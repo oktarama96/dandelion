@@ -32,7 +32,7 @@
     });
 
     $("input[name='NamaProduk\\[\\]']").autocomplete({
-       serviceUrl : "{{ url('/pos/pages/pos/acproduk/') }}",
+       serviceUrl : "{{ url('/pos/pointofsale/acproduk/') }}",
        dataType : "JSON",
        showNoSuggestionNotice : true,
        onSelect : function(suggestions){
@@ -133,7 +133,7 @@
         
         $("input[name='NamaProduk\\[\\]']").each(function(index){
             $(this).autocomplete({
-                serviceUrl : "{{ url('/pos/pages/pos/acproduk/') }}",
+                serviceUrl : "{{ url('/pos/pointofsale/acproduk/') }}",
                 dataType : "JSON",
                 showNoSuggestionNotice : true,
                 onSelect : function(suggestions){
@@ -185,7 +185,7 @@
 
         $.ajax({
             type: "GET",
-            url:  "{{ url('/pos/pages/pos/addproduk') }}/"+$(ini).val()+"/",
+            url:  "{{ url('/pos/pointofsale/addproduk') }}/"+$(ini).val()+"/",
             data:  "IdProduk=" + $(ini).val(),
             success: function(msg){
                 //console.log(msg);
@@ -223,7 +223,7 @@
 
         $.ajax({
             type: "GET",
-            url:  "{{ url('/pos/pages/pos/addukuran') }}/"+$(ini).val()+"/",
+            url:  "{{ url('/pos/pointofsale/addukuran') }}/"+$(ini).val()+"/",
             data:  "IdProduk=" + $(ini).val(),
             success: function(msg){
                 //console.log(msg);
@@ -286,7 +286,7 @@
 @section('content')
 
     <div class="card shadow md-4">
-        <form action="{{ url('/pos/pages/pos/addtransaksi') }}" method="post" id="form-transaksi">
+        <form action="{{ url('/pos/pointofsale/addtransaksi') }}" method="post" id="form-transaksi">
             @csrf
             <div class="card-header py-3">
                 <h1 class="page-header"><i class="fas fa-fw fa-cash-register"></i> Point Of Sale</h1>
@@ -299,8 +299,8 @@
                             <tr>
                                 <td>Nama Pengguna</td>
                                 <td>
-                                    <input type="text" name="NamaPengguna" class="form-control " value="Rama" readonly>
-                                    <input type="hidden" name="IdPengguna" class="form-control " value="1">
+                                    <input type="text" name="NamaPengguna" class="form-control " value="{{Auth::guard('pengguna')->user()->NamaPengguna}}" readonly>
+                                    <input type="hidden" name="IdPengguna" class="form-control " value="{{Auth::guard('pengguna')->user()->IdPengguna}}">
                                 </td>
                             </tr>
                             

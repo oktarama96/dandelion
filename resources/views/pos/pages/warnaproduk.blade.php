@@ -36,7 +36,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/warnaproduk') }}",
+            url: "{{ url('/pos/admin/warnaproduk') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -62,7 +62,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/warnaproduk/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/warnaproduk/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -86,7 +86,7 @@
         var kode = 'IdWarna='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/warnaproduk/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/warnaproduk/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdWarnaE").val(msg.IdWarna);
@@ -109,7 +109,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/warnaproduk/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/warnaproduk/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");

@@ -23,16 +23,16 @@
 
 </head>
 
-<body id="page-top" @if (Request::path() === 'pos/pages/pos' || Request::path() === 'pos/pages/transaksi') {{ 'class=sidebar-toggled' }} @else {{ '' }} @endif>
+<body id="page-top" @if (Request::path() === 'pos/pointofsale' || Request::path() === 'pos/transaksi') {{ 'class=sidebar-toggled' }} @else {{ '' }} @endif>
 
   <!-- Page Wrapper -->
   <div id="wrapper">
 
     <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion @if (Request::path() === 'pos/pages/pos' || Request::path() === 'pos/pages/transaksi') {{ 'toggled' }} @else {{ '' }} @endif" id="accordionSidebar">
+    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion @if (Request::path() === 'pos/pointofsale' || Request::path() === 'pos/transaksi') {{ 'toggled' }} @else {{ '' }} @endif" id="accordionSidebar">
 
       <!-- Sidebar - Brand -->
-      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('index') }}">
+      <a class="sidebar-brand d-flex align-items-center justify-content-center" href="{{ route('kasir.index') }}">
         <div class="sidebar-brand-icon rotate-n-15">
           <i class="fas fa-laugh-wink"></i>
         </div>
@@ -44,142 +44,179 @@
 
       <!-- Nav Item - Dashboard -->
       <li class="nav-item {{ Request::path() == 'pos' ? 'active' : '' }}">
-        <a class="nav-link" href="{{ route('index') }}">
+        <a class="nav-link" href="{{ route('kasir.index') }}">
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
+      @if (Auth::guard('pengguna')->user()->Is_admin == 1)
+        <!-- Divider -->
+        <hr class="sidebar-divider">
 
-      <!-- Divider -->
-      <hr class="sidebar-divider">
-
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Master Data
-      </div>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/pengguna' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/pengguna">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Pengguna</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/pelanggan' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/pelanggan">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Pelanggan</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/kategoriproduk' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/kategoriproduk">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Kategori Produk</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/warnaproduk' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/warnaproduk">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Warna Produk</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/ukuranproduk' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/ukuranproduk">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Ukuran Produk</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/produk' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/produk">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Produk</span></a>
-      </li>
-
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/kupondiskon' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/kupondiskon">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Kupon Diskon</span></a>
-      </li>
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Master Data
+        </div>
       
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/transaksi' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/transaksi">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Data Transaksi</span></a>
-      </li>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/pengguna' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/pengguna">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Pengguna</span></a>
+        </li>
 
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/pelanggan' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/pelanggan">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Pelanggan</span></a>
+        </li>
 
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Application
-      </div>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/kategoriproduk' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/kategoriproduk">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Kategori Produk</span></a>
+        </li>
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/pos' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/pos">
-          <i class="fas fa-fw fa-cash-register"></i>
-          <span>Point Of Sale</span></a>
-      </li>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/warnaproduk' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/warnaproduk">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Warna Produk</span></a>
+        </li>
 
-      <!-- Nav Item -->
-      <li class="nav-item">
-        <a class="nav-link" href="/">
-          <i class="fas fa-fw fa-globe-asia"></i>
-          <span>Online Shop</span></a>
-      </li>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/ukuranproduk' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/ukuranproduk">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Ukuran Produk</span></a>
+        </li>
 
-      <!-- Divider -->
-      <hr class="sidebar-divider">
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/produk' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/produk">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Produk</span></a>
+        </li>
 
-      <!-- Heading -->
-      <div class="sidebar-heading">
-        Report
-      </div>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/kupondiskon' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/admin/kupondiskon">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Kupon Diskon</span></a>
+        </li>
+        
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/transaksi' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/transaksi">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Transaksi</span></a>
+        </li>
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/report/transaksi' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/report/transaksi">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Laporan Transaksi</span></a>
-      </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/report/stokproduk' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/report/stokproduk">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Laporan Stok Produk</span></a>
-      </li>
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Application
+        </div>
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/pos' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/pos">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Laporan Keuntungan</span></a>
-      </li>
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/pointofsale' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/pointofsale">
+            <i class="fas fa-fw fa-cash-register"></i>
+            <span>Point Of Sale</span></a>
+        </li>
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/report/stokhabis' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/report/stokhabis">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Laporan Stok Habis</span></a>
-      </li>
+        <!-- Nav Item -->
+        <li class="nav-item">
+          <a class="nav-link" href="/">
+            <i class="fas fa-fw fa-globe-asia"></i>
+            <span>Online Shop</span></a>
+        </li>
 
-      <!-- Nav Item -->
-      <li class="nav-item {{ Request::path() === 'pos/pages/report/stoklaris' ? 'active' : '' }}">
-        <a class="nav-link" href="/pos/pages/report/stoklaris">
-          <i class="fas fa-fw fa-table"></i>
-          <span>Laporan Stok Paling Laris</span></a>
-      </li>
+        <!-- Divider -->
+        <hr class="sidebar-divider">
 
-    </ul>
-    <!-- End of Sidebar -->
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Report
+        </div>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/report/transaksi">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Laporan Transaksi</span></a>
+        </li>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/report/stokproduk' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/report/stokproduk">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Laporan Stok Produk</span></a>
+        </li>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/pos' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/pos">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Laporan Keuntungan</span></a>
+        </li>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/report/stokhabis' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/report/stokhabis">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Laporan Stok Habis</span></a>
+        </li>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/admin/report/stoklaris' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/report/stoklaris">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Laporan Stok Paling Laris</span></a>
+        </li>
+
+      @else
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Master Data
+        </div>
+        
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/transaksi' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/transaksi">
+            <i class="fas fa-fw fa-table"></i>
+            <span>Data Transaksi</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+        <!-- Heading -->
+        <div class="sidebar-heading">
+          Application
+        </div>
+
+        <!-- Nav Item -->
+        <li class="nav-item {{ Request::path() === 'pos/pointofsale' ? 'active' : '' }}">
+          <a class="nav-link" href="/pos/pointofsale">
+            <i class="fas fa-fw fa-cash-register"></i>
+            <span>Point Of Sale</span></a>
+        </li>
+
+        <!-- Divider -->
+        <hr class="sidebar-divider">
+
+      @endif 
+      </ul>
+      <!-- End of Sidebar -->
+
+      
 
     <!-- Content Wrapper -->
     <div id="content-wrapper" class="d-flex flex-column">
@@ -233,23 +270,16 @@
             <!-- Nav Item - User Information -->
             <li class="nav-item dropdown no-arrow">
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <span class="mr-2 d-none d-lg-inline text-gray-600 small">Admin</span>
+                @if (Auth::guard('pengguna')->user()->Is_admin == 1)
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::guard('pengguna')->user()->NamaPengguna}} - Admin</span>
+                @else
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::guard('pengguna')->user()->NamaPengguna}} - Kasir</span>
+                @endif                
                 <img class="img-profile rounded-circle" src="https://source.unsplash.com/QAB-WJcbgJk/60x60">
               </a>
               <!-- Dropdown - User Information -->
               <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                <a class="dropdown-item" href="{{ route('profile') }}">
-                  <i class="fas fa-user fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Profile
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-cogs fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Settings
-                </a>
-                <a class="dropdown-item" href="#">
-                  <i class="fas fa-list fa-sm fa-fw mr-2 text-gray-400"></i>
-                  Activity Log
-                </a>
+
                 <div class="dropdown-divider"></div>
                 <a class="dropdown-item" href="#" data-toggle="modal" data-target="#logoutModal">
                   <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
@@ -308,7 +338,11 @@
         <div class="modal-body">Anda yakin ingin logout ?</div>
         <div class="modal-footer">
           <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-          <a class="btn btn-primary" href="/pos/login">Logout</a>
+          <a class="btn btn-primary" href="{{ route('pos.logout') }}" onclick="event.preventDefault();
+          document.getElementById('logout-form').submit();">Logout</a>
+          <form id="logout-form" action="{{ route('pos.logout') }}" method="POST" style="display: none;">
+              @csrf
+          </form>
         </div>
       </div>
     </div>

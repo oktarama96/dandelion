@@ -75,8 +75,8 @@ class PelangganController extends Controller
         $tabel = new Pelanggan;
 
         $tabel->NamaPelanggan = $request->NamaPelanggan;
-        $tabel->Email = $request->Email;
-        $tabel->Password = bcrypt($request->Password);
+        $tabel->email = $request->Email;
+        $tabel->password = bcrypt($request->Password);
         $tabel->JenisKelamin = $request->JenisKelamin;
         $tabel->TglLahir = $request->TglLahir;
         $tabel->NoHandphone = $request->NoHandphone;
@@ -152,11 +152,11 @@ class PelangganController extends Controller
         $tabel->IdPelanggan = $request->IdPelanggan;
         $tabel->NamaPelanggan = $request->NamaPelanggan;
         if($request->has('Email')){
-            $tabel->Email = $request->Email;
+            $tabel->email = $request->Email;
         }
 
         if($request->has('Password')){
-            $tabel->Password = bcrypt($request->Password);
+            $tabel->password = bcrypt($request->Password);
         }     
         $tabel->JenisKelamin = $request->JenisKelamin;
         $tabel->TglLahir = $request->TglLahir;

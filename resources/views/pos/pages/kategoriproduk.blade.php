@@ -36,7 +36,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/kategoriproduk') }}",
+            url: "{{ url('/pos/admin/kategoriproduk') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -62,7 +62,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/kategoriproduk/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/kategoriproduk/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -86,7 +86,7 @@
         var kode = 'IdKategoriProduk='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/kategoriproduk/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/kategoriproduk/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdKategoriProdukE").val(msg.IdKategoriProduk);
@@ -109,7 +109,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/kategoriproduk/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/kategoriproduk/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");

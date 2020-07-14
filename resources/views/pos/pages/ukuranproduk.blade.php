@@ -36,7 +36,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/ukuranproduk') }}",
+            url: "{{ url('/pos/admin/ukuranproduk') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -62,7 +62,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/ukuranproduk/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/ukuranproduk/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -86,7 +86,7 @@
         var kode = 'IdUkuran='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/ukuranproduk/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/ukuranproduk/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdUkuranE").val(msg.IdUkuran);
@@ -109,7 +109,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/ukuranproduk/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/ukuranproduk/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");

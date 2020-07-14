@@ -132,11 +132,22 @@
             <div class="same-style account-satting">
                 <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
                 <div class="account-dropdown">
-                    <ul>
-                        <li><a href="login-register.html">Login</a></li>
-                        <li><a href="login-register.html">Register</a></li>
-                        <li><a href="my-account.html">my account</a></li>
-                    </ul>
+                    @if (Auth::guard('web')->user())
+                        <ul>
+                            <li>{{Auth::guard('web')->user()->NamaPelanggan}}</li>
+                            <li><a ref="{{ route('logout') }}" onclick="event.preventDefault();
+                                document.getElementById('logout-form').submit();">Logout</a></li>                            
+                            <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                @csrf
+                            </form>
+                        </ul>
+                    @else
+                        <ul>
+                            <li><a href="login-register.html">Login</a></li>
+                            <li><a href="login-register.html">Register</a></li>
+                        </ul>
+                    @endif
+                    
                 </div>
             </div>
             <div class="same-style cart-wrap">
