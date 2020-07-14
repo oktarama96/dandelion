@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 14, 2020 at 04:59 AM
+-- Generation Time: Jul 14, 2020 at 03:34 PM
 -- Server version: 10.4.11-MariaDB
 -- PHP Version: 7.2.29
 
@@ -38,6 +38,14 @@ CREATE TABLE `detailtransaksi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `detailtransaksi`
+--
+
+INSERT INTO `detailtransaksi` (`IdDetailTransaksi`, `Qty`, `Diskon`, `SubTotal`, `IdProduk`, `IdStokProduk`, `IdTransaksi`, `created_at`, `updated_at`) VALUES
+(22, 1, 0, 40000, 'DB0001', 12, '20200714212945', '2020-07-14 13:29:45', '2020-07-14 13:29:45'),
+(23, 1, 0, 70000, 'DB0002', 15, '20200714212945', '2020-07-14 13:29:45', '2020-07-14 13:29:45');
 
 -- --------------------------------------------------------
 
@@ -154,8 +162,8 @@ CREATE TABLE `pelanggan` (
   `NamaPelanggan` varchar(125) COLLATE utf8mb4_unicode_ci NOT NULL,
   `TglLahir` date NOT NULL,
   `JenisKelamin` enum('Laki-laki','Perempuan') COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `Alamat` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `NoHandphone` char(15) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -173,7 +181,7 @@ CREATE TABLE `pelanggan` (
 -- Dumping data for table `pelanggan`
 --
 
-INSERT INTO `pelanggan` (`IdPelanggan`, `NamaPelanggan`, `TglLahir`, `JenisKelamin`, `Email`, `Password`, `remember_token`, `Alamat`, `NoHandphone`, `IdKecamatan`, `NamaKecamatan`, `IdKabupaten`, `NamaKabupaten`, `IdProvinsi`, `NamaProvinsi`, `created_at`, `updated_at`) VALUES
+INSERT INTO `pelanggan` (`IdPelanggan`, `NamaPelanggan`, `TglLahir`, `JenisKelamin`, `email`, `password`, `remember_token`, `Alamat`, `NoHandphone`, `IdKecamatan`, `NamaKecamatan`, `IdKabupaten`, `NamaKabupaten`, `IdProvinsi`, `NamaProvinsi`, `created_at`, `updated_at`) VALUES
 (1, '-', '2020-06-01', 'Laki-laki', '-@mail.com', '$2y$10$x4tmbGNT4rswFYYzsBF9KOPNThYVenrpKN/bgJ37NU1nXYb9vWB6u', NULL, '-', '00000000000', 261, 'Kuta Utara', 17, 'Badung', 1, 'Bali', '2020-06-14 16:55:57', '2020-06-14 16:55:57');
 
 -- --------------------------------------------------------
@@ -185,8 +193,8 @@ INSERT INTO `pelanggan` (`IdPelanggan`, `NamaPelanggan`, `TglLahir`, `JenisKelam
 CREATE TABLE `pengguna` (
   `IdPengguna` int(10) UNSIGNED NOT NULL,
   `NamaPengguna` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `Password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `email` varchar(100) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `password` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `remember_token` varchar(100) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `Alamat` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `NoHandphone` char(15) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -199,7 +207,7 @@ CREATE TABLE `pengguna` (
 -- Dumping data for table `pengguna`
 --
 
-INSERT INTO `pengguna` (`IdPengguna`, `NamaPengguna`, `Email`, `Password`, `remember_token`, `Alamat`, `NoHandphone`, `Is_admin`, `created_at`, `updated_at`) VALUES
+INSERT INTO `pengguna` (`IdPengguna`, `NamaPengguna`, `email`, `password`, `remember_token`, `Alamat`, `NoHandphone`, `Is_admin`, `created_at`, `updated_at`) VALUES
 (1, 'Rama', 'ramaa@gmail.com', '$2y$10$vEQ6IedAh/JZs7G9qk/WEehlzubF/.h2vebcANCRCO9LzFaUvKyM6', NULL, 'asdasd', '083119853063', 1, '2020-06-13 03:26:07', '2020-06-13 03:26:07');
 
 -- --------------------------------------------------------
@@ -252,9 +260,9 @@ CREATE TABLE `stokproduk` (
 --
 
 INSERT INTO `stokproduk` (`IdStokProduk`, `StokMasuk`, `StokKeluar`, `StokAkhir`, `IdWarna`, `IdUkuran`, `IdProduk`, `created_at`, `updated_at`) VALUES
-(12, 5, 0, 5, 1, 1, 'DB0001', '2020-06-15 06:54:46', '2020-06-15 06:54:46'),
+(12, 5, 1, 4, 1, 1, 'DB0001', '2020-06-15 06:54:46', '2020-07-14 13:29:45'),
 (14, 2, 0, 2, 2, 5, 'DB0001', '2020-06-15 06:54:46', '2020-06-15 10:29:59'),
-(15, 10, 1, 9, 2, 3, 'DB0002', '2020-06-17 04:34:27', '2020-07-05 02:24:21'),
+(15, 10, 2, 8, 2, 3, 'DB0002', '2020-06-17 04:34:27', '2020-07-14 13:29:45'),
 (16, 0, 2, -2, 1, 4, 'DB0002', '2020-06-17 04:34:27', '2020-07-14 00:35:04');
 
 -- --------------------------------------------------------
@@ -281,6 +289,13 @@ CREATE TABLE `transaksi` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Dumping data for table `transaksi`
+--
+
+INSERT INTO `transaksi` (`IdTransaksi`, `TglTransaksi`, `Total`, `Potongan`, `OngkosKirim`, `NamaEkspedisi`, `GrandTotal`, `MetodePembayaran`, `StatusPembayaran`, `StatusPesanan`, `Snap_token`, `IdKuponDiskon`, `IdPengguna`, `IdPelanggan`, `created_at`, `updated_at`) VALUES
+('20200714212945', '2020-07-14 21:29:45', 110000, 0, 0, '-', 110000, 'Cash', 1, 3, '-', '-', 1, 1, '2020-07-14 13:29:45', '2020-07-14 13:29:45');
 
 -- --------------------------------------------------------
 
@@ -410,14 +425,14 @@ ALTER TABLE `password_resets`
 --
 ALTER TABLE `pelanggan`
   ADD PRIMARY KEY (`IdPelanggan`),
-  ADD UNIQUE KEY `pelanggan_email_unique` (`Email`);
+  ADD UNIQUE KEY `pelanggan_email_unique` (`email`);
 
 --
 -- Indexes for table `pengguna`
 --
 ALTER TABLE `pengguna`
   ADD PRIMARY KEY (`IdPengguna`),
-  ADD UNIQUE KEY `pengguna_email_unique` (`Email`);
+  ADD UNIQUE KEY `pengguna_email_unique` (`email`);
 
 --
 -- Indexes for table `produk`
@@ -479,7 +494,7 @@ ALTER TABLE `warna`
 -- AUTO_INCREMENT for table `detailtransaksi`
 --
 ALTER TABLE `detailtransaksi`
-  MODIFY `IdDetailTransaksi` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=22;
+  MODIFY `IdDetailTransaksi` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
 
 --
 -- AUTO_INCREMENT for table `failed_jobs`
