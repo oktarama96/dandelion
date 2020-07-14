@@ -61,3 +61,7 @@ Route::get('/pos/profile-management', function () {
 Route::get('/', 'IndexController@index');
 Route::get('/produk/detail/{id}','ProdukController@edit');
 Route::get('/shop', 'ShopController@index');
+Route::post('/shop', 'ShopController@index');
+Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
+
+Route::get('/shop/add-cart', 'ShopController@filterProduk');

@@ -6,7 +6,9 @@
 
 @section('add-js')
     <script type="text/javascript">
-
+        $("#form-filter input[type=checkbox]").click(function(){
+            $("#form-filter").submit();
+        })
         function viewUkuran(ini) {
             //console.log(ini);
             $.ajax({
@@ -45,6 +47,7 @@
                                     "</div>"+
                                     "<div class='col-md-7 col-sm-12 col-xs-12'>"+
                                         "<div class='product-details-content quickview-content'>"+
+                                            "<input type='hidden' id='IdProduk' value='"+msg.produk.IdProduk+"'>"+
                                             "<h2>"+msg.produk.NamaProduk+"</h2>"+
                                             "<div class='product-details-price'>"+
                                                 "<span>Rp. "+msg.produk.HargaJual+"</span>"+
@@ -66,7 +69,7 @@
                                                 "<div class='pro-details-color-wrap'>"+
                                                     "<span>Color</span>"+
                                                     "<div class='pro-details-color-content'>"+
-                                                        "<select class='form-control' name='Warna' onchange='viewUkuran(this)'>";
+                                                        "<select class='form-control' id='IdWarna' onchange='viewUkuran(this)'>";
 
                                                         for(var i = 0; i < msg.stokproduk.length; i++){
                                                             data = data+"<option value='"+msg.stokproduk[i].IdWarna+"'>"+msg.stokproduk[i].warna.NamaWarna+"</option>";
@@ -78,7 +81,7 @@
                                                 "<div class='pro-details-color-wrap'>"+
                                                     "<span>Size</span>"+
                                                     "<div class='pro-details-color-content'>"+
-                                                        "<select class='form-control' name='Ukuran'>";
+                                                        "<select class='form-control' id='IdUkuran'>";
 
                                                             for(var j = 0; j < msg.stokproduk.length; j++){
                                                             data = data+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
@@ -90,10 +93,10 @@
                                             "</div>"+
                                             "<div class='pro-details-quality'>"+
                                                 "<div class='cart-plus-minus'>"+
-                                                    "<input class='cart-plus-minus-box' type='number' name='Qty' value='1'>"+
+                                                    "<input class='cart-plus-minus-box' type='number' id='Qty' value='1'>"+
                                                 "</div>"+
                                                 "<div class='pro-details-cart btn-hover'>"+
-                                                    "<a href='#'>Add To Cart</a>"+
+                                                    "<a href='#' onclick='addToCart()'>Add To Cart</a>"+
                                                 "</div>"+
                                             "</div>"+
                                         "</div>"+
@@ -103,6 +106,11 @@
                     $("#detail").append(data);
                 }
             })
+        }
+
+        function addToCart(){
+            alert($('#IdProduk').val() + " " + $('#IdWarna').val() + " " + $('#IdUkuran').val() + " " + $('#Qty').val())
+
         }
 
         $('#exampleModal').on('hidden.bs.modal', function(e){
@@ -247,7 +255,7 @@
                                         <div class="col-xl-4 col-md-6 col-lg-6 col-sm-6">
                                             <div class="product-wrap mb-25 scroll-zoom">
                                                 <div class="product-img">
-                                                    <a href="#">
+                                                    <a href="/shop/product-detail/{{ $produk->IdProduk }}">
                                                         <img class="default-img" src="img/produk/{{ $produk->GambarProduk }}" alt="">
                                                         <img class="hover-img" src="img/produk/{{ $produk->GambarProduk }}" alt="">
                                                     </a>
@@ -261,7 +269,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="product-content text-center">
-                                                    <h3>{{ $produk->NamaProduk }}</a></h3>
+                                                    <h3>{{ $produk->NamaProduk }}</h3>
                                                     <div class="product-rating">
                                                         <i class="fa fa-star-o yellow"></i>
                                                         <i class="fa fa-star-o yellow"></i>
@@ -280,23 +288,25 @@
                             </div>
                         </div>
                         <div class="pro-pagination-style text-center mt-30">
-                            <ul>
+                            {{-- <ul>
                                 <li><a class="prev" href="#"><i class="fa fa-angle-double-left"></i></a></li>
                                 <li><a class="active" href="#">1</a></li>
                                 <li><a href="#">2</a></li>
                                 <li><a class="next" href="#"><i class="fa fa-angle-double-right"></i></a></li>
-                            </ul>
+                            </ul> --}}
+                            {{ $produks->links() }}
                         </div>
                     </div>
                 </div>
-
                 <div class="col-lg-3">
+                    <form id="form-filter" method="post" action='http://127.0.0.1:8000/shop'>
+                    @csrf
                     <div class="sidebar-style mr-30">
                         <div class="sidebar-widget">
                             <h4 class="pro-sidebar-title">Search </h4>
                             <div class="pro-sidebar-search mb-50 mt-25">
                                 <form class="pro-sidebar-search-form" action="#">
-                                    <input type="text" placeholder="Search here...">
+                                    <input name="search" value="{{ $filter['search'] }}" type="text" placeholder="Search here...">
                                     <button>
                                         <i class="pe-7s-search"></i>
                                     </button>
@@ -319,7 +329,7 @@
                                     @foreach ($warnas as $warna)
                                         <li>
                                             <div class="sidebar-widget-list-left">
-                                                <input type="checkbox" value="{{ $warna->IdWarna }}"><a href="#">{{ $warna->NamaWarna }}</a>
+                                                <input name="warna[]" type="checkbox" {{ (in_array($warna->IdWarna, $filter['warna']))?"checked":"" }} value="{{ $warna->IdWarna }}"><a href="#">{{ $warna->NamaWarna }}</a>
                                                 <span class="checkmark"></span> 
                                             </div>
                                         </li>
@@ -334,7 +344,7 @@
                                     @foreach ($ukurans as $ukuran)
                                         <li>
                                             <div class="sidebar-widget-list-left">
-                                                <input type="checkbox" value="{{ $ukuran->IdUkuran }}"><a href="#">{{ $ukuran->NamaUkuran }}</a>
+                                                <input name="ukuran[]" type="checkbox" {{ (in_array($ukuran->IdUkuran, $filter['ukuran']))?"checked":"" }} value="{{ $ukuran->IdUkuran }}"><a href="#">{{ $ukuran->NamaUkuran }}</a>
                                                 <span class="checkmark"></span> 
                                             </div>
                                         </li>
@@ -342,17 +352,24 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="sidebar-widget mt-50">
+                        <div class="sidebar-widget mt-40">
                             <h4 class="pro-sidebar-title">Categories </h4>
-                            <div class="sidebar-widget-tag mt-25">
+                            <div class="sidebar-widget-list mt-20">
                                 <ul>
                                     @foreach ($kategoris as $kategori)
-                                        <li><a href="#">{{ $kategori->NamaKategori }}</a></li>
+                                    <!--<li><a href="#">{{ $kategori->NamaKategori }}</a></li>-->
+                                    <li>
+                                        <div class="sidebar-widget-list-left">
+                                            <input name="kategori[]" type="checkbox" {{ (in_array($kategori->IdKategoriProduk, $filter['kategori']))?"checked":"" }} value="{{ $kategori->IdKategoriProduk }}"><a href="#">{{ $kategori->NamaKategori }}</a>
+                                            <span class="checkmark"></span> 
+                                        </div>
+                                    </li>
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
                     </div>
+                </form>
                 </div>
             </div>
         </div>
