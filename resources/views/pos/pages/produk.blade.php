@@ -41,7 +41,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/produk') }}",
+            url: "{{ url('/pos/admin/produk') }}",
             data: formData,
             processData: false,
             contentType: false,
@@ -69,7 +69,7 @@
         //console.log($('#form-edit').serialize());
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/produk/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/produk/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -96,7 +96,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/produk/') }}/"+a+"/stok",
+            url: "{{ url('/pos/admin/produk/') }}/"+a+"/stok",
             data: $('#form-stok').serialize(),
             
             success: function (data) {
@@ -130,7 +130,7 @@
         var kode = 'IdProduk='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/produk/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/produk/') }}/"+a+"/",
             data: kode,
             success: function(msg){
                 //console.log(msg[0].GambarProduk);
@@ -188,7 +188,7 @@
         var kode = 'IdProduk='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/produk/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/produk/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdProdukE").val(msg.produk.IdProduk);
@@ -253,7 +253,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/produk/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/produk/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
@@ -318,7 +318,7 @@
 
                     $.ajax({
                         type: "DELETE",
-                        url: "{{ url('/pos/pages/produk/') }}/"+idstok+"/stok",
+                        url: "{{ url('/pos/admin/produk/') }}/"+idstok+"/stok",
                         data: kode,
                         success: function (data) {
                             $(tr).remove();
@@ -342,7 +342,7 @@
         var kode = 'IdProduk='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/produk/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/produk/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 var dataa = "";

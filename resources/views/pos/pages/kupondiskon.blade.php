@@ -42,7 +42,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/kupondiskon') }}",
+            url: "{{ url('/pos/admin/kupondiskon') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -68,7 +68,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/kupondiskon/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/kupondiskon/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -92,7 +92,7 @@
         var kode = 'IdKuponDiskon='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/kupondiskon/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/kupondiskon/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdKuponDiskonE").val(msg.IdKuponDiskon);
@@ -118,7 +118,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/kupondiskon/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/kupondiskon/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");

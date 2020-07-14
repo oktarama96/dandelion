@@ -22,7 +22,7 @@
 
     $(document).ready(function(){
         $('.input-daterange').datepicker({
-            format: "dd/mm/yyyy"
+            format: "mm/dd/yyyy"
         });
 
         load_data();
@@ -81,7 +81,7 @@
         var kode = 'IdTransaksi='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/transaksi/detailtransaksi/') }}/"+a+"/",
+            url: "{{ url('/pos/transaksi/detailtransaksi/') }}/"+a+"/",
             data: kode,
             success: function(msg){
                 console.log(msg);
@@ -122,7 +122,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/transaksi/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/transaksi/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");

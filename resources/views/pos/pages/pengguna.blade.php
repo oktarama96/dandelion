@@ -25,7 +25,7 @@
         columns: [
             {data: 'IdPengguna', name: 'IdPengguna'},
             {data: 'NamaPengguna', name: 'NamaPengguna'},
-            {data: 'Email', name: 'Email'},
+            {data: 'email', name: 'Email'},
             {data: 'Alamat', name: 'Alamat'},
             {data: 'NoHandphone', name: 'NoHandphone'},
             {data: 'Is_admin', name: 'Is_admin'},
@@ -40,7 +40,7 @@
 
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/pengguna') }}",
+            url: "{{ url('/pos/admin/pengguna') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -67,7 +67,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/pengguna/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/pengguna/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -81,7 +81,6 @@
                 $.each(data.responseJSON.errors, function(key,value) {
                     errors = errors +' '+ value +'\n';
                 });
-                
                 swal("Gagal!","Gagal Mengubah Data : \n"+errors+"","error");
             },
         });
@@ -91,12 +90,12 @@
         var kode = 'IdPengguna='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/pengguna/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/pengguna/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 $("#IdPenggunaE").val(msg.IdPengguna);
                 $("#NamaPenggunaE").val(msg.NamaPengguna);
-                $("#EmailE").val(msg.Email);
+                $("#EmailE").val(msg.email);
                 $("#AlamatE").val(msg.Alamat);
                 $("#NoHandphoneE").val(msg.NoHandphone);
                 $("#jabatanE").val(msg.Is_admin);
@@ -118,7 +117,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/pengguna/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/pengguna/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
@@ -203,7 +202,7 @@
                         </div>
                         <div class="form-group">
                             <label>No Handphone</label>
-                            <input type="text" class="form-control" name="NoHandphone" required>
+                            <input type="number" class="form-control" name="NoHandphone" required>
                         </div>
                         <div class="form-group">
                             <label>Jabatan</label>
@@ -253,7 +252,7 @@
                         </div>
                         <div class="form-group">
                             <label>No Handphone</label>
-                            <input type="text" class="form-control" name="NoHandphone" id="NoHandphoneE" required>
+                            <input type="number" class="form-control" name="NoHandphone" id="NoHandphoneE" required>
                         </div>
                         <div class="form-group">
                             <label>Jabatan</label>

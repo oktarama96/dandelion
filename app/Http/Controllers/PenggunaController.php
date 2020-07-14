@@ -8,6 +8,15 @@ use DataTables;
 
 class PenggunaController extends Controller
 {
+    public function adminDash()
+    {
+        return view('admin');
+    }
+
+    public function kasirDash()
+    {
+        return view('kasir');
+    }
     public function index(Request $request){
         if ($request->ajax()) {
             $pengguna = Pengguna::latest()->get();
@@ -46,8 +55,8 @@ class PenggunaController extends Controller
         $pengguna = new Pengguna;
 
         $pengguna->NamaPengguna = $request->NamaPengguna;
-        $pengguna->Email = $request->Email;
-        $pengguna->Password = bcrypt($request->Password);
+        $pengguna->email = $request->Email;
+        $pengguna->password = bcrypt($request->Password);
         $pengguna->Alamat = $request->Alamat;
         $pengguna->NoHandphone = $request->NoHandphone;
         $pengguna->Is_admin = $request->jabatan;
@@ -77,11 +86,11 @@ class PenggunaController extends Controller
         $pengguna->IdPengguna = $request->IdPengguna;
         $pengguna->NamaPengguna = $request->NamaPengguna;
         if($request->has('Email')){
-            $pengguna->Email = $request->Email;
+            $pengguna->email = $request->Email;
         }
 
         if($request->has('Password')){
-            $pengguna->Password = bcrypt($request->Password);
+            $pengguna->password = bcrypt($request->Password);
         }        
         $pengguna->Alamat = $request->Alamat;
         $pengguna->NoHandphone = $request->NoHandphone;

@@ -27,7 +27,7 @@
         columns: [
             {data: 'IdPelanggan', name: 'IdPelanggan'},
             {data: 'NamaPelanggan', name: 'NamaPengguna'},
-            {data: 'Email', name: 'Email'},
+            {data: 'email', name: 'Email'},
             {data: 'JenisKelamin', name: 'JenisKelamin'},
             {data: 'TglLahir', name: 'TglLahir'},
             {data: 'Alamat', name: 'Alamat'},
@@ -41,7 +41,7 @@
        
         $.ajax({
             type: 'POST',
-            url: "{{ url('/pos/pages/pelanggan') }}",
+            url: "{{ url('/pos/admin/pelanggan') }}",
             data: $('#form-tambah').serialize(),
             
             success: function (data) {
@@ -68,7 +68,7 @@
 
         $.ajax({
             type: 'PATCH',
-            url: "{{ url('/pos/pages/pelanggan/') }}/"+a+"/",
+            url: "{{ url('/pos/admin/pelanggan/') }}/"+a+"/",
             data: $('#form-edit').serialize(),
             
             success: function (data) {
@@ -92,7 +92,7 @@
         var kode = 'IdPelanggan='+ a;
         $.ajax({
             type: "GET",
-            url: "{{ url('/pos/pages/pelanggan/') }}/"+a+"/edit",
+            url: "{{ url('/pos/admin/pelanggan/') }}/"+a+"/edit",
             data: kode,
             success: function(msg){
                 var kabupaten = "<option value='-'>Pilih Kabupaten</option>";
@@ -110,7 +110,7 @@
 
                 $("#IdPelangganE").val(msg.tabel.IdPelanggan);
                 $("#NamaPelangganE").val(msg.tabel.NamaPelanggan);
-                $("#EmailE").val(msg.tabel.Email);
+                $("#EmailE").val(msg.tabel.email);
                 $("#JenisKelaminE").val(msg.tabel.JenisKelamin);
                 $("#TglLahirE").val(msg.tabel.TglLahir);
                 $("#NoHandphoneE").val(msg.tabel.NoHandphone);
@@ -140,7 +140,7 @@
             if (willDelete) {
                 $.ajax({
                     type: "DELETE",
-                    url: "{{ url('/pos/pages/pelanggan/') }}/"+a+"/",
+                    url: "{{ url('/pos/admin/pelanggan/') }}/"+a+"/",
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
@@ -173,7 +173,7 @@
         $("select[name='Provinsi']").append("<input type='hidden' name='NamaProvinsi' value='"+this.options[this.selectedIndex].text+"'>"); 
         $.ajax({
             type: "POST",
-            url: "{{ url('/pos/pages/pelanggan/add/provinsi/') }}/"+this.value+"/",
+            url: "{{ url('/pos/admin/pelanggan/add/provinsi/') }}/"+this.value+"/",
             data: "IdPropinsi="+this.value,
             success: function(msg){
                 var data = "<option value='-'>Pilih Kabupaten</option>";
@@ -195,7 +195,7 @@
         $("select[name='Kabupaten']").append("<input type='hidden' name='NamaKabupaten' value='"+this.options[this.selectedIndex].text+"'>"); 
         $.ajax({
             type: "POST",
-            url: "{{ url('/pos/pages/pelanggan/add/kabupaten/') }}/"+this.value+"/",
+            url: "{{ url('/pos/admin/pelanggan/add/kabupaten/') }}/"+this.value+"/",
             data: "IdKabupaten="+this.value,
             success: function(msg){
                 var data = "<option value='-'>Pilih Kecamatan</option>";

@@ -39,7 +39,7 @@
                     <div class="text-center">
                       <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
                     </div>
-                    <form method="post" action="/pos/login/auth" class="user">
+                    <form method="post" action="{{route('pos.login')}}" class="user">
                       @csrf
                       <div class="form-group">
                         <input type="email" class="form-control form-control-user" name="email" aria-describedby="emailHelp" placeholder="Enter Email Address...">

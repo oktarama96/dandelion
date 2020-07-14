@@ -144,7 +144,6 @@ class TransaksiController extends Controller
     public function index(Request $request)
     {
         if ($request->ajax()) {
-
             if(!empty($request->from_date)){
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', array($request->from_date, $request->to_date))
@@ -177,8 +176,9 @@ class TransaksiController extends Controller
                     })
                     ->addColumn('Aksi', function($data){
                         $btn = "<button type='button' class='btn btn-success btn-flat' title='Show Data' data-toggle='modal' data-target='#detail' onclick='detail(\"".$data->IdTransaksi."\")'><i class='fa fa-info'></i></button>";
-                        $btn = $btn." <button type='button' class='btn btn-danger btn-flat' title='Delete Data' onclick='deletee(\"".$data->IdTransaksi."\")'><i class='fa fa-trash'></i></button>";
-
+                        if (auth()->guard('pengguna')->user()->Is_admin == 1) {
+                            $btn = $btn." <button type='button' class='btn btn-danger btn-flat' title='Delete Data' onclick='deletee(\"".$data->IdTransaksi."\")'><i class='fa fa-trash'></i></button>";
+                        }
                         return $btn;
                     })
                     ->rawColumns(['Aksi'])
