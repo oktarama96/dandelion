@@ -80,10 +80,9 @@ Route::get('/profile-management', function () {
 Route::get('/', 'IndexController@index')->name('index');
 Route::get('/produk/detail/{id}','ProdukController@edit');
 Route::get('/shop', 'ShopController@index');
-<<<<<<< HEAD
+
 Route::post('/shop', 'ShopController@index');
 Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
 
 Route::get('/shop/add-cart', 'ShopController@filterProduk');
-=======
->>>>>>> e446ad61a0e33e293866c4c4a64c76a0054b8915
+

@@ -22,7 +22,7 @@
 
     $(document).ready(function(){
         $('.input-daterange').datepicker({
-            format: "mm/dd/yyyy"
+            format: "yyyy-mm-dd"
         });
 
         load_data();
@@ -32,6 +32,7 @@
             $('.data-table').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 data:{from_date:from_date, to_date:to_date}
             },

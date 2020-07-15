@@ -8,10 +8,11 @@
     <!-- Page level plugins -->
   <script src="{{ asset('/vendor/chart.js/Chart.min.js') }}"></script>
 
-  <!-- Page level custom scripts -->
-  <script src="{{ asset('/js/demo/chart-pie-demo.js') }}"></script>
-
   <script type="text/javascript">
+    var dataa = <?php echo $totaltransaksi; ?>;
+
+    // alert(data);
+
     Chart.defaults.global.defaultFontFamily = 'Nunito', '-apple-system,system-ui,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif';
     Chart.defaults.global.defaultFontColor = '#858796';
 
@@ -59,7 +60,7 @@
           pointHoverBorderColor: "rgba(78, 115, 223, 1)",
           pointHitRadius: 10,
           pointBorderWidth: 2,
-          data: [0, 10000, 5000, 15000, 10000, 20000, 15000, 25000, 20000, 30000, 25000, 40000],
+          data: dataa,
         }],
       },
       options: {
@@ -130,7 +131,40 @@
       }
     });
 
+    // Pie Chart Example
+    var ctx = document.getElementById("myPieChart");
+    var myPieChart = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: ["Direct", "Referral", "Social"],
+        datasets: [{
+          data: [55, 30, 15],
+          backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc'],
+          hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf'],
+          hoverBorderColor: "rgba(234, 236, 244, 1)",
+        }],
+      },
+      options: {
+        maintainAspectRatio: false,
+        tooltips: {
+          backgroundColor: "rgb(255,255,255)",
+          bodyFontColor: "#858796",
+          borderColor: '#dddfeb',
+          borderWidth: 1,
+          xPadding: 15,
+          yPadding: 15,
+          displayColors: false,
+          caretPadding: 10,
+        },
+        legend: {
+          display: false
+        },
+        cutoutPercentage: 80,
+      },
+    });
+
   </script>
+
 @endsection
 
 @section('content')
@@ -149,7 +183,11 @@
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                   <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pendapatan Hari Ini</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">$40,000</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    @foreach($pendapatanSum as $p)
+                    Rp. {{ $p->pendapatanSum }}
+                    @endforeach  
+                  </div>
                 </div>
                 <div class="col-auto">
                   <i class="fas fa-dollar-sign fa-2x text-gray-300"></i>
@@ -166,7 +204,11 @@
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                   <div class="text-xs font-weight-bold text-success text-uppercase mb-1">Produk Terjual Hari Ini</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    @foreach($qtySum as $q)
+                    {{ $q->qtySum }} Pcs
+                    @endforeach
+                  </div>
                 </div>
                 <div class="col-auto">
                   <i class="fas fa-tshirt fa-2x text-gray-300"></i>
@@ -183,7 +225,11 @@
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                   <div class="text-xs font-weight-bold text-info text-uppercase mb-1">Jumlah Transaksi Hari Ini</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">$215,000</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    @foreach($transaksiCount as $t)
+                    {{ $t->transaksiCount }} Transaksi
+                    @endforeach
+                  </div>
                 </div>
                 <div class="col-auto">
                   <i class="fas fa-clipboard fa-2x text-gray-300"></i>
@@ -200,7 +246,11 @@
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
                   <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Online Order Belum Di Proses</div>
-                  <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                  <div class="h5 mb-0 font-weight-bold text-gray-800">
+                    @foreach($pesananbelumdiproses as $p)
+                    {{ $p->pesananbelumdiproses }} Transaksi
+                    @endforeach  
+                  </div>
                 </div>
                 <div class="col-auto">
                   <i class="fas fa-comments fa-2x text-gray-300"></i>

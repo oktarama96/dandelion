@@ -145,14 +145,14 @@
 
         <!-- Nav Item -->
         <li class="nav-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/transaksi">
+          <a class="nav-link" href="/pos/admin/report/transaksi">
             <i class="fas fa-fw fa-table"></i>
             <span>Laporan Transaksi</span></a>
         </li>
 
         <!-- Nav Item -->
         <li class="nav-item {{ Request::path() === 'pos/admin/report/stokproduk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stokproduk">
+          <a class="nav-link" href="/pos/admin/report/stokproduk">
             <i class="fas fa-fw fa-table"></i>
             <span>Laporan Stok Produk</span></a>
         </li>
@@ -166,14 +166,14 @@
 
         <!-- Nav Item -->
         <li class="nav-item {{ Request::path() === 'pos/admin/report/stokhabis' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stokhabis">
+          <a class="nav-link" href="/pos/admin/report/stokhabis">
             <i class="fas fa-fw fa-table"></i>
             <span>Laporan Stok Habis</span></a>
         </li>
 
         <!-- Nav Item -->
         <li class="nav-item {{ Request::path() === 'pos/admin/report/stoklaris' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stoklaris">
+          <a class="nav-link" href="/pos/admin/report/stoklaris">
             <i class="fas fa-fw fa-table"></i>
             <span>Laporan Stok Paling Laris</span></a>
         </li>

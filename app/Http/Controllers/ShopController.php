@@ -66,7 +66,7 @@ class ShopController extends Controller
         $produks = DB::table('produk');
         if (!empty($filter['kategori'])) 
         $produks = $produks->whereIn("IdKategoriProduk", $filter['kategori'], 'and');
-        $produks = $produks->whereIn("IdProduk", $stokprodukid)->orderBy('created_at', 'desc')->paginate(1);
+        $produks = $produks->whereIn("IdProduk", $stokprodukid)->orderBy('created_at', 'desc')->paginate(8);
         // print_r($produks);
         // return $produks;
 
