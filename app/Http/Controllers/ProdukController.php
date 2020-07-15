@@ -170,6 +170,26 @@ class ProdukController extends Controller
         return response()->json(['produk' => $produk, 'stokproduk' => $stokproduk]);
     }
 
+    
+    public function getDetail($id)
+    {
+        $produk = Produk::where('IdProduk', $id)->first();
+        $warna = $produk->warnas()->groupBy('IdWarna')->get();
+        $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+        // return $warna;
+        return response()->json(['produk' => $produk, 'warna' => $warna, 'ukuran' => $ukuran]);
+    }
+
+    public function getUkuran($IdProduk, $IdWarna){
+        $ukuran = StokProduk::join('ukuran', 'ukuran.IdUkuran', '=', 'stokproduk.IdUkuran')
+        ->where([
+            ['IdProduk',$IdProduk],
+            ['IdWarna',$IdWarna],
+        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
+        return $ukuran;
+    }
+
+
     /**
      * Update the specified resource in storage.
      *

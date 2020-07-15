@@ -23,18 +23,114 @@
         $("#form-filter input[type=checkbox]").click(function(){
             $("#form-filter").submit();
         })
-        function viewUkuran(ini) {
+
+        function formatNumber (num) {
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+        }
+
+
+        var cart_produk = {!! $cart_produk !!}
+        var cart_total = {{ $cart_total }}
+
+        function delete_cart(delete_cart){
+            key = $('.delete_cart').index($(delete_cart))
+
+            alert(cart_produk[key].NamaProduk)
+            $.ajax({
+                type: "GET",
+                url:  "{{ url('/shop/delete-cart') }}/"+cart_produk[key].IdCart,
+                success: function(msg){
+                    
+                    cart_total-=cart_produk[key].sub_total
+                    cart_produk.splice(key, 1)
+
+                    $('#cart_total').html('Rp'+formatNumber(cart_total))
+                    $('#cart_count').html(cart_produk.length)
+                    $('#cart_content li').eq(key).remove()
+
+                    alert('sukses menghapus item dari cart')
+                }
+            });
+        }
+        
+        function addToCart(){
+            alert($('#IdProduk').val() + " " + $('#IdWarna').val() + " " + $('#IdUkuran').val() + " " + $('#Qty').val())
+
+            data = {
+                "_token": "{{ csrf_token() }}",
+                'IdProduk': $('#IdProduk').val(),
+                'IdWarna': $('#IdWarna').val(),
+                'IdUkuran': $('#IdUkuran').val(),
+                'Qty': $('#Qty').val(),
+            }
+
+            $.ajax({
+                type: "POST",
+                url:  "{{ url('/shop/add-cart') }}/",
+                data: data,
+                success: function(data){
+                    var new_item = true
+                    var sub_total = data.sub_total
+                    var key = -1;
+
+                    cart_produk.forEach(function(produk, index){
+                        if(produk.IdCart == data.IdCart){
+                            new_item = false
+                            sub_total -= produk.sub_total
+                            cart_produk[index] = data
+                            key = index
+                        }
+                    })
+
+                    if(new_item){
+                        cart_produk.push(data)
+                    }
+                    
+                    cart_count = cart_produk.length
+                    cart_total+=sub_total
+
+                    content = `
+                    <li class="single-shopping-cart">
+                        <div class="shopping-cart-img">
+                            <a href="#"><img alt="" width="82px" height="82px" src="img/produk/`+ data.GambarProduk +`"></a>
+                        </div>
+                        <div class="shopping-cart-title">
+                            <h4><a href="#">`+ data.NamaProduk +`(`+data.NamaWarna+`/`+data.NamaUkuran+`)</a></h4>
+                            <h6 class='qty'>Qty: `+ data.Qty +`</h6>
+                            <span class='sub_total'>Rp`+ formatNumber(data.sub_total) +`</span>
+                        </div>
+                        <div class="shopping-cart-delete">
+                            <a href="#" class='delete_cart' onclick="delete_cart(this)"><i class="fa fa-times-circle"></i></a>
+                        </div>
+                    </li>
+                    `   
+
+                    $('#cart_total').html('Rp'+formatNumber(cart_total))
+                    $('#cart_count').html(cart_count)
+                    
+                    if(new_item){
+                        alert('new item')
+                        $('#cart_content').append(content)
+                    } else {
+                        $('#cart_content .qty').eq(key).html('Qty: '+ data.Qty)
+                        $('#cart_content .sub_total').eq(key).html('Rp: '+ formatNumber(data.sub_total))
+                    }
+                    alert('sukses menambah item ke cart')
+                }
+            });
+        }
+
+        function viewUkuran(IdProduk, ini) {
             //console.log(ini);
             $.ajax({
                 type: "GET",
-                url:  "{{ url('/pos/pages/pos/addukuran') }}/"+$(ini).val()+"/",
-                data:  "IdProduk=" + $(ini).val(),
-                success: function(msg){
+                url:  "{{ url('/shop/get-ukuran') }}/"+IdProduk+"/"+$(ini).val()+"/",
+                success: function(data){
                     //console.log(msg);
                     var ukuran;
-                    if(msg.stokproduk.length != 0) {              
-                        for(var j = 0; j < msg.stokproduk.length; j++){
-                            ukuran = ukuran+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                    if(data.length != 0) {              
+                        for(var j = 0; j < data.length; j++){
+                            ukuran = ukuran+"<option value='"+data[j].IdUkuran+"'>"+data[j].NamaUkuran+"</option>";
                         }
                         $("select[name='Ukuran']").empty().append(ukuran);
                     }
@@ -46,7 +142,7 @@
             var kode = 'IdProduk='+ a;
             $.ajax({
                 type: "GET",
-                url: "{{ url('/produk/detail/') }}/"+a+"/",
+                url: "{{ url('/shop/get-warna') }}/"+a+"/",
                 data: kode,
                 success: function(msg){
                     //console.log(msg.produk.NamaProduk);
@@ -83,10 +179,10 @@
                                                 "<div class='pro-details-color-wrap'>"+
                                                     "<span>Color</span>"+
                                                     "<div class='pro-details-color-content'>"+
-                                                        "<select class='form-control' id='IdWarna' onchange='viewUkuran(this)'>";
+                                                        `<select class='form-control' name="Warna" id='IdWarna' onchange='viewUkuran("`+msg.produk.IdProduk+`", this)'>`;
 
-                                                        for(var i = 0; i < msg.stokproduk.length; i++){
-                                                            data = data+"<option value='"+msg.stokproduk[i].IdWarna+"'>"+msg.stokproduk[i].warna.NamaWarna+"</option>";
+                                                        for(var i = 0; i < msg.warna.length; i++){
+                                                            data = data+"<option value='"+msg.warna[i].IdWarna+"'>"+msg.warna[i].NamaWarna+"</option>";
                                                         }
                                                         
                                                     data = data+"</select>"+
@@ -95,10 +191,10 @@
                                                 "<div class='pro-details-color-wrap'>"+
                                                     "<span>Size</span>"+
                                                     "<div class='pro-details-color-content'>"+
-                                                        "<select class='form-control' id='IdUkuran'>";
+                                                        "<select class='form-control' name='Ukuran' id='IdUkuran'>";
 
-                                                            for(var j = 0; j < msg.stokproduk.length; j++){
-                                                            data = data+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                                                        for(var j = 0; j < msg.ukuran.length; j++){
+                                                            data = data+"<option value='"+msg.ukuran[j].IdUkuran+"'>"+msg.ukuran[j].NamaUkuran+"</option>";
                                                         }
                                                         
                                                     data = data+"</select>"+
@@ -122,11 +218,6 @@
             })
         }
 
-        function addToCart(){
-            alert($('#IdProduk').val() + " " + $('#IdWarna').val() + " " + $('#IdUkuran').val() + " " + $('#Qty').val())
-
-        }
-
         $('#exampleModal').on('hidden.bs.modal', function(e){
             $('.append').remove(); 
         });
@@ -140,44 +231,32 @@
         <div class="same-style cart-wrap">
             <button class="icon-cart">
                 <i class="pe-7s-shopbag"></i>
-                <span class="count-style">02</span>
+                <span class="count-style" id='cart_count'>{{ count($cart_produk) }}</span>
             </button>
             <div class="shopping-cart-content">
-                <ul>
+                <ul id="cart_content">
+                    @foreach($cart_produk as $key=>$produk)
                     <li class="single-shopping-cart">
                         <div class="shopping-cart-img">
-                            <a href="#"><img alt="" src="assets/img/cart/cart-1.png"></a>
+                            <a href="#"><img alt="" width="82px" height="82px" src="img/produk/{{ $produk->GambarProduk }}"></a>
                         </div>
                         <div class="shopping-cart-title">
-                            <h4><a href="#">T- Shart & Jeans </a></h4>
-                            <h6>Qty: 02</h6>
-                            <span>$260.00</span>
+                            <h4><a href="#">{{ $produk->NamaProduk }} ({{ $produk->NamaWarna }}/{{ $produk->NamaUkuran }}) </a></h4>
+                            <h6 class='qty'>Qty: {{ $produk->Qty }}</h6>
+                            <span class='sub_total'>Rp{{ number_format($produk->sub_total,0,"",".") }}</span>
                         </div>
                         <div class="shopping-cart-delete">
-                            <a href="#"><i class="fa fa-times-circle"></i></a>
+                            <a href="#" class="delete_cart" onclick="delete_cart(this)"><i class="fa fa-times-circle"></i></a>
                         </div>
                     </li>
-                    <li class="single-shopping-cart">
-                        <div class="shopping-cart-img">
-                            <a href="#"><img alt="" src="assets/img/cart/cart-2.png"></a>
-                        </div>
-                        <div class="shopping-cart-title">
-                            <h4><a href="#">T- Shart & Jeans </a></h4>
-                            <h6>Qty: 02</h6>
-                            <span>$260.00</span>
-                        </div>
-                        <div class="shopping-cart-delete">
-                            <a href="#"><i class="fa fa-times-circle"></i></a>
-                        </div>
-                    </li>
+                    @endforeach
                 </ul>
                 <div class="shopping-cart-total">
-                    <h4>Shipping : <span>$20.00</span></h4>
-                    <h4>Total : <span class="shop-total">$260.00</span></h4>
+                    <h4>Total : <span class="shop-total" id="cart_total">Rp{{ number_format($cart_total,0,"",".") }}</span></h4>
                 </div>
                 <div class="shopping-cart-btn btn-hover text-center">
                     <a class="default-btn" href="cart-page.html">view cart</a>
-                    <a class="default-btn" href="checkout.html">checkout</a>
+                    <a class="default-btn" href="/shop/checkout">checkout</a>
                 </div>
             </div>
         </div>

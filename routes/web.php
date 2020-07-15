@@ -84,9 +84,12 @@ Route::get('/shop', 'ShopController@index');
 Route::post('/shop', 'ShopController@index');
 Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
 
-Route::get('/shop/add-cart', 'ShopController@filterProduk');
-
 Route::get('/shop/cart', 'ShopController@showcart');
+Route::get('/shop/get-cart', 'ShopController@getCart');
+Route::get('/shop/delete-cart/{id_cart}', 'ShopController@deleteCartItem');
+Route::post('/shop/add-cart', 'ShopController@addCartItem');
 
 Route::get('/shop/checkout', 'ShopController@showcheckout');
 
+Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
+Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
