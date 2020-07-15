@@ -157,8 +157,9 @@ class TransaksiController extends Controller
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }else{
+                // return $request->to_date;
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
-                ->whereBetween('created_at', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }

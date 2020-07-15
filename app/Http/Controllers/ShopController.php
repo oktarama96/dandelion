@@ -66,7 +66,7 @@ class ShopController extends Controller
         $produks = DB::table('produk');
         if (!empty($filter['kategori'])) 
         $produks = $produks->whereIn("IdKategoriProduk", $filter['kategori'], 'and');
-        $produks = $produks->whereIn("IdProduk", $stokprodukid)->orderBy('created_at', 'desc')->paginate(8);
+        $produks = $produks->whereIn("IdProduk", $stokprodukid)->orderBy('created_at', 'desc')->paginate(9);
         // print_r($produks);
         // return $produks;
 
@@ -83,9 +83,9 @@ class ShopController extends Controller
 		if(!$request->session()->has('filter')){
             $filter = [
                 'search' => '',
-                'warna' => [1,2],
-                'ukuran' => [1],
-                'kategori' => [1],
+                'warna' => [],
+                'ukuran' => [],
+                'kategori' => [],
             ];
             $request->session()->put('filter', $filter);
         }
@@ -118,5 +118,15 @@ class ShopController extends Controller
         $produks = Produk::find($id);
         
         return view('product-detail', compact('$produks'));
+    }
+
+    public function showcart()
+    {
+        return view('cart');
+    }
+
+    public function showcheckout()
+    {
+        return view('checkout');
     }
 }

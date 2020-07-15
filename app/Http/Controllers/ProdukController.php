@@ -23,7 +23,9 @@ class ProdukController extends Controller
     {
         if ($request->ajax()) {
             //User::with(['product:id,user_id,name,slug,price', 'product.comments:id,product_id,comment,created_at'])
-            $datas = Produk::with('kategori')->get();
+            $datas = Produk::with('kategori')
+                    ->orderBy('created_at', 'DESC')
+                    ->get();
            // $stok = StokProduk::where('IdProduk', $datas->IdProduk)->sum('StokMasuk')->sum('StokKeluar')->sum('StokAkhir');
             
 

@@ -13,19 +13,39 @@ class DashboardController extends Controller
     public function index()
     {
         $now = Carbon::today();
-        $totaltransaksis = Transaksi::select(
+
+        // offline transaksi
+        $totaltransaksioffs = Transaksi::select(
                     DB::raw('sum(GrandTotal) as total'), 
                     DB::raw("DATE_FORMAT(TglTransaksi,'%m') as monthKey")
                 )
                 ->whereYear('TglTransaksi', date('Y'))
+                ->where('MetodePembayaran', 'Cash')
                 ->groupBy('monthKey')
                 ->orderBy('TglTransaksi', 'ASC')
                 ->get();
 
-        $datatransaksi = [0,0,0,0,0,0,0,0,0,0,0,0];
+        $datatransaksioff = [0,0,0,0,0,0,0,0,0,0,0,0];
 
-        foreach($totaltransaksis as $transaksi){
-            $datatransaksi[$transaksi->monthKey-1] = $transaksi->total;
+        foreach($totaltransaksioffs as $transaksioff){
+            $datatransaksioff[$transaksioff->monthKey-1] = $transaksioff->total;
+        }
+
+        // online transaksi
+        $totaltransaksions = Transaksi::select(
+                    DB::raw('sum(GrandTotal) as total'), 
+                    DB::raw("DATE_FORMAT(TglTransaksi,'%m') as monthKey")
+                )
+                ->whereYear('TglTransaksi', date('Y'))
+                ->where('MetodePembayaran', '!=' ,'Cash')
+                ->groupBy('monthKey')
+                ->orderBy('TglTransaksi', 'ASC')
+                ->get();
+
+        $datatransaksion = [0,0,0,0,0,0,0,0,0,0,0,0];
+
+        foreach($totaltransaksions as $transaksion){
+            $datatransaksion[$transaksion->monthKey-1] = $transaksion->total;
         }
 
         $pendapatanSum = Transaksi::select(DB::raw('COALESCE(SUM(GrandTotal),0) as pendapatanSum'))
@@ -46,7 +66,8 @@ class DashboardController extends Controller
 
         // return $pesananbelumdiproses;
         return view("pos.pages.index")
-                ->with('totaltransaksi', json_encode($datatransaksi,JSON_NUMERIC_CHECK))
+                ->with('totaltransaksioff', json_encode($datatransaksioff,JSON_NUMERIC_CHECK))
+                ->with('totaltransaksion', json_encode($datatransaksion,JSON_NUMERIC_CHECK))
                 ->with('pendapatanSum', $pendapatanSum)
                 ->with('qtySum', $qtySum)
                 ->with('transaksiCount', $transaksiCount)

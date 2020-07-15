@@ -5,23 +5,29 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Transaksi;
 use App\StokProduk;
+use Carbon\Carbon;
 use DataTables;
 
 class LaporanController extends Controller
 {
     public function transaksiReport(Request $request)
     {
-        if ($request->ajax()) {
+        $now = Carbon::today();
+        // $now->format('Y-m-d')  
 
-            if(!empty($request->from_date)){
+        if ($request->ajax()) {
+            if($request->from_date == NULL){
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
-                ->whereBetween('TglTransaksi', array($request->from_date, $request->to_date))
+                ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
+                ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }else{
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
+                ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }
-
+            //dd($datas);
             return Datatables::of($datas)
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){

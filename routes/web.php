@@ -11,7 +11,7 @@
 |
 */
 
-// Pandika 
+
 Route::get('pos/login', 'Auth\PosController@showLoginForm')->name('pos.login');
 Route::post('pos/login', 'Auth\PosController@login')->name('pos.login');
 Route::post('pos/logout', 'Auth\PosController@logout')->name('pos.logout');
@@ -85,4 +85,8 @@ Route::post('/shop', 'ShopController@index');
 Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
 
 Route::get('/shop/add-cart', 'ShopController@filterProduk');
+
+Route::get('/shop/cart', 'ShopController@showcart');
+
+Route::get('/shop/checkout', 'ShopController@showcheckout');
 
