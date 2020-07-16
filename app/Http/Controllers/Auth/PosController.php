@@ -7,6 +7,9 @@ use App\Http\Controllers\Controller;
 use Auth;
 use Route;
 
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Input;
+
 class PosController extends Controller
 {
     public function __construct()
@@ -21,6 +24,7 @@ class PosController extends Controller
 
     public function login(Request $request)
     {
+        $errors = new MessageBag(['email' => ['Email dan/atau password salah!.']]);
         // Validate the form data
         $this->validate($request, [
           'email'   => 'required|email',
@@ -38,7 +42,7 @@ class PosController extends Controller
             }
         } 
         // if unsuccessful, then redirect back to the login with the form data
-        return redirect()->back()->withInput($request->only('email'));
+        return redirect()->back()->withErrors($errors)->withInput($request->except('password'));
     }
     
     public function logout()

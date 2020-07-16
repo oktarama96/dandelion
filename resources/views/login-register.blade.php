@@ -71,8 +71,20 @@
                                     <div class="login-register-form">
                                         <form action="{{route('login')}}" method="post">
                                             @csrf
-                                            <input type="email" name="email" placeholder="Email">
-                                            <input type="password" name="password" placeholder="Password">
+                                            <div class="form-group {{ $errors->has('email') ? ' has-danger' : '' }}">
+                                                <label for="email">Email Address</label>
+                                                <input type="email" class="form-control {{ $errors->has('email') ? ' form-control-danger' : '' }}" id="email" name="email" placeholder="Masukkan email anda" value="{{ old('email') }}" required autofocus> 
+                                                @if ($errors->has('email'))
+                                                <label class="error mt-2 text-danger">{{ $errors->first('email') }}</label>
+                                                @endif
+                                            </div>
+                                            <div class="form-group {{ $errors->has('password') ? ' has-danger' : '' }}">
+                                                <label for="password">Password</label>
+                                                <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }}" id="password" name="password" required> 
+                                                @if ($errors->has('password'))
+                                                <label class="error mt-2 text-danger">{{ $errors->first('password') }}</label>
+                                                @endif
+                                            </div> 
                                             <div class="button-box">
                                                 <button type="submit"><span>Login</span></button>
                                             </div>

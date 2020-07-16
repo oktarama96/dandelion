@@ -8,6 +8,9 @@ use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
 use Auth;
 
+use Illuminate\Support\MessageBag;
+use Illuminate\Support\Facades\Input;
+
 class LoginController extends Controller
 {
     /*
@@ -42,6 +45,7 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        $errors = new MessageBag(['email' => ['Email dan/atau password salah!.']]);
         // Validate the form data
         $this->validate($request, [
             'email'   => 'required|email',
@@ -52,7 +56,7 @@ class LoginController extends Controller
             return redirect()->route('index');
         } 
         // if unsuccessful, then redirect back to the login with the form data
-        return redirect()->back()->withInput($request->only('email'));
+        return redirect()->back()->withErrors($errors)->withInput($request->except('password'));
     }
 
     public function showLoginForm()
