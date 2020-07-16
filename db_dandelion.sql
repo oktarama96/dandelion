@@ -25,10 +25,16 @@ CREATE TABLE `cart` (
   `IdPelanggan` int(11) NOT NULL,
   `IdStokProduk` int(11) NOT NULL,
   `Qty` int(11) NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdCart`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `cart` */
+
+insert  into `cart`(`IdCart`,`IdPelanggan`,`IdStokProduk`,`Qty`,`created_at`,`updated_at`) values 
+(18,3,39,1,'2020-07-16 03:19:24','2020-07-16 03:19:24'),
+(22,3,27,1,'2020-07-16 03:28:11','2020-07-16 03:28:11');
 
 /*Table structure for table `detailtransaksi` */
 
@@ -281,7 +287,7 @@ CREATE TABLE `stokproduk` (
   CONSTRAINT `stokproduk_idproduk_foreign` FOREIGN KEY (`IdProduk`) REFERENCES `produk` (`IdProduk`),
   CONSTRAINT `stokproduk_idukuran_foreign` FOREIGN KEY (`IdUkuran`) REFERENCES `ukuran` (`IdUkuran`),
   CONSTRAINT `stokproduk_idwarna_foreign` FOREIGN KEY (`IdWarna`) REFERENCES `warna` (`IdWarna`)
-) ENGINE=InnoDB AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=40 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `stokproduk` */
 
@@ -290,14 +296,14 @@ insert  into `stokproduk`(`IdStokProduk`,`StokMasuk`,`StokKeluar`,`StokAkhir`,`I
 (14,2,0,2,2,5,'DB0001','2020-06-15 14:54:46','2020-06-15 18:29:59'),
 (15,10,5,5,2,3,'DB0002','2020-06-17 12:34:27','2020-07-15 10:42:40'),
 (16,0,2,-2,1,4,'DB0002','2020-06-17 12:34:27','2020-07-14 08:35:04'),
-(22,4,0,4,3,2,'DB0003','2020-07-15 18:23:02','2020-07-15 18:23:02'),
+(22,4,0,4,3,4,'DB0003','2020-07-15 18:23:02','2020-07-15 18:23:02'),
 (23,7,0,7,2,5,'DB0003','2020-07-15 18:23:02','2020-07-15 18:23:02'),
 (24,4,0,4,3,3,'DB0004','2020-07-15 18:26:57','2020-07-15 18:26:57'),
 (25,5,0,5,4,4,'DB0004','2020-07-15 18:26:57','2020-07-15 18:26:57'),
 (26,5,0,5,4,3,'DB0005','2020-07-15 18:27:59','2020-07-15 18:27:59'),
 (27,5,0,5,3,4,'DB0005','2020-07-15 18:27:59','2020-07-15 18:27:59'),
 (28,5,0,5,6,5,'DB0005','2020-07-15 18:27:59','2020-07-15 18:27:59'),
-(29,3,0,3,1,1,'a','2020-07-15 18:32:08','2020-07-15 18:32:08'),
+(29,3,0,3,2,2,'DB0003','2020-07-15 18:32:08','2020-07-15 18:32:08'),
 (30,3,0,3,1,1,'a','2020-07-15 18:32:08','2020-07-15 18:32:08'),
 (31,4,0,4,1,1,'a','2020-07-15 18:32:08','2020-07-15 18:32:08'),
 (32,4,0,4,1,2,'DB0006','2020-07-15 18:36:03','2020-07-15 18:36:03'),
@@ -306,7 +312,8 @@ insert  into `stokproduk`(`IdStokProduk`,`StokMasuk`,`StokKeluar`,`StokAkhir`,`I
 (35,3,0,3,3,3,'DB0007','2020-07-15 18:36:54','2020-07-15 18:36:54'),
 (36,40,0,40,4,7,'DB0009','2020-07-15 18:37:47','2020-07-15 18:37:47'),
 (37,10,0,10,7,7,'DB0010','2020-07-15 18:41:53','2020-07-15 18:41:53'),
-(38,5,0,5,2,2,'DB0011','2020-07-15 18:42:55','2020-07-15 18:42:55');
+(38,5,0,5,2,2,'DB0011','2020-07-15 18:42:55','2020-07-15 18:42:55'),
+(39,7,0,7,1,3,'DB0003','2020-07-16 02:45:55','2020-07-16 02:45:55');
 
 /*Table structure for table `transaksi` */
 
