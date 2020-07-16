@@ -23,6 +23,7 @@
         processing: true,
         serverSide: true,
         ajax: "",
+        order: [],
         columns: [
             {data: 'IdProduk', name: 'IdProduk'},
             {data: 'NamaProduk', name: 'NamaProduk'},

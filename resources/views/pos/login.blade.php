@@ -17,7 +17,11 @@
 
     <!-- Custom styles for this template-->
     <link href="../css/sb-admin-2.min.css" rel="stylesheet">
-
+    <style>
+      .bg-login-image{
+        background:url('../img/wallpaper.jpg');
+      }
+    </style>
   </head>
 
   <body class="bg-gradient-primary">
@@ -37,7 +41,7 @@
                 <div class="col-lg-6">
                   <div class="p-5">
                     <div class="text-center">
-                      <h1 class="h4 text-gray-900 mb-4">Welcome Back!</h1>
+                      <h1 class="h4 text-gray-900 mb-4">Welcome Back Dandelion!</h1>
                     </div>
                     <form method="post" action="{{route('pos.login')}}" class="user">
                         @csrf
@@ -71,11 +75,8 @@
                       </button>
                     </form>
                     <hr>
-                    <div class="text-center">
-                      <a class="small" href="forgot-password.html">Forgot Password?</a>
-                    </div>
-                    <div class="text-center">
-                      <a class="small" href="register.html">Create an Account!</a>
+                    <div class="copyright text-center mt-3">
+                      <span>Copyright &copy; Dandelion Fashion Shop 2020</span>
                     </div>
                   </div>
                 </div>

@@ -23,7 +23,9 @@ class ProdukController extends Controller
     {
         if ($request->ajax()) {
             //User::with(['product:id,user_id,name,slug,price', 'product.comments:id,product_id,comment,created_at'])
-            $datas = Produk::with('kategori')->get();
+            $datas = Produk::with('kategori')
+                    ->orderBy('created_at', 'DESC')
+                    ->get();
            // $stok = StokProduk::where('IdProduk', $datas->IdProduk)->sum('StokMasuk')->sum('StokKeluar')->sum('StokAkhir');
             
 
@@ -167,6 +169,26 @@ class ProdukController extends Controller
         $stokproduk = StokProduk::with(['warna','ukuran'])->where('IdProduk', $id)->get();
         return response()->json(['produk' => $produk, 'stokproduk' => $stokproduk]);
     }
+
+    
+    public function getDetail($id)
+    {
+        $produk = Produk::where('IdProduk', $id)->first();
+        $warna = $produk->warnas()->groupBy('IdWarna')->get();
+        $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+        // return $warna;
+        return response()->json(['produk' => $produk, 'warna' => $warna, 'ukuran' => $ukuran]);
+    }
+
+    public function getUkuran($IdProduk, $IdWarna){
+        $ukuran = StokProduk::join('ukuran', 'ukuran.IdUkuran', '=', 'stokproduk.IdUkuran')
+        ->where([
+            ['IdProduk',$IdProduk],
+            ['IdWarna',$IdWarna],
+        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
+        return $ukuran;
+    }
+
 
     /**
      * Update the specified resource in storage.

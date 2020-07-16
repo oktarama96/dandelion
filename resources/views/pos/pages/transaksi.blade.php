@@ -22,7 +22,7 @@
 
     $(document).ready(function(){
         $('.input-daterange').datepicker({
-            format: "mm/dd/yyyy"
+            format: "yyyy-mm-dd"
         });
 
         load_data();
@@ -32,6 +32,7 @@
             $('.data-table').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 data:{from_date:from_date, to_date:to_date}
             },
@@ -149,6 +150,7 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Transaksi</h1>
+        <a href="#" class="d-sm-inline-block btn btn-sm btn-success shadow-sm" data-toggle="modal" data-target="#pesanan"><i class="fas fa-plus fa-sm text-white-50"></i> Update Status Pesanan</a>
     </div>
 
     <!-- DataTales Example -->
@@ -227,6 +229,27 @@
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!--Modal pesanan-->
+    <div class="modal fade" id="pesanan" tabindex="-1" role="dialog" aria-labelledby="pesanan" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="pesanan">Update Status Pesanan</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Exit</button>
+                    <button class="btn btn-primary" type="button" id="Update">Update</button>
                 </div>
             </div>
         </div>

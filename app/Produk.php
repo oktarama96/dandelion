@@ -25,4 +25,14 @@ class Produk extends Model
     {
         return $this->hasMany('App\DetailTransaksi', 'IdProduk', 'IdProduk');
     }
+
+    public function warnas()
+    {
+        return $this->belongsToMany('App\Warna', 'stokproduk', 'IdProduk', 'IdWarna');
+    }
+
+    public function ukurans()
+    {
+        return $this->belongsToMany('App\Ukuran', 'stokproduk', 'IdProduk', 'IdUkuran');
+    }
 }

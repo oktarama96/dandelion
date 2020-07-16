@@ -10314,6 +10314,40 @@ a.default-btn {
 .pro-pagination-style ul li {
   display: inline-block;
   margin: 0 4px; }
+
+  .pro-pagination-style ul li span {
+    display: inline-block;
+    width: 43px;
+    height: 43px;
+    text-align: center;
+    line-height: 43px;
+    font-size: 16px;
+    border-radius: 100%;
+    color: #a749ff;
+    -webkit-box-shadow: 0 0px 12px 0.8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 0px 12px 0.8px rgba(0, 0, 0, 0.1); }
+    .pro-pagination-style ul li span:hover {
+      background-color: #a749ff;
+      color: #fff; }
+  .pro-pagination-style ul li span.active {
+    background-color: #a749ff;
+    color: #fff;
+    -webkit-box-shadow: none;
+    box-shadow: none; }
+    .pro-pagination-style ul li span.active:hover {
+      background-color: #333; }
+  .pro-pagination-style ul li span.prev,
+  .pro-pagination-style ul li span.next {
+    background-color: #f6f6f6;
+    color: #a749ff;
+    font-size: 17px;
+    -webkit-box-shadow: none;
+    box-shadow: none; }
+    .pro-pagination-style ul li span.prev:hover,
+    .pro-pagination-style ul li span.next:hover {
+      background-color: #a749ff;
+      color: #fff; }
+
   .pro-pagination-style ul li a {
     display: inline-block;
     width: 43px;

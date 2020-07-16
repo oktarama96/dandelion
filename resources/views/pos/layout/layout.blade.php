@@ -56,61 +56,27 @@
         <div class="sidebar-heading">
           Master Data
         </div>
-      
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/pengguna' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/pengguna">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Pengguna</span></a>
-        </li>
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/pelanggan' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/pelanggan">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Pelanggan</span></a>
-        </li>
+        <!-- Nav Item - Pages Collapse Menu -->
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages2" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Data</span>
+          </a>
+          <div id="collapsePages2" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/kategoriproduk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/kategoriproduk">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Kategori Produk</span></a>
-        </li>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/pengguna' ? 'active' : '' }}" href="/pos/admin/pengguna">Data Pengguna</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/pelanggan' ? 'active' : '' }}" href="/pos/admin/pelanggan">Data Pelanggan</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/kategoriproduk' ? 'active' : '' }}" href="/pos/admin/kategoriproduk">Data Kategori Produk</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/warnaproduk' ? 'active' : '' }}" href="/pos/admin/warnaproduk">Data Warna Produk</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/ukuranproduk' ? 'active' : '' }}" href="/pos/admin/ukuranproduk">Data Ukuran Produk</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/produk' ? 'active' : '' }}" href="/pos/admin/produk">Data Produk</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/kupondiskon' ? 'active' : '' }}" href="/pos/admin/kupondiskon">Data Kupon Diskon</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/transaksi' ? 'active' : '' }}" href="/pos/transaksi">Data Transaksi</a>
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/warnaproduk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/warnaproduk">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Warna Produk</span></a>
-        </li>
-
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/ukuranproduk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/ukuranproduk">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Ukuran Produk</span></a>
-        </li>
-
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/produk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/produk">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Produk</span></a>
-        </li>
-
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/kupondiskon' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/admin/kupondiskon">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Kupon Diskon</span></a>
-        </li>
-        
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/transaksi' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/transaksi">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Data Transaksi</span></a>
+            </div>
+          </div>
         </li>
 
         <!-- Divider -->
@@ -143,39 +109,22 @@
           Report
         </div>
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/transaksi">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Laporan Transaksi</span></a>
-        </li>
+        <li class="nav-item">
+          <a class="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages1" aria-expanded="true" aria-controls="collapsePages">
+            <i class="fas fa-fw fa-folder"></i>
+            <span>Report</span>
+          </a>
+          <div id="collapsePages1" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
+            <div class="bg-white py-2 collapse-inner rounded">
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/report/stokproduk' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stokproduk">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Laporan Stok Produk</span></a>
-        </li>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}" href="pos/admin/report/transaksi">Laporan Transaksi</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/stokproduk' ? 'active' : '' }}" href="pos/admin/report/stokproduk">Laporan Stok Produk</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/keuntungan' ? 'active' : '' }}" href="pos/admin/report/keuntungan">Laporan Keuntungan</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/stokhabis' ? 'active' : '' }}" href="pos/admin/report/stokhabis">Laporan Stok Habis</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/stoklaris' ? 'active' : '' }}" href="pos/admin/report/stoklaris">Laporan Stok Paling Laris</a>
 
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/pos' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/pos">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Laporan Keuntungan</span></a>
-        </li>
-
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/report/stokhabis' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stokhabis">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Laporan Stok Habis</span></a>
-        </li>
-
-        <!-- Nav Item -->
-        <li class="nav-item {{ Request::path() === 'pos/admin/report/stoklaris' ? 'active' : '' }}">
-          <a class="nav-link" href="/pos/report/stoklaris">
-            <i class="fas fa-fw fa-table"></i>
-            <span>Laporan Stok Paling Laris</span></a>
+            </div>
+          </div>
         </li>
 
       @else
@@ -233,7 +182,7 @@
           </button>
 
           <!-- Topbar Search -->
-          <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
+          {{-- <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
             <div class="input-group">
               <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..." aria-label="Search" aria-describedby="basic-addon2">
               <div class="input-group-append">
@@ -242,7 +191,7 @@
                 </button>
               </div>
             </div>
-          </form>
+          </form> --}}
 
           <!-- Topbar Navbar -->
           <ul class="navbar-nav ml-auto">

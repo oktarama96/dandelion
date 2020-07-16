@@ -287,7 +287,7 @@
                     <div class="col-sm-6">
                         <table class="table tbl">
                             <tr>
-                                <td>Nama Pengguna</td>
+                                <td>Nama Penasdgguna</td>
                                 <td>
                                     <input type="text" name="NamaPengguna" class="form-control " value="Rama" readonly>
                                     <input type="hidden" name="IdPengguna" class="form-control " value="1">

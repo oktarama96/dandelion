@@ -98,32 +98,36 @@ class TransaksiController extends Controller
                     
                     $transaksi->save();
 
-                    if($request->IdProduk[0] != NULL){
+                    if(!empty($request->IdProduk)){
                         for($i=0;$i<count($request->IdProduk);$i++){
+                            // return $request->Ukuran;
+                           
                             $stokproduk = StokProduk::where([
                                 ['IdProduk', '=', $request->IdProduk[$i]],
                                 ['IdWarna', '=', $request->Warna[$i]],
                                 ['IdUkuran', '=', $request->Ukuran[$i]],
                             ])->first();
-                        
-                            //dd($stokproduk->StokKeluar);
-                            $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+
+                            if($stokproduk){
+                                //dd($stokproduk->StokKeluar);
+                                $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                                
+                                $stokproduk->StokKeluar = $stokkeluar;
+                                $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+
+                                $stokproduk->save();
+
+                                $detailtransaksi = new DetailTransaksi;
                             
-                            $stokproduk->StokKeluar = $stokkeluar;
-                            $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+                                $detailtransaksi->Qty = $request->Qty[$i];
+                                $detailtransaksi->Diskon = $request->Diskon[$i];
+                                $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                                $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                                $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                                $detailtransaksi->IdTransaksi = $IdTransaksi;
 
-                            $stokproduk->save();
-
-                            $detailtransaksi = new DetailTransaksi;
-                        
-                            $detailtransaksi->Qty = $request->Qty[$i];
-                            $detailtransaksi->Diskon = $request->Diskon[$i];
-                            $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                            $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                            $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
-                            $detailtransaksi->IdTransaksi = $IdTransaksi;
-
-                            $detailtransaksi->save();
+                                $detailtransaksi->save();
+                            }                                          
                         }
                     }else{
                         return redirect()->back()->with("alert" , "Error : Tidak Ada Barang!");
@@ -143,16 +147,23 @@ class TransaksiController extends Controller
 
     public function index(Request $request)
     {
+        $now = Carbon::today();
+        // $now->format('Y-m-d')  
+
         if ($request->ajax()) {
-            if(!empty($request->from_date)){
+            if($request->from_date == NULL){
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
-                ->whereBetween('TglTransaksi', array($request->from_date, $request->to_date))
+                ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
+                ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }else{
+                // return $request->to_date;
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
+                ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }
-
+            //dd($datas);
             return Datatables::of($datas)
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){

@@ -6,12 +6,19 @@
     <!-- Custom styles for this page -->
   <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
   <link href="{{ asset('vendor/bootstrap-datepicker/css/bootstrap-datepicker.standalone.min.css') }}" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.datatables.net/buttons/1.6.2/css/buttons.dataTables.min.css">
 @endsection
 @section('add-js')
     <!-- Page level plugins -->
   <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
   <script src="{{ asset('vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+
+  <script src="https://cdn.datatables.net/buttons/1.6.2/js/dataTables.buttons.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/pdfmake.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
+  <script src="https://cdn.datatables.net/buttons/1.6.2/js/buttons.html5.min.js"></script>
 
   <script type="text/javascript">
     $.ajaxSetup({
@@ -22,7 +29,7 @@
 
     $(document).ready(function(){
         $('.input-daterange').datepicker({
-            format: "dd/mm/yyyy"
+            format: "yyyy-mm-dd"
         });
 
         load_data();
@@ -32,9 +39,17 @@
             $('.data-table').DataTable({
             processing: true,
             serverSide: true,
+            ordering: false,
             ajax: {
                 data:{from_date:from_date, to_date:to_date}
             },
+            dom: 'Bfrtip',
+            buttons: [
+                'copyHtml5',
+                'excelHtml5',
+                'csvHtml5',
+                'pdfHtml5'
+            ],
             columns: [
                 {data: 'IdTransaksi', name: 'IdTransaksi'},
                 {data: 'TglTransaksi', name: 'TglTransaksi'},
@@ -48,7 +63,7 @@
                 {data: 'StatusPesanan', name: 'StatusPesanan'},
                 {data: 'kupondiskon.NamaKupon', name: 'NamaKuponDiskon'},
                 {data: 'pelanggan.NamaPelanggan', name: 'NamaPelanggan'},
-                {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'},
+                {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'}
             ]
         });
         }
@@ -74,7 +89,8 @@
             load_data();
         });
 
-    });
+    }); 
+
   </script>
 @endsection
 @section('content')

@@ -1,57 +1,10 @@
-@extends('layout.layout')
+@extends('layout.layout2')
+
+@section('title-page')
+    Login/Register - Dandelion Fashion Shop 
+@endsection
 
 @section('content')
-    <header class="header-area header-in-container clearfix">
-        <div class="header-bottom sticky-bar header-res-padding">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xl-2 col-lg-2 col-md-6 col-4">
-                        <div class="logo">
-                            <a href="/">
-                                <img alt="" src="assets/img/logo/logo.png">
-                            </a>
-                        </div>
-                    </div>
-                    <div class="col-xl-8 col-lg-8 d-none d-lg-block">
-                        <div class="main-menu">
-                            <nav>
-                                <ul>
-                                    <li><a href="/">Home</a></li>
-                                    <li><a href="/shop">Shop</a></li>
-                                    <li><a href="/about">About</a></li>
-                                    <li><a href="/contact">Contact</a></li>
-                                </ul>
-                            </nav>
-                        </div>
-                    </div>
-                </div>
-                <div class="mobile-menu-area">
-                    <div class="mobile-menu">
-                        <nav id="mobile-menu-active">
-                            <ul class="menu-overflow">
-                                <li><a href="/">HOME</a></li>
-                                <li><a href="/shop">Shop</a></li>
-                                <li><a href="/about">About us</a></li>
-                                <li><a href="/contact">Contact</a></li>
-                            </ul>
-                        </nav>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
-        <div class="container">
-            <div class="breadcrumb-content text-center">
-                <ul>
-                    <li>
-                        <a href="/">Home</a>
-                    </li>
-                    <li class="active">login/Register </li>
-                </ul>
-            </div>
-        </div>
-    </div>
     <div class="login-register-area pt-100 pb-100">
         <div class="container">
             <div class="row">
@@ -112,46 +65,4 @@
             </div>
         </div>
     </div>
-    <footer class="footer-area bg-gray pt-100 pb-70">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-2 col-md-4 col-sm-4">
-                    <div class="copyright mb-30">
-                        <div class="footer-logo">
-                            <a href="/">
-                                <img alt="" src="assets/img/logo/logo.png">
-                            </a>
-                        </div>
-                        <p>© 2020 <a href="#">Dandelion Fashion Shop</a>.<br> All Rights Reserved</p>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-4 col-sm-4">
-                    <div class="footer-widget mb-30 ml-30">
-                        <div class="footer-title">
-                            <h3>ABOUT US</h3>
-                        </div>
-                        <div class="footer-list">
-                            <ul>
-                                <li><a href="/about">About us</a></li>
-                                <li><a href="/contact">Contact</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-lg-2 col-md-6 col-sm-6">
-                    <div class="footer-widget mb-30 ml-75">
-                        <div class="footer-title">
-                            <h3>FOLLOW US</h3>
-                        </div>
-                        <div class="footer-list">
-                            <ul>
-                                <li><a href="#">Facebook</a></li>
-                                <li><a href="#">Instagram</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </footer>
 @endsection

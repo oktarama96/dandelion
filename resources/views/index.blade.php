@@ -120,15 +120,6 @@
             </a>
         </div>
         <div class="header-right-wrap">
-            <div class="same-style header-search">
-                <a class="search-active" href="#"><i class="pe-7s-search"></i></a>
-                <div class="search-content">
-                    <form action="#">
-                        <input type="text" placeholder="Search" />
-                        <button class="button-search"><i class="pe-7s-search"></i></button>
-                    </form>
-                </div> 
-            </div>
             <div class="same-style account-satting">
                 <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
                 <div class="account-dropdown">
@@ -143,13 +134,13 @@
                         </ul>
                     @else
                         <ul>
-                            <li><a href="login-register.html">Login</a></li>
-                            <li><a href="login-register.html">Register</a></li>
+                            <li><a href="/login">Login</a></li>
                         </ul>
                     @endif
                     
                 </div>
             </div>
+            @if (Auth::guard('web')->user())
             <div class="same-style cart-wrap">
                 <button class="icon-cart">
                     <i class="pe-7s-shopbag"></i>
@@ -162,7 +153,7 @@
                                 <a href="#"><img alt="" src="assets/img/cart/cart-1.png"></a>
                             </div>
                             <div class="shopping-cart-title">
-                                <h4><a href="#">T- Shart &amp; Jeans </a></h4>
+                                <h4><a href="#">T- Shart & Jeans </a></h4>
                                 <h6>Qty: 02</h6>
                                 <span>$260.00</span>
                             </div>
@@ -175,7 +166,7 @@
                                 <a href="#"><img alt="" src="assets/img/cart/cart-2.png"></a>
                             </div>
                             <div class="shopping-cart-title">
-                                <h4><a href="#">T- Shart &amp; Jeans </a></h4>
+                                <h4><a href="#">T- Shart & Jeans </a></h4>
                                 <h6>Qty: 02</h6>
                                 <span>$260.00</span>
                             </div>
@@ -194,6 +185,7 @@
                     </div>
                 </div>
             </div>
+        @endif
         </div>
         <div class="sidebar-menu">
             <nav>
@@ -227,13 +219,23 @@
                         <div class="same-style account-satting">
                             <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
                             <div class="account-dropdown">
+                            @if (Auth::guard('web')->user())
                                 <ul>
-                                    <li><a href="login-register.html">Login</a></li>
-                                    <li><a href="login-register.html">Register</a></li>
-                                    <li><a href="my-account.html">my account</a></li>
+                                    <li>{{Auth::guard('web')->user()->NamaPelanggan}}</li>
+                                    <li><a ref="{{ route('logout') }}" onclick="event.preventDefault();
+                                        document.getElementById('logout-form').submit();">Logout</a></li>                            
+                                    <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                                        @csrf
+                                    </form>
                                 </ul>
+                            @else
+                                <ul>
+                                    <li><a href="/login">Login</a></li>
+                                </ul>
+                            @endif
                             </div>
                         </div>
+                        @if (Auth::guard('web')->user())
                         <div class="same-style cart-wrap">
                             <button class="icon-cart">
                                 <i class="pe-7s-shopbag"></i>
@@ -278,6 +280,7 @@
                                 </div>
                             </div>
                         </div>
+                    @endif
                     </div>
                 </div>
             </div>
@@ -468,7 +471,7 @@
                                     <img alt="" src="assets/img/logo/logo.png">
                                 </a>
                             </div>
-                            <p>©2020 <a href="#">Dandelion Fashion Shop</a>.<br> All Rights Reserved</p>
+                            <p>©2020 <a href="/">Dandelion Fashion Shop</a>.<br> All Rights Reserved</p>
                         </div>
                     </div>
                     <div class="col-xl-4 col-lg-4 col-md-4 col-sm-4">
@@ -508,6 +511,7 @@
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
+                    <h4 class="modal-title">Dandelion Fashion Shop</h4>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">x</span></button>
                 </div>
                 <div class="modal-body" id="detail">
