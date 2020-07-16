@@ -282,17 +282,7 @@
             <div class="row flex-row-reverse">
                 <div class="col-lg-9">
                     <div class="shop-top-bar">
-                        <div class="select-shoing-wrap">
-                            <div class="shop-select">
-                                <select>
-                                    <option value="">Sort by newness</option>
-                                    <option value="">A to Z</option>
-                                    <option value=""> Z to A</option>
-                                    <option value="">In stock</option>
-                                </select>
-                            </div>
-                            <p>Showing 1–12 of 20 result</p>
-                        </div>
+                        
                     </div>
                     <div class="shop-bottom-area mt-35">
                         <div class="tab-content jump">
@@ -307,9 +297,6 @@
                                                         <img class="hover-img" src="img/produk/{{ $produk->GambarProduk }}" alt="">
                                                     </a>
                                                     <div class="product-action">
-                                                        <div class="pro-same-action pro-quickview">
-                                                            <a title="Add To Cart" href="#"><i class="pe-7s-cart"></i></a>
-                                                        </div>
                                                         <div class="pro-same-action pro-quickview">
                                                             <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="pe-7s-look"></i></a>
                                                         </div>
