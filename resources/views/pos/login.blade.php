@@ -44,12 +44,31 @@
                       <h1 class="h4 text-gray-900 mb-4">Welcome Back Dandelion!</h1>
                     </div>
                     <form method="post" action="{{route('pos.login')}}" class="user">
-                      @csrf
-                      <div class="form-group">
+                        @csrf
+                        <div class="form-group {{ $errors->has('email') ? ' has-danger' : '' }}">                            
+                            <input type="email" class="form-control {{ $errors->has('email') ? ' form-control-danger' : '' }} form-control-user" id="email" name="email" placeholder="Masukkan email anda" value="{{ old('email') }}" required autofocus> 
+                            @if ($errors->has('email'))
+                            <label class="error mt-2 text-danger">{{ $errors->first('email') }}</label>
+                            @endif
+                        </div>
+                        <div class="form-group {{ $errors->has('password') ? ' has-danger' : '' }}">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }} form-control-user" id="password" name="password" required> 
+                            @if ($errors->has('password'))
+                            <label class="error mt-2 text-danger">{{ $errors->first('password') }}</label>
+                            @endif
+                        </div> 
+                      {{-- <div class="form-group">
                         <input type="email" class="form-control form-control-user" name="email" aria-describedby="emailHelp" placeholder="Enter Email Address...">
                       </div>
                       <div class="form-group">
                         <input type="password" class="form-control form-control-user" name="password" placeholder="Password">
+                      </div> --}}
+                      <div class="form-group">
+                        <div class="custom-control custom-checkbox small">
+                          <input type="checkbox" class="custom-control-input" id="customCheck">
+                          <label class="custom-control-label" for="customCheck">Remember Me</label>
+                        </div>
                       </div>
                       <button type="submit" class="btn btn-primary btn-user btn-block">
                         Login
