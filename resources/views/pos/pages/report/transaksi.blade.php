@@ -32,7 +32,13 @@
             format: "yyyy-mm-dd"
         });
 
-        load_data();
+        var dt = new Date();
+        var mm = dt.getMonth() + 1;
+        var dd = dt.getDate();
+        var yyyy = dt.getFullYear();
+        var format = yyyy + '-' + mm + '-' + dd;
+
+        load_data(format, format);
 
         function load_data(from_date = '', to_date = '')
         {
@@ -48,7 +54,12 @@
                 'copyHtml5',
                 'excelHtml5',
                 'csvHtml5',
-                'pdfHtml5'
+                {
+                    extend: 'pdfHtml5',
+                    messageTop: 'Data Transaksi dari tanggal '+from_date+' sampai '+to_date,
+                    orientation: 'landscape',
+                    pageSize: 'LEGAL'
+                }
             ],
             columns: [
                 {data: 'IdTransaksi', name: 'IdTransaksi'},

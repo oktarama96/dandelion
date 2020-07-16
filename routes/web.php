@@ -53,8 +53,11 @@ Route::group(['prefix' => 'pos/', 'middleware' => ['auth:pengguna']], function()
 
     Route::get('/pointofsale', 'TransaksiController@pointofsale');
     Route::get('/pointofsale/acproduk', 'TransaksiController@acproduk');
-    Route::get('/pointofsale/addproduk/{id}', 'TransaksiController@addproduk');
-    Route::get('/pointofsale/addukuran/{id}', 'TransaksiController@addukuran');
+    // Route::get('/pointofsale/addproduk/{id}', 'TransaksiController@addproduk');
+    // Route::get('/pointofsale/addukuran/{id}', 'TransaksiController@addukuran');
+    Route::get('/pointofsale/addproduk/{IdProduk}', 'ProdukController@getDetail');
+    Route::get('/pointofsale/addukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
+
     Route::post('/pointofsale/addtransaksi', 'TransaksiController@simpantransaksi');
 
     Route::get('/transaksi', 'TransaksiController@index');
@@ -93,3 +96,4 @@ Route::get('/shop/checkout', 'ShopController@showcheckout');
 
 Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
 Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
+Route::post('/transaksi/online', 'TransaksiController@simpantransaksionline');

@@ -1,5 +1,42 @@
 @extends('layout.layout2')
 
+@section('add-js')
+    <script type="text/javascript">
+        var cost_jne = {!! json_encode($cost_jne) !!}
+        var total = {{ $cart_total }};
+
+        
+        function formatNumber (num) {
+            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+        }
+
+        $( document ).ready(function() {
+            $("#btn_checkout").click(function(){
+                var formData = new FormData($('#checkout-form')[0]);
+                formData.append("_token", "{{ csrf_token() }}")
+                console.log(formData)
+                $.ajax({
+                    type: "POST",
+                    url:  "{{ url('/transaksi/online') }}/",
+                    data: formData,
+                    success: function(data){
+                        alert(data)
+                    }
+                })
+            })
+
+            $("#shipping_cost").change(function(){
+                var val = $(this).val().split('-');
+
+                var grand_total = parseInt(val[0]) + total
+                $("#total_shipping").html('Rp' + formatNumber($(this).val()))
+                $("#nama_ekspedisi").val(val[1])
+                $("#total_order").html('Rp'+formatNumber(grand_total))
+                $("#total_order_val").val(grand_total)
+            })
+        });
+    </script>
+@endsection
 @section('content')
     <div class="breadcrumb-area pt-35 pb-35 bg-gray-3">
         <div class="container">
@@ -186,6 +223,8 @@
                 <div class="col-lg-5">
                     <div class="your-order-area">
                         <h3>Your order</h3>
+                        <form id="checkout-form" action="#" method="POST">
+                        @csrf
                         <div class="your-order-wrap gray-bg-4">
                             <div class="your-order-product-info">
                                 <div class="your-order-top">
@@ -196,74 +235,56 @@
                                 </div>
                                 <div class="your-order-middle">
                                     <ul>
-                                        <li><span class="order-middle-left">Product Name  X  1</span> <span class="order-price">$329 </span></li>
-                                        <li><span class="order-middle-left">Product Name  X  1</span> <span class="order-price">$329 </span></li>
+                                        @foreach($cart_produk as $produk)
+                                        <li><span class="order-middle-left"><b>{{ $produk->NamaProduk }}</b> Rp{{ number_format($produk->HargaJual, 0, '', '.') }} X {{ $produk->Qty }}<br> {{ $produk->NamaWarna }} / {{ $produk->NamaUkuran }} </span> <span class="order-price"><b>Rp{{ number_format($produk->sub_total, 0, '', '.') }} </b></span></li>
+                                        <input type="hidden" name="IdProduk[]" value="{{ $produk->IdProduk }}"/>
+                                        <input type="hidden" name="IdStokProduk[]" value="{{ $produk->IdStokProduk }}"/>
+                                        <input type="hidden" name="Qty[]" value="{{ $produk->Qty }}"/>
+                                        <input type="hidden" name="SubTotal[]" value="{{ $produk->sub_total }}"/>
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                <div class="your-order-total">
+                                    <ul>
+                                        <li class="order-total">Sub Total</li>
+                                        <li>Rp{{ number_format($cart_total, 0, '', '.') }}</li>
+                                        <input type="hidden" id="Total" name="total_cart_val" value="{{ $cart_total }}" />
+                                        <input type="text" id="Total2" name="total_cart_val2" value="{{ $cart_total }}" />
                                     </ul>
                                 </div>
                                 <div class="your-order-bottom">
                                     <ul>
-                                        <li class="your-order-shipping">Shipping</li>
-                                        <li>Free shipping</li>
+                                        <li class="your-order-shipping">Shipping (JNE)</li>
+                                        <li>
+                                            <div class='pro-details-color-content'>
+                                                <select id="shipping_cost" class='form-control' name="OngkosKirim">
+                                                    @foreach($cost_jne as $cost)
+                                                    <option value='{{ $cost->cost[0]->value }}-{{ $cost->service }}'>{{ $cost->service }}/Rp{{ number_format($cost->cost[0]->value, 0, '', '.') }}/{{ $cost->cost[0]->etd }} hari</option>"
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                </div>
+                                <div class="your-order-total">
+                                    <ul>
+                                        <li class="order-total">Shipping Cost</li>
+                                        <li id="total_shipping">Rp{{ number_format($cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
+                                        <input type="hidden" id="nama_ekspedisi" name="NamaEkspedisi" value="{{ $cost_jne[0]->service }}" />
                                     </ul>
                                 </div>
                                 <div class="your-order-total">
                                     <ul>
                                         <li class="order-total">Total</li>
-                                        <li>$329</li>
+                                        <li id="total_order">Rp{{ number_format($cart_total + $cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
+                                        <input type="hidden" name="GrandTotal" id="total_order_val" value="{{ $cart_total + $cost_jne[0]->cost[0]->value }}" />
                                     </ul>
                                 </div>
                             </div>
-                            <div class="payment-method">
-                                <div class="payment-accordion element-mrg">
-                                    <div class="panel-group" id="accordion">
-                                        <div class="panel payment-accordion">
-                                            <div class="panel-heading" id="method-one">
-                                                <h4 class="panel-title">
-                                                    <a data-toggle="collapse" data-parent="#accordion" href="#method1">
-                                                        Direct bank transfer
-                                                    </a>
-                                                </h4>
-                                            </div>
-                                            <div id="method1" class="panel-collapse collapse show">
-                                                <div class="panel-body">
-                                                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="panel payment-accordion">
-                                            <div class="panel-heading" id="method-two">
-                                                <h4 class="panel-title">
-                                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#method2">
-                                                        Check payments
-                                                    </a>
-                                                </h4>
-                                            </div>
-                                            <div id="method2" class="panel-collapse collapse">
-                                                <div class="panel-body">
-                                                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="panel payment-accordion">
-                                            <div class="panel-heading" id="method-three">
-                                                <h4 class="panel-title">
-                                                    <a class="collapsed" data-toggle="collapse" data-parent="#accordion" href="#method3">
-                                                        Cash on delivery
-                                                    </a>
-                                                </h4>
-                                            </div>
-                                            <div id="method3" class="panel-collapse collapse">
-                                                <div class="panel-body">
-                                                    <p>Please send a check to Store Name, Store Street, Store Town, Store State / County, Store Postcode.</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
+                        </form>
                         <div class="Place-order mt-25">
-                            <a class="btn-hover" href="#">Place Order</a>
+                            <a class="btn-hover" id="btn_checkout" href="#">CHECKOUT</a>
                         </div>
                     </div>
                 </div>

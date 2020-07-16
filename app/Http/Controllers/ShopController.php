@@ -75,14 +75,16 @@ class ShopController extends Controller
         $ukurans = Ukuran::all();
         $warnas = Warna::all();
         $kategoris = KategoriProduk::all();
-        $cart_produk = [];
-        if(Auth::guard('web')->user()){
-            $cart_produk = $this->getCart();
-        }
+        $cart_produk = "[]";
         $cart_total = 0;
 
-        foreach($cart_produk as $produk){
-            $cart_total+=$produk->sub_total;
+        if(Auth::guard('web')->check()){
+            $cart_produk = [];
+            $cart_produk = $this->getCart();
+
+            foreach($cart_produk as $produk){
+                $cart_total+=$produk->sub_total;
+            }
         }
 
         return view('shop', compact('produks','ukurans','warnas','kategoris','filter','cart_produk', 'cart_total'));
@@ -97,47 +99,11 @@ class ShopController extends Controller
         return response()->json(['stokproduk' => $stokproduk]);
     }
 
-    public function filterProduk(Request $request){
-        
-		$request->session()->forget('filter');
-		if(!$request->session()->has('filter')){
-            $filter = [
-                'search' => '',
-                'warna' => [],
-                'ukuran' => [],
-                'kategori' => [],
-            ];
-            $request->session()->put('filter', $filter);
-        }
-
-        $filter = $request->session()->get('filter');
-        print_r($filter['warna']);
-        //$data = $request->all();
-
-        $produks = StokProduk::join('produk', 'produk.IdProduk', '=', 'stokproduk.IdProduk');
-
-        if (!empty($filter['kategori'])) {
-            $produks = $produks->whereIn('IdKategoriProduk', $filter['kategori'], "and");
-        }
-        
-        if (!empty($filter['ukuran'])) {
-            $produks = $produks->whereIn('IdUkuran', $filter['ukuran'], "and");
-        }
-
-        if (!empty($filter['warna'])) {
-            $produks = $produks->whereIn('IdWarna', $filter['warna']);
-        }
-
-        $produks = $produks->get('produk.*');
-        return $produks;
-        return $data;
-    }
-
     public function productdetail($id)
     {
         $produks = Produk::find($id);
         
-        return view('product-detail', compact('$produks'));
+        return view('product-detail', compact('produks'));
     }
 
     public function getCart()
@@ -147,7 +113,7 @@ class ShopController extends Controller
                 ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
                 ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
                 ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
-                ->select('warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
+                ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
                 ->where('IdPelanggan', $id_pelanggan)->get();
         return $cart;
     }
@@ -201,6 +167,49 @@ class ShopController extends Controller
 
     public function showcheckout()
     {
-        return view('checkout');
+        $cart_produk = $this->getCart();
+        $cart_total = 0;
+        $cart_weight = 0;
+        foreach($cart_produk as $produk){
+            $cart_total+=$produk->sub_total;
+            $cart_weight+=$produk->Berat;
+        }
+
+        $curl = curl_init();
+
+        $biaya_kirim = $this->getBiayaKirim($cart_weight);
+        $biaya_kirim = json_decode($biaya_kirim);
+        $cost_jne = $biaya_kirim->rajaongkir->results[0]->costs;
+        return view('checkout', compact('cart_produk', 'cart_weight', 'cart_total', 'cart_weight', 'cost_jne'));
+    }
+
+    function getBiayaKirim($weight){
+        
+        $destination = Auth::guard('web')->user()->IdKabupaten;
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => "https://api.rajaongkir.com/starter/cost",
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => "",
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 30,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => "POST",
+            CURLOPT_POSTFIELDS => "origin=17&destination=".$destination."&weight=".$weight."&courier=jne",
+            CURLOPT_HTTPHEADER => array(
+                "content-type: application/x-www-form-urlencoded",
+                "key: 72abbf05000784250caf10ff1742fa2d"
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        $err = curl_error($curl);
+
+        curl_close($curl);
+
+        if ($err) 
+            return $err;
+        else 
+            return $response;
     }
 }

@@ -28,7 +28,6 @@
             return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
         }
 
-
         var cart_produk = {!! $cart_produk !!}
         var cart_total = {{ $cart_total }}
 

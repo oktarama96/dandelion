@@ -9,13 +9,29 @@ use App\Transaksi;
 use App\KategoriProduk;
 use App\Warna;
 use App\Ukuran;
+use App\Cart;
 use App\DetailTransaksi;
 use App\StokProduk;
 use Carbon\Carbon;
 use DataTables;
+use Veritrans_Config;
+use Veritrans_Snap;
+use Veritrans_Notification;
 
 class TransaksiController extends Controller
 {
+    public function __construct(Request $request)
+    {
+        $this->request = $request;
+ 
+        // Set midtrans configuration
+        Veritrans_Config::$serverKey = config('services.midtrans.serverKey');
+        Veritrans_Config::$isProduction = config('services.midtrans.isProduction');
+        Veritrans_Config::$isSanitized = config('services.midtrans.isSanitized');
+        Veritrans_Config::$is3ds = config('services.midtrans.is3ds');
+    }
+
+
     public function pointofsale()
     {
         return view('pos.pages.pointofsale');
@@ -90,7 +106,7 @@ class TransaksiController extends Controller
                     $transaksi->GrandTotal = $request->GrandTotal;
                     $transaksi->MetodePembayaran = "Cash";
                     $transaksi->StatusPembayaran = 1;
-                    $transaksi->StatusPesanan = 3; //0=diproses, 1=dikirim, 2=diterima, 3=selesai
+                    $transaksi->StatusPesanan = 3; //1=diproses, 2=dikirim,  3=selesai
                     $transaksi->Snap_token = "-";
                     $transaksi->IdKuponDiskon = "-";
                     $transaksi->IdPengguna = $request->IdPengguna;
@@ -143,6 +159,114 @@ class TransaksiController extends Controller
                 }
             }
         }
+    }
+
+    public function getSnapToken($TrxId, $Total){
+        $Tgl = Carbon::now();
+        $Now = $Tgl->format("Y-m-d H:i:s");
+
+        $pelanggan = Auth::guard('web')->user();
+        $cart = $this->getCart();
+
+        $transaction_detail = [];
+        foreach($cart as $produk){
+            $transaction_detail[] = [
+                'id'       => $produk->IdStokProduk,
+                'price'    => $produk->HargaJual,
+                'quantity' => $produk->Qty,
+                'name'     => $produk->NamaProduk
+            ];
+
+        }
+        // Buat transaksi ke midtrans kemudian save snap tokennya.
+        $payload = [
+            'transaction_details' => [
+                'order_id'      => $TrxId,
+                'gross_amount'  => $Total,
+            ],
+            'customer_details' => [
+                'first_name'    => $pelanggan->NamaPelanggan,
+                'email'         => $pelanggan->email,
+                'phone'         => $pelanggan->NoHandphone,
+                'address'       => $pelanggan->Alamat,
+                // 'phone'         => '08888888888',
+                // 'address'       => '',
+            ],
+            'item_details' => $transaction_detail,
+            'expiry' => array (
+              "start_time" => $Now." +0700",
+              "unit" => "hour",
+              "duration" => 1
+            )
+        ];
+        
+        $snapToken = Veritrans_Snap::getSnapToken($payload);
+        return $snapToken;
+    }
+    public function getCart()
+    {
+        $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
+        $cart = Cart::join('stokproduk', 'cart.IdStokProduk', '=', 'stokproduk.IdStokProduk')
+                ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
+                ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
+                ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
+                ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
+                ->where('IdPelanggan', $id_pelanggan)->get();
+        return $cart;
+    }
+
+    public function simpantransaksionline(Request $request)
+    {
+        $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
+        DB::beginTransaction();
+        try {
+            $Tgl = Carbon::now();
+            $IdTransaksi = $Tgl->format("YmdHis");
+            $TglTransaksi = $Tgl->format("Y-m-d H:i:s");
+
+            $transaksi = new Transaksi;
+
+            $transaksi->IdTransaksi = $IdTransaksi;
+            $transaksi->TglTransaksi = $TglTransaksi;
+            $transaksi->Total = $request->Total;
+            $transaksi->Potongan = 0;
+            $transaksi->OngkosKirim = $request->OngkosKirim;
+            $transaksi->NamaEkspedisi = $request->NamaEkspedisi;
+            $transaksi->GrandTotal = $request->GrandTotal;
+            $transaksi->MetodePembayaran = "Midtrans";
+            $transaksi->StatusPembayaran = 0;
+            $transaksi->StatusPesanan = 0; //1=diproses, 2=dikirim,  3=selesai
+            $transaksi->IdKuponDiskon = "-";
+            $transaksi->IdPelanggan = $id_pelanggan;
+            $transaksi->save();
+
+            $snapToken = $this->getSnapToken($transaksi->IdTransaksi, $request->GrandTotal);
+            
+            $transaksi->Snap_token = $snapToken;
+            $transaksi->save();
+
+            for($i=0;$i<count($request->IdProduk);$i++){
+                $detailtransaksi = new DetailTransaksi;
+            
+                $detailtransaksi->Qty = $request->Qty[$i];
+                $detailtransaksi->Diskon = 0;
+                $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                $detailtransaksi->IdStokProduk = $request->IdStokProduk[$i];
+                $detailtransaksi->IdTransaksi = $IdTransaksi;
+
+                $detailtransaksi->save();                        
+            }
+            
+            
+            DB::commit();
+
+            $this->response['snap_token'] = $snapToken;
+        }catch(Exception $e){
+            DB::rollback();
+            $this->response['error'] = $e;
+        }
+        return response()->json($this->response);
     }
 
     public function index(Request $request)

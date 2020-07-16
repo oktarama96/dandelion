@@ -191,18 +191,18 @@
                 //console.log(msg);
                 var warna,ukuran;
                 
-                if(msg.produk.length != 0) {              
-                    $("input[name='IdProduk\\[\\]']:eq("+index+")").val(msg.produk[0].IdProduk);
-                    $("input[name='NamaProduk\\[\\]']:eq("+index+")").val(msg.produk[0].NamaProduk);
-                    $("input[name='HargaJual\\[\\]']:eq("+index+")").val(msg.produk[0].HargaJual);
+                if(msg.produk) {              
+                    $("input[name='IdProduk\\[\\]']:eq("+index+")").val(msg.produk.IdProduk);
+                    $("input[name='NamaProduk\\[\\]']:eq("+index+")").val(msg.produk.NamaProduk);
+                    $("input[name='HargaJual\\[\\]']:eq("+index+")").val(msg.produk.HargaJual);
 
-                    for(var i = 0; i < msg.stokproduk.length; i++){
-                        warna = warna+"<option value='"+msg.stokproduk[i].IdWarna+"'>"+msg.stokproduk[i].warna.NamaWarna+"</option>";
+                    for(var i = 0; i < msg.warna.length; i++){
+                        warna = warna+"<option value='"+msg.IdWarna+"'>"+msg.warna.NamaWarna+"</option>";
                     }
                     $("select[name='Warna\\[\\]']:eq("+index+")").empty().append(warna);
-                    viewUkuran($("select[name='Warna\\[\\]']:eq(0)"));
-                    for(var j = 0; j < msg.stokproduk.length; j++){
-                        ukuran = ukuran+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                    viewUkuran(msg.produk.IdProduk ,$("select[name='Warna\\[\\]']:eq("+index+")"));
+                    for(var j = 0; j < msg.ukuran.length; j++){
+                        ukuran = ukuran+"<option value='"+msg.IdUkuran+"'>"+msg.ukuran.NamaUkuran+"</option>";
                     }
                 
                     
@@ -218,13 +218,12 @@
         });
     }
 
-    function viewUkuran(ini) {
+    function viewUkuran(IdProduk, ini) {
         var index = $(ini).parent().parent().index();
 
         $.ajax({
             type: "GET",
-            url:  "{{ url('/pos/pointofsale/addukuran') }}/"+$(ini).val()+"/",
-            data:  "IdProduk=" + $(ini).val(),
+            url:  "{{ url('/pos/pointofsale/addukuran') }}/"+IdProduk+"/"+$(ini).val()+"/",
             success: function(msg){
                 //console.log(msg);
                 var ukuran;
