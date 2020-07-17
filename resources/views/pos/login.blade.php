@@ -45,7 +45,8 @@
                     </div>
                     <form method="post" action="{{route('pos.login')}}" class="user">
                         @csrf
-                        <div class="form-group {{ $errors->has('email') ? ' has-danger' : '' }}">                            
+                        <div class="form-group {{ $errors->has('email') ? ' has-danger' : '' }}">
+                            <label for="email">Email</label>                            
                             <input type="email" class="form-control {{ $errors->has('email') ? ' form-control-danger' : '' }} form-control-user" id="email" name="email" placeholder="Masukkan email anda" value="{{ old('email') }}" required autofocus> 
                             @if ($errors->has('email'))
                             <label class="error mt-2 text-danger">{{ $errors->first('email') }}</label>
