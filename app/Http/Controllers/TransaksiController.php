@@ -17,6 +17,7 @@ use DataTables;
 use Veritrans_Config;
 use Veritrans_Snap;
 use Veritrans_Notification;
+use Auth;
 
 class TransaksiController extends Controller
 {
@@ -161,7 +162,7 @@ class TransaksiController extends Controller
         }
     }
 
-    public function getSnapToken($TrxId, $Total){
+    public function getSnapToken($TrxId, $Total, $Ongkir){
         $Tgl = Carbon::now();
         $Now = $Tgl->format("Y-m-d H:i:s");
 
@@ -178,6 +179,13 @@ class TransaksiController extends Controller
             ];
 
         }
+        
+        $transaction_detail[] = [
+            'id'       => 0,
+            'price'    => $Ongkir,
+            'quantity' => 1,
+            'name'     => "Ongkos Kirim"
+        ];
         // Buat transaksi ke midtrans kemudian save snap tokennya.
         $payload = [
             'transaction_details' => [
@@ -223,6 +231,7 @@ class TransaksiController extends Controller
             $Tgl = Carbon::now();
             $IdTransaksi = $Tgl->format("YmdHis");
             $TglTransaksi = $Tgl->format("Y-m-d H:i:s");
+            $ongkir = explode("-",$request->OngkosKirim);
 
             $transaksi = new Transaksi;
 
@@ -230,7 +239,7 @@ class TransaksiController extends Controller
             $transaksi->TglTransaksi = $TglTransaksi;
             $transaksi->Total = $request->Total;
             $transaksi->Potongan = 0;
-            $transaksi->OngkosKirim = $request->OngkosKirim;
+            $transaksi->OngkosKirim = $ongkir[0];
             $transaksi->NamaEkspedisi = $request->NamaEkspedisi;
             $transaksi->GrandTotal = $request->GrandTotal;
             $transaksi->MetodePembayaran = "Midtrans";
@@ -240,7 +249,7 @@ class TransaksiController extends Controller
             $transaksi->IdPelanggan = $id_pelanggan;
             $transaksi->save();
 
-            $snapToken = $this->getSnapToken($transaksi->IdTransaksi, $request->GrandTotal);
+            $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0]);
             
             $transaksi->Snap_token = $snapToken;
             $transaksi->save();

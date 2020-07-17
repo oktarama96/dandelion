@@ -1,6 +1,9 @@
 @extends('layout.layout2')
 
 @section('add-js')
+
+    <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
+    
     <script type="text/javascript">
         var cost_jne = {!! json_encode($cost_jne) !!}
         var total = {{ $cart_total }};
@@ -12,15 +15,30 @@
 
         $( document ).ready(function() {
             $("#btn_checkout").click(function(){
-                var formData = new FormData($('#checkout-form')[0]);
-                formData.append("_token", "{{ csrf_token() }}")
+                var formData = new FormData($('#checkout_form')[0]);
                 console.log(formData)
                 $.ajax({
                     type: "POST",
+                    processData: false,
+                    contentType: false,
                     url:  "{{ url('/transaksi/online') }}/",
                     data: formData,
                     success: function(data){
-                        alert(data)
+                        snap.pay(data.snap_token, {
+                            // Optional
+                            onSuccess: function (result) {
+                                location.reload();
+                            },
+                            // Optional
+                            onPending: function (result) {
+                                location.reload();
+                            },
+                            // Optional
+                            onError: function (result) {
+                                location.reload();
+                            }
+                        });
+
                     }
                 })
             })
@@ -223,7 +241,7 @@
                 <div class="col-lg-5">
                     <div class="your-order-area">
                         <h3>Your order</h3>
-                        <form id="checkout-form" action="#" method="POST">
+                        <form id="checkout_form" action="#" method="POST">
                         @csrf
                         <div class="your-order-wrap gray-bg-4">
                             <div class="your-order-product-info">
@@ -248,7 +266,7 @@
                                     <ul>
                                         <li class="order-total">Sub Total</li>
                                         <li>Rp{{ number_format($cart_total, 0, '', '.') }}</li>
-                                        <input type="hidden" id="Total" name="total_cart_val" value="{{ $cart_total }}" />
+                                        <input type="hidden" id="total_cart_val" name="Total" value="{{ $cart_total }}" />
                                         <input type="text" id="Total2" name="total_cart_val2" value="{{ $cart_total }}" />
                                     </ul>
                                 </div>
@@ -277,7 +295,7 @@
                                     <ul>
                                         <li class="order-total">Total</li>
                                         <li id="total_order">Rp{{ number_format($cart_total + $cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
-                                        <input type="hidden" name="GrandTotal" id="total_order_val" value="{{ $cart_total + $cost_jne[0]->cost[0]->value }}" />
+                                        <input type="hidden" name="GrandTotal" id="total_order_val" value="{{ ($cart_total + $cost_jne[0]->cost[0]->value) }}" />
                                     </ul>
                                 </div>
                             </div>
