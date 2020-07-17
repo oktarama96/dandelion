@@ -64,6 +64,31 @@ class DashboardController extends Controller
                         ->where('StatusPesanan', 0)
                         ->get();
 
+        $kategoriTerlaris = DB::select(
+            DB::raw("
+                SELECT p.IdKategoriProduk, kp.NamaKategori, COUNT(p.IdKategoriProduk) AS jumlah_dipesan
+                FROM transaksi t INNER JOIN detailtransaksi dt USING(IdTransaksi) 
+                INNER JOIN produk p USING(IdProduk) 
+                INNER JOIN kategoriproduk kp USING(IdKategoriProduk) 
+                WHERE YEAR(TglTransaksi) = 2020 AND StatusPembayaran = 1
+                GROUP BY p.IdKategoriProduk ORDER BY jumlah_dipesan DESC LIMIT 5
+            ")
+        );
+
+        $label = [];
+        $count = [];
+        $total = 0;
+        
+        foreach($kategoriTerlaris as $kategori){
+            $total += $kategori->jumlah_dipesan;
+        }
+        foreach($kategoriTerlaris as $kategori){
+            $label[] = $kategori->NamaKategori;
+            $count[] = $kategori->jumlah_dipesan;
+        }
+        $kategoriChartLabel= "['" . join("','", $label) . "']";
+        $kategoriChartCount = "['" . join("','", $count) . "']";
+
         // return $pesananbelumdiproses;
         return view("pos.pages.index")
                 ->with('totaltransaksioff', json_encode($datatransaksioff,JSON_NUMERIC_CHECK))
@@ -71,6 +96,8 @@ class DashboardController extends Controller
                 ->with('pendapatanSum', $pendapatanSum)
                 ->with('qtySum', $qtySum)
                 ->with('transaksiCount', $transaksiCount)
-                ->with('pesananbelumdiproses', $pesananbelumdiproses);
+                ->with('pesananbelumdiproses', $pesananbelumdiproses)
+                ->with('kategoriChartLabel', $kategoriChartLabel)
+                ->with('kategoriChartCount', $kategoriChartCount);
     }
 }
