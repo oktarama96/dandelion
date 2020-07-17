@@ -211,6 +211,49 @@ class TransaksiController extends Controller
         $snapToken = Veritrans_Snap::getSnapToken($payload);
         return $snapToken;
     }
+
+    /**
+     * Midtrans notification handler.
+     *
+     * @param Request $request
+     * 
+     * @return void
+     */
+    public function notificationHandler(Request $request)
+    {
+        $notif = new Veritrans_Notification();
+        \DB::transaction(function() use($notif) {
+ 
+          $transaction = $notif->transaction_status;
+          $type = $notif->payment_type;
+          $orderId = $notif->order_id;
+          $fraud = $notif->fraud_status;
+          $transaksi = Transaksi::findOrFail($orderId);
+ 
+          if ($transaction == 'capture') {
+            if ($type == 'credit_card') {
+              if($fraud == 'challenge') {
+                $transaksi->setPending();
+              } else {
+                $transaksi->setSuccess();
+              }
+            }
+          } elseif ($transaction == 'settlement') {
+            $transaksi->setSuccess();
+          } elseif($transaction == 'pending'){
+            $transaksi->setPending();
+          } elseif ($transaction == 'deny') {
+            $transaksi->setFailed();
+          } elseif ($transaction == 'expire') {
+            $transaksi->setExpired();
+          } elseif ($transaction == 'cancel') {
+            $transaksi->setFailed();
+          }
+        });
+ 
+        return;
+    }
+
     public function getCart()
     {
         $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;

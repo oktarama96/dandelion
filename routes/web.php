@@ -92,8 +92,13 @@ Route::get('/shop/get-cart', 'ShopController@getCart');
 Route::get('/shop/delete-cart/{id_cart}', 'ShopController@deleteCartItem');
 Route::post('/shop/add-cart', 'ShopController@addCartItem');
 
-Route::get('/shop/checkout', 'ShopController@showcheckout');
+Route::get('/shop/checkout', 'ShopController@showcheckout')->name('checkout');
 
 Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
 Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
 Route::post('/transaksi/online', 'TransaksiController@simpantransaksionline');
+
+Route::post('/midtrans/finish', function(){
+    return redirect()->route('checkout')->with('status', 'Pembayaran Sukses!');;
+})->name('checkout.finish');
+Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
