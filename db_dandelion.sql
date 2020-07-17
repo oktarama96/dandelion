@@ -28,13 +28,14 @@ CREATE TABLE `cart` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`IdCart`)
-) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=24 DEFAULT CHARSET=utf8mb4;
 
 /*Data for the table `cart` */
 
 insert  into `cart`(`IdCart`,`IdPelanggan`,`IdStokProduk`,`Qty`,`created_at`,`updated_at`) values 
 (18,3,39,1,'2020-07-16 03:19:24','2020-07-16 03:19:24'),
-(22,3,27,1,'2020-07-16 03:28:11','2020-07-16 03:28:11');
+(22,3,27,1,'2020-07-16 03:28:11','2020-07-16 03:28:11'),
+(23,3,38,2,'2020-07-16 13:19:35','2020-07-16 13:19:35');
 
 /*Table structure for table `detailtransaksi` */
 
@@ -57,7 +58,7 @@ CREATE TABLE `detailtransaksi` (
   CONSTRAINT `detailtransaksi_ibfk_1` FOREIGN KEY (`IdStokProduk`) REFERENCES `stokproduk` (`IdStokProduk`),
   CONSTRAINT `detailtransaksi_idproduk_foreign` FOREIGN KEY (`IdProduk`) REFERENCES `produk` (`IdProduk`),
   CONSTRAINT `detailtransaksi_idtransaksi_foreign` FOREIGN KEY (`IdTransaksi`) REFERENCES `transaksi` (`IdTransaksi`)
-) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=66 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `detailtransaksi` */
 
@@ -72,7 +73,10 @@ insert  into `detailtransaksi`(`IdDetailTransaksi`,`Qty`,`Diskon`,`SubTotal`,`Id
 (32,1,0,40000,'DB0001',12,'20200715104144','2020-07-15 10:41:45','2020-07-15 10:41:45'),
 (33,1,0,40000,'DB0001',12,'20200715104240','2020-07-15 10:42:40','2020-07-15 10:42:40'),
 (34,1,0,70000,'DB0002',15,'20200715104240','2020-07-15 10:42:40','2020-07-15 10:42:40'),
-(35,1,0,40000,'DB0001',12,'20200715143444','2020-07-15 14:34:44','2020-07-15 14:34:44');
+(35,1,0,40000,'DB0001',12,'20200715143444','2020-07-15 14:34:44','2020-07-15 14:34:44'),
+(63,1,0,80000,'DB0003',39,'20200717104957','2020-07-17 10:49:57','2020-07-17 10:49:57'),
+(64,1,0,80000,'DB0005',27,'20200717104957','2020-07-17 10:49:57','2020-07-17 10:49:57'),
+(65,2,0,180000,'DB0011',38,'20200717104957','2020-07-17 10:49:57','2020-07-17 10:49:57');
 
 /*Table structure for table `failed_jobs` */
 
@@ -205,7 +209,7 @@ CREATE TABLE `pelanggan` (
 
 insert  into `pelanggan`(`IdPelanggan`,`NamaPelanggan`,`TglLahir`,`JenisKelamin`,`email`,`password`,`remember_token`,`Alamat`,`NoHandphone`,`IdKecamatan`,`NamaKecamatan`,`IdKabupaten`,`NamaKabupaten`,`IdProvinsi`,`NamaProvinsi`,`created_at`,`updated_at`) values 
 (1,'-','2020-06-01','Laki-laki','-@mail.com','$2y$10$x4tmbGNT4rswFYYzsBF9KOPNThYVenrpKN/bgJ37NU1nXYb9vWB6u',NULL,'-','00000000000',261,'Kuta Utara',17,'Badung',1,'Bali','2020-06-15 00:55:57','2020-06-15 00:55:57'),
-(3,'aaaa','2020-07-29','Perempuan','a@a.com','$2y$10$YC3vBXmKtwwylj7JOiwh0.D3mRBhskk8I4feMQHXyybq2AhBho2Au',NULL,'asdasd','083119853063',261,'Kuta Utara',17,'Badung',1,'Bali','2020-07-15 02:41:32','2020-07-15 02:41:32');
+(3,'Pandika Pinata','2020-07-29','Perempuan','a@a.com','$2y$10$YC3vBXmKtwwylj7JOiwh0.D3mRBhskk8I4feMQHXyybq2AhBho2Au',NULL,'asdasd','083119853063',261,'Kuta Utara',17,'Badung',1,'Bali','2020-07-15 02:41:32','2020-07-15 02:41:32');
 
 /*Table structure for table `pengguna` */
 
@@ -341,8 +345,7 @@ CREATE TABLE `transaksi` (
   KEY `transaksi_idpengguna_foreign` (`IdPengguna`),
   KEY `transaksi_idpelanggan_foreign` (`IdPelanggan`),
   CONSTRAINT `transaksi_idkupondiskon_foreign` FOREIGN KEY (`IdKuponDiskon`) REFERENCES `kupondiskon` (`IdKuponDiskon`),
-  CONSTRAINT `transaksi_idpelanggan_foreign` FOREIGN KEY (`IdPelanggan`) REFERENCES `pelanggan` (`IdPelanggan`),
-  CONSTRAINT `transaksi_idpengguna_foreign` FOREIGN KEY (`IdPengguna`) REFERENCES `pengguna` (`IdPengguna`)
+  CONSTRAINT `transaksi_idpelanggan_foreign` FOREIGN KEY (`IdPelanggan`) REFERENCES `pelanggan` (`IdPelanggan`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 /*Data for the table `transaksi` */
@@ -354,7 +357,8 @@ insert  into `transaksi`(`IdTransaksi`,`TglTransaksi`,`Total`,`Potongan`,`Ongkos
 ('20200715102531','2020-07-15 10:25:31',110000,0,0,'-',110000,'Cash',1,3,'-','-',1,1,'2020-07-15 10:25:31','2020-07-15 10:25:31'),
 ('20200715104144','2020-07-15 10:41:44',110000,0,0,'-',110000,'BCA',1,3,'-','-',1,1,'2020-07-15 10:41:44','2020-07-15 10:41:44'),
 ('20200715104240','2020-07-15 10:42:40',110000,10000,0,'-',100000,'Cash',1,3,'-','-',1,1,'2020-07-15 10:42:40','2020-07-15 10:42:40'),
-('20200715143444','2020-07-15 14:34:44',40000,0,0,'-',40000,'Cash',1,3,'-','-',1,1,'2020-07-15 14:34:44','2020-07-15 14:34:44');
+('20200715143444','2020-07-15 14:34:44',40000,0,0,'-',40000,'Cash',1,3,'-','-',1,1,'2020-07-15 14:34:44','2020-07-15 14:34:44'),
+('20200717104957','2020-07-17 10:49:57',340000,0,8000,'CTC',348000,'Midtrans',1,0,'','-',0,3,'2020-07-17 10:49:57','2020-07-17 10:50:33');
 
 /*Table structure for table `ukuran` */
 
