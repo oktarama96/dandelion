@@ -289,6 +289,7 @@ class TransaksiController extends Controller
             $transaksi->StatusPembayaran = 0;
             $transaksi->StatusPesanan = 0; //1=diproses, 2=dikirim,  3=selesai
             $transaksi->IdKuponDiskon = "-";
+            $transaksi->IdPengguna = 0;
             $transaksi->IdPelanggan = $id_pelanggan;
             $transaksi->save();
 
