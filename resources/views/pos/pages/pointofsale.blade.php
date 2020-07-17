@@ -304,7 +304,7 @@
                             
                             <tr>
                                 <td>Tanggal</td>
-                                <td><input type="text" name="Tanggal" class="form-control " value="15-09-2020" readonly></td>
+                                <td><input type="text" name="Tanggal" class="form-control " value="17-07-2020" readonly></td>
                             </tr>
                         </table>
                     </div>
