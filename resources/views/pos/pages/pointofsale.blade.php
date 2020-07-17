@@ -197,14 +197,13 @@
                     $("input[name='HargaJual\\[\\]']:eq("+index+")").val(msg.produk.HargaJual);
 
                     for(var i = 0; i < msg.warna.length; i++){
-                        warna = warna+"<option value='"+msg.IdWarna+"'>"+msg.warna.NamaWarna+"</option>";
+                        warna = warna+"<option value='"+msg.warna[i].IdWarna+"'>"+msg.warna[i].NamaWarna+"</option>";
                     }
                     $("select[name='Warna\\[\\]']:eq("+index+")").empty().append(warna);
-                    viewUkuran(msg.produk.IdProduk ,$("select[name='Warna\\[\\]']:eq("+index+")"));
+                    // viewUkuran(msg.produk.IdProduk , $("select[name='Warna\\[\\]']:eq("+index+")"));
                     for(var j = 0; j < msg.ukuran.length; j++){
-                        ukuran = ukuran+"<option value='"+msg.IdUkuran+"'>"+msg.ukuran.NamaUkuran+"</option>";
+                        ukuran = ukuran+"<option value='"+msg.ukuran[j].IdUkuran+"'>"+msg.ukuran[j].NamaUkuran+"</option>";
                     }
-                
                     
                     $("select[name='Ukuran\\[\\]']:eq("+index+")").empty().append(ukuran);
 
@@ -218,18 +217,18 @@
         });
     }
 
-    function viewUkuran(IdProduk, ini) {
+    function viewUkuran(ini) {
         var index = $(ini).parent().parent().index();
-
+        var IdProduk = $("input[name='IdProduk\\[\\]']:eq("+index+")").val()
         $.ajax({
             type: "GET",
             url:  "{{ url('/pos/pointofsale/addukuran') }}/"+IdProduk+"/"+$(ini).val()+"/",
-            success: function(msg){
-                //console.log(msg);
+            success: function(data){
+                console.log(data);
                 var ukuran;
-                if(msg.stokproduk.length != 0) {              
-                    for(var j = 0; j < msg.stokproduk.length; j++){
-                        ukuran = ukuran+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                if(data.length != 0) {              
+                    for(var j = 0; j < data.length; j++){
+                        ukuran = ukuran+"<option value='"+data[j].IdUkuran+"'>"+data[j].NamaUkuran+"</option>";
                     }
                     $("select[name='Ukuran\\[\\]']:eq("+index+")").empty().append(ukuran);
                 } else {
