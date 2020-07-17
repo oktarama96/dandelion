@@ -102,8 +102,20 @@ class ShopController extends Controller
     public function productdetail($id)
     {
         $produks = Produk::find($id);
+
+        $cart_produk = "[]";
+        $cart_total = 0;
+
+        if(Auth::guard('web')->check()){
+            $cart_produk = [];
+            $cart_produk = $this->getCart();
+
+            foreach($cart_produk as $produk){
+                $cart_total+=$produk->sub_total;
+            }
+        }
         
-        return view('product-detail', compact('produks'));
+        return view('product-detail', compact('produks','cart_produk', 'cart_total'));
     }
 
     public function getCart()
@@ -162,7 +174,19 @@ class ShopController extends Controller
 
     public function showcart()
     {
-        return view('cart');
+        $cart_total = 0;
+        $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
+        $carts = Cart::join('stokproduk', 'cart.IdStokProduk', '=', 'stokproduk.IdStokProduk')
+                ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
+                ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
+                ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
+                ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
+                ->where('IdPelanggan', $id_pelanggan)->get();
+
+        foreach($carts as $cart){
+            $cart_total+=$cart->sub_total;
+        }
+        return view('cart', compact('carts', 'cart_total'));
     }
 
     public function showcheckout()

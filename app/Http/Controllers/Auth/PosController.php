@@ -24,11 +24,11 @@ class PosController extends Controller
 
     public function login(Request $request)
     {
-        $errors = new MessageBag(['email' => ['Email dan/atau password salah!.']]);
+        $errors = new MessageBag(['email' => ['Email atau password salah!.']]);
         // Validate the form data
         $this->validate($request, [
           'email'   => 'required|email',
-          'password' => 'required|min:6'
+          'password' => 'required'
         ]);
       
         if (Auth::guard('pengguna')->attempt(['email' => $request->email, 'password' => $request->password])) {

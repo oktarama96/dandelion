@@ -22,102 +22,7 @@
     <script type="text/javascript">
         $("#form-filter input[type=checkbox]").click(function(){
             $("#form-filter").submit();
-        })
-
-        function formatNumber (num) {
-            return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
-        }
-
-        var cart_produk = {!! $cart_produk !!}
-        var cart_total = {{ $cart_total }}
-
-        function delete_cart(delete_cart){
-            key = $('.delete_cart').index($(delete_cart))
-
-            alert(cart_produk[key].NamaProduk)
-            $.ajax({
-                type: "GET",
-                url:  "{{ url('/shop/delete-cart') }}/"+cart_produk[key].IdCart,
-                success: function(msg){
-                    
-                    cart_total-=cart_produk[key].sub_total
-                    cart_produk.splice(key, 1)
-
-                    $('#cart_total').html('Rp'+formatNumber(cart_total))
-                    $('#cart_count').html(cart_produk.length)
-                    $('#cart_content li').eq(key).remove()
-
-                    alert('sukses menghapus item dari cart')
-                }
-            });
-        }
-        
-        function addToCart(){
-            alert($('#IdProduk').val() + " " + $('#IdWarna').val() + " " + $('#IdUkuran').val() + " " + $('#Qty').val())
-
-            data = {
-                "_token": "{{ csrf_token() }}",
-                'IdProduk': $('#IdProduk').val(),
-                'IdWarna': $('#IdWarna').val(),
-                'IdUkuran': $('#IdUkuran').val(),
-                'Qty': $('#Qty').val(),
-            }
-
-            $.ajax({
-                type: "POST",
-                url:  "{{ url('/shop/add-cart') }}/",
-                data: data,
-                success: function(data){
-                    var new_item = true
-                    var sub_total = data.sub_total
-                    var key = -1;
-
-                    cart_produk.forEach(function(produk, index){
-                        if(produk.IdCart == data.IdCart){
-                            new_item = false
-                            sub_total -= produk.sub_total
-                            cart_produk[index] = data
-                            key = index
-                        }
-                    })
-
-                    if(new_item){
-                        cart_produk.push(data)
-                    }
-                    
-                    cart_count = cart_produk.length
-                    cart_total+=sub_total
-
-                    content = `
-                    <li class="single-shopping-cart">
-                        <div class="shopping-cart-img">
-                            <a href="#"><img alt="" width="82px" height="82px" src="img/produk/`+ data.GambarProduk +`"></a>
-                        </div>
-                        <div class="shopping-cart-title">
-                            <h4><a href="#">`+ data.NamaProduk +`(`+data.NamaWarna+`/`+data.NamaUkuran+`)</a></h4>
-                            <h6 class='qty'>Qty: `+ data.Qty +`</h6>
-                            <span class='sub_total'>Rp`+ formatNumber(data.sub_total) +`</span>
-                        </div>
-                        <div class="shopping-cart-delete">
-                            <a href="#" class='delete_cart' onclick="delete_cart(this)"><i class="fa fa-times-circle"></i></a>
-                        </div>
-                    </li>
-                    `   
-
-                    $('#cart_total').html('Rp'+formatNumber(cart_total))
-                    $('#cart_count').html(cart_count)
-                    
-                    if(new_item){
-                        alert('new item')
-                        $('#cart_content').append(content)
-                    } else {
-                        $('#cart_content .qty').eq(key).html('Qty: '+ data.Qty)
-                        $('#cart_content .sub_total').eq(key).html('Rp: '+ formatNumber(data.sub_total))
-                    }
-                    alert('sukses menambah item ke cart')
-                }
-            });
-        }
+        });
 
         function viewUkuran(IdProduk, ini) {
             //console.log(ini);
@@ -161,15 +66,7 @@
                                             "<div class='product-details-price'>"+
                                                 "<span>Rp. "+msg.produk.HargaJual+"</span>"+
                                             "</div>"+
-                                            "<div class='pro-details-rating-wrap'>"+
-                                                "<div class='pro-details-rating'>"+
-                                                    "<i class='fa fa-star-o yellow'></i>"+
-                                                    "<i class='fa fa-star-o yellow'></i>"+
-                                                    "<i class='fa fa-star-o yellow'></i>"+
-                                                    "<i class='fa fa-star-o'></i>"+
-                                                    "<i class='fa fa-star-o'></i>"+
-                                                "</div>"+
-                                                "<span>3 Reviews</span>"+
+                                            "<div class='pro-details-rating-wrap' style='border-top: 5px solid #6f42c1'>"+
                                             "</div>"+
                                             "<p>"+msg.produk.Deskripsi+"</p>"+
                                             "<p>Berat : "+msg.produk.Berat+" Gram</p>"+
@@ -222,44 +119,12 @@
         });
 
     </script>
+    @include('layout.js.cart')
 @endsection
 
 @section('cart')
 
-    @if (Auth::guard('web')->user())
-        <div class="same-style cart-wrap">
-            <button class="icon-cart">
-                <i class="pe-7s-shopbag"></i>
-                <span class="count-style" id='cart_count'>{{ count($cart_produk) }}</span>
-            </button>
-            <div class="shopping-cart-content">
-                <ul id="cart_content">
-                    @foreach($cart_produk as $key=>$produk)
-                    <li class="single-shopping-cart">
-                        <div class="shopping-cart-img">
-                            <a href="#"><img alt="" width="82px" height="82px" src="img/produk/{{ $produk->GambarProduk }}"></a>
-                        </div>
-                        <div class="shopping-cart-title">
-                            <h4><a href="#">{{ $produk->NamaProduk }} ({{ $produk->NamaWarna }}/{{ $produk->NamaUkuran }}) </a></h4>
-                            <h6 class='qty'>Qty: {{ $produk->Qty }}</h6>
-                            <span class='sub_total'>Rp{{ number_format($produk->sub_total,0,"",".") }}</span>
-                        </div>
-                        <div class="shopping-cart-delete">
-                            <a href="#" class="delete_cart" onclick="delete_cart(this)"><i class="fa fa-times-circle"></i></a>
-                        </div>
-                    </li>
-                    @endforeach
-                </ul>
-                <div class="shopping-cart-total">
-                    <h4>Total : <span class="shop-total" id="cart_total">Rp{{ number_format($cart_total,0,"",".") }}</span></h4>
-                </div>
-                <div class="shopping-cart-btn btn-hover text-center">
-                    <a class="default-btn" href="cart-page.html">view cart</a>
-                    <a class="default-btn" href="/shop/checkout">checkout</a>
-                </div>
-            </div>
-        </div>
-    @endif
+    @include('layout.cart')
     
 @endsection
 
@@ -292,8 +157,8 @@
                                             <div class="product-wrap mb-25 scroll-zoom">
                                                 <div class="product-img">
                                                     <a href="/shop/product-detail/{{ $produk->IdProduk }}">
-                                                        <img class="default-img" src="img/produk/{{ $produk->GambarProduk }}" alt="">
-                                                        <img class="hover-img" src="img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                        <img class="default-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                        <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
                                                     </a>
                                                     <div class="product-action">
                                                         <div class="pro-same-action pro-quickview">
@@ -302,16 +167,9 @@
                                                     </div>
                                                 </div>
                                                 <div class="product-content text-center">
-                                                    <h3>{{ $produk->NamaProduk }}</h3>
-                                                    <div class="product-rating">
-                                                        <i class="fa fa-star-o yellow"></i>
-                                                        <i class="fa fa-star-o yellow"></i>
-                                                        <i class="fa fa-star-o yellow"></i>
-                                                        <i class="fa fa-star-o"></i>
-                                                        <i class="fa fa-star-o"></i>
-                                                    </div>
+                                                    
                                                     <div class="product-price">
-                                                        <span>Rp. {{ $produk->HargaJual }}</span>
+                                                        <span>{{ $produk->NamaProduk }} - Rp. {{ $produk->HargaJual }}</span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -335,17 +193,19 @@
                     <form id="form-filter" method="post" action='http://127.0.0.1:8000/shop'>
                     @csrf
                     <div class="sidebar-style mr-30">
+                        
                         <div class="sidebar-widget">
                             <h4 class="pro-sidebar-title">Search </h4>
                             <div class="pro-sidebar-search mb-50 mt-25">
-                                <form class="pro-sidebar-search-form" action="#">
-                                    <input name="search" value="{{ $filter['search'] }}" type="text" placeholder="Search here...">
+                                <div class="pro-sidebar-search-form">
+                                    <input type="text" name="search" value="{{ $filter['search'] }}" placeholder="Search here...">
                                     <button>
                                         <i class="pe-7s-search"></i>
                                     </button>
-                                </form>
+                                </div>
                             </div>
                         </div>
+
                         <!--<div class="sidebar-widget mt-45">
                             <h4 class="pro-sidebar-title">Filter By Price </h4>
                             <div class="price-filter mt-10">

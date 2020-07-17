@@ -10,16 +10,16 @@ class Transaksi extends Model
     protected $primaryKey = 'IdTransaksi';
 
     public function setSuccess(){
-        $this->setStatusPembayaran = 1;
+        $this->setStatusPembayaran(1);
     }
     public function setPending(){
-        $this->setStatusPembayaran = 2;
+        $this->setStatusPembayaran(2);
     }
     public function setFailed(){
-        $this->setStatusPembayaran = 3;
+        $this->setStatusPembayaran(3);
     }
     public function setExpired(){
-        $this->setStatusPembayaran = 4;
+        $this->setStatusPembayaran(4);
     }
     public function setStatusPembayaran($status){
         $this->StatusPembayaran = $status;

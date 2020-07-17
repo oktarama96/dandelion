@@ -45,15 +45,15 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $errors = new MessageBag(['email' => ['Email dan/atau password salah!.']]);
+        $errors = new MessageBag(['email' => ['Email atau password salah!.']]);
         // Validate the form data
         $this->validate($request, [
             'email'   => 'required|email',
-            'password' => 'required|min:6'
+            'password' => 'required'
         ]);
         
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->route('index');
+            return redirect('/shop');
         } 
         // if unsuccessful, then redirect back to the login with the form data
         return redirect()->back()->withErrors($errors)->withInput($request->except('password'));

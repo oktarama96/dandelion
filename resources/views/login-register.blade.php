@@ -33,7 +33,7 @@
                                             </div>
                                             <div class="form-group {{ $errors->has('password') ? ' has-danger' : '' }}">
                                                 <label for="password">Password</label>
-                                                <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }}" id="password" name="password" required> 
+                                                <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }}" id="password" name="password" placeholder="Masukkan password anda" required> 
                                                 @if ($errors->has('password'))
                                                 <label class="error mt-2 text-danger">{{ $errors->first('password') }}</label>
                                                 @endif
