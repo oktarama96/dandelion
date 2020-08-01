@@ -173,9 +173,13 @@ class ProdukController extends Controller
     
     public function getDetail($id)
     {
+        $warna = '';
+        $ukuran = '';
         $produk = Produk::where('IdProduk', $id)->first();
-        $warna = $produk->warnas()->groupBy('IdWarna')->get();
-        $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+        if($produk){
+            $warna = $produk->warnas()->groupBy('IdWarna')->get();
+            $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+        }
         // return $warna;
         return response()->json(['produk' => $produk, 'warna' => $warna, 'ukuran' => $ukuran]);
     }

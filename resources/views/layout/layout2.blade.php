@@ -150,8 +150,6 @@
         <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
         <!-- Plugins JS -->
         <script src="{{ asset('assets/js/plugins.js') }}"></script>
-        <!-- Ajax Mail -->
-        <script src="{{ asset('assets/js/ajax-mail.js') }}"></script>
         <!-- Main JS -->
         <script src="{{ asset('assets/js/main.js') }}"></script>
 

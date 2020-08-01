@@ -18,6 +18,9 @@ use Veritrans_Config;
 use Veritrans_Snap;
 use Veritrans_Notification;
 use Auth;
+use Mike42\Escpos\Printer;
+use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use App\Item;
 
 class TransaksiController extends Controller
 {
@@ -87,7 +90,7 @@ class TransaksiController extends Controller
         if($request->Total == 0){
             return redirect()->back()->with("alert" , "Error : Form Transaksi Masih Kosong!");
         }else{
-            if($request->Bayar == 0){
+            if($request->Bayar == 0 || $request->Kembali < 0){
                 return redirect()->back()->with("alert", "Error : Jumlah Pembayaran Tidak Sesuai!"); 
             }else{
                 DB::beginTransaction();
@@ -144,6 +147,10 @@ class TransaksiController extends Controller
                                 $detailtransaksi->IdTransaksi = $IdTransaksi;
 
                                 $detailtransaksi->save();
+
+                                if($request->has('print')){
+                                    $this->printstruk($IdTransaksi);
+                                }
                             }                                          
                         }
                     }else{
@@ -333,15 +340,36 @@ class TransaksiController extends Controller
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
+
+                $sum_total = Transaksi::whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
+                ->sum('GrandTotal');
             }else{
                 // return $request->to_date;
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
+
+                $sum_total = Transaksi::whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                ->sum('GrandTotal');
             }
             //dd($datas);
             return Datatables::of($datas)
+                    ->editColumn('Total', function($data){
+                        return "Rp. ".number_format($data->Total,0,',',',')."";
+                    })
+                    ->editColumn('Potongan', function($data){
+                        return "Rp. ".number_format($data->Potongan,0,',',',')."";
+                    })
+                    ->editColumn('OngkosKirim', function($data){
+                        return "Rp. ".number_format($data->OngkosKirim,0,',',',')."";
+                    })
+                    ->editColumn('GrandTotal', function($data){
+                        return "Rp. ".number_format($data->GrandTotal,0,',',',')."";
+                    })
+                    ->editColumn('Total', function($data){
+                        return "Rp. ".number_format($data->Total,0,',',',')."";
+                    })
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){
                             $status = "Lunas";
@@ -412,6 +440,100 @@ class TransaksiController extends Controller
             DB::rollback();
             return response()->json(['error'=> $e ]);
         }
+    }
+
+    public function printstruk($id)
+    {
+        $connector = new WindowsPrintConnector("star");
+
+        $transaksis = Transaksi::with('pengguna')
+                    ->where([
+                        ['IdTransaksi', '=', $id],
+                        ['MetodePembayaran', '=', 'Cash'],
+                    ])->first();
+
+        $detailtransaksis = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $id)->get();
+        // dd($detailtransaksis);
+        
+        $id = new Item('ID TRANSAKSI', $transaksis->IdTransaksi);
+        $tgl = new Item('TANGGAL', date('d-m-Y', strtotime($transaksis->TglTransaksi)));
+        $op = new Item('OPERATOR', $transaksis->pengguna->NamaPengguna);
+
+        $totalp = new Item('TOTAL', $transaksis->Total);
+        $potonganp = new Item('POTONGAN', $transaksis->Potongan);
+        $grandtotalp = new Item('GRANDTOTAL', $transaksis->GrandTotal);
+
+        $items = array();
+        $items_detail = array();
+
+        $i = 0;
+        foreach($detailtransaksis as $detailtransaksi){
+            $items[$i] = new ItemDt($detailtransaksi->produk->NamaProduk, $detailtransaksi->Qty." x ".$detailtransaksi->produk->HargaJual, $detailtransaksi->Diskon."%    ".$detailtransaksi->Subtotal);
+            $items_detail[$i] = new ItemDt($detailtransaksi->stokproduk->ukuran->NamaUkuran ." - ". $detailtransaksi->stokproduk->warna->NamaWarna ,"");
+            $i++;
+        }
+
+        
+        $printer = new Printer($connector);
+
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);
+        $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer -> text("Dandelion Fashion Shop\n");
+        $printer -> selectPrintMode();
+        $printer -> text("Jl. Raya Abianbase No. 128\n");
+        $printer -> text("IG: dandelionshop128\n");
+        $printer -> text("================================\n");
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);
+        $printer -> setEmphasis(true);
+        $printer -> text($id);
+        $printer -> setEmphasis(false);
+        $printer -> text($tgl);
+        $printer -> text($op);
+        $printer -> setJustification();
+
+
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);
+        $printer -> text("================================\n");
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);
+
+        foreach ($items as $item) {
+            foreach (items_detail as $item_detail){
+                $printer -> text($item);
+                $printer -> text($item_detail);
+            }
+        }
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);
+        $printer -> text("================================\n");
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_LEFT);
+        $printer -> text($totalp);
+        $printer -> text($potonganp);
+        $printer -> setEmphasis(true);
+        $printer -> text($grandtotalp);
+        $printer -> setEmphasis(false);
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);
+        $printer -> text("================================\n");
+        $printer -> setJustification();
+
+        $printer -> setJustification(Printer::JUSTIFY_CENTER);
+        $printer -> text("Terima Kasih\n");
+        $printer -> text("Barang yang telah dibeli\n");
+        $printer -> text("tidak bisa ditukar/dikembalikan\n");
+        $printer -> text("IG: dandelionshop128\n");
+        $printer -> setJustification();
+
+        $printer -> cut();
+        $printer -> close();
+
     }
 
 }

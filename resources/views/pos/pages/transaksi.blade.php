@@ -30,29 +30,67 @@
         function load_data(from_date = '', to_date = '')
         {
             $('.data-table').DataTable({
-            processing: true,
-            serverSide: true,
-            ordering: false,
-            ajax: {
-                data:{from_date:from_date, to_date:to_date}
-            },
-            columns: [
-                {data: 'IdTransaksi', name: 'IdTransaksi'},
-                {data: 'TglTransaksi', name: 'TglTransaksi'},
-                {data: 'Total', name: 'Total'},
-                {data: 'Potongan', name: 'Potongan'},
-                {data: 'OngkosKirim', name: 'OngkosKirim'},
-                {data: 'NamaEkspedisi', name: 'NamaEkspedisi'},
-                {data: 'GrandTotal', name: 'GrandTotal'},
-                {data: 'MetodePembayaran', name: 'MetodePembayaran'},
-                {data: 'StatusPembayaran', name: 'StatusPembayaran'},
-                {data: 'StatusPesanan', name: 'StatusPesanan'},
-                {data: 'kupondiskon.NamaKupon', name: 'NamaKuponDiskon'},
-                {data: 'pelanggan.NamaPelanggan', name: 'NamaPelanggan'},
-                {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'},
-                {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
-            ]
-        });
+                scrollX: true,
+                processing: true,
+                serverSide: true,
+                ordering: false,
+                ajax: {
+                    data:{from_date:from_date, to_date:to_date}
+                },
+                footerCallback: function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+        
+                    // Remove the formatting to get integer data for summation
+                    var intVal = function ( i ) {
+                        return typeof i === 'string' ?
+                            i.replace(/[\Rp.,]/g, '')*1 :
+                            typeof i === 'number' ?
+                                i : 0;
+                    };
+        
+                    // Total over all pages
+                    total = api
+                        .column( 6 )
+                        .data()
+                        .reduce( function (a, b) {
+                            return intVal(a) + intVal(b);
+                        }, 0 );
+                
+                    // Update footer
+                    $( api.column( 6 ).footer() ).html(
+                        '$'+ total +' total)'
+                    );
+                },
+                columns: [
+                    {data: 'IdTransaksi', name: 'IdTransaksi'},
+                    {data: 'TglTransaksi', name: 'TglTransaksi'},
+                    {data: 'Total', name: 'Total'},
+                    {data: 'Potongan', name: 'Potongan'},
+                    {data: 'OngkosKirim', name: 'OngkosKirim'},
+                    {data: 'NamaEkspedisi', name: 'NamaEkspedisi'},
+                    {data: 'GrandTotal', name: 'GrandTotal'},
+                    {data: 'MetodePembayaran', name: 'MetodePembayaran'},
+                    {data: 'StatusPembayaran', name: 'StatusPembayaran'},
+                    {data: 'StatusPesanan', name: 'StatusPesanan'},
+                    {data: 'kupondiskon.NamaKupon', name: 'NamaKuponDiskon'},
+                    {data: 'pelanggan.NamaPelanggan', name: 'NamaPelanggan'},
+                    {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'},
+                    {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
+                ],
+                // footerCallback: function ( row, data, start, end, display ) {
+                //     var api = this.api(), data;
+
+                //     // Total over all pages
+                //     // var json = this.api().ajax.json();
+                //     // total = json.total;
+                    
+                //     // Update footer
+                //     $( api.column( 6 ).footer() ).html(
+                //         // 'Rp. '+ total.toLocaleString()
+                //         'Total'
+                //     );
+                // },
+            });
         }
 
         $('#filter').click(function(){
@@ -94,10 +132,10 @@
                         "<td>"+msg.detailtransaksi[i].produk.NamaProduk+"</td>"+
                         "<td>"+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+"</td>"+
                         "<td>"+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].produk.HargaJual+"</td>"+
+                        "<td>Rp. "+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+"</td>"+
                         "<td>"+msg.detailtransaksi[i].Qty+"</td>"+
                         "<td>"+msg.detailtransaksi[i].Diskon+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].SubTotal+"</td>"+
+                        "<td>Rp. "+msg.detailtransaksi[i].SubTotal.toLocaleString()+"</td>"+
                     "</tr>";
                 }
             
@@ -127,7 +165,8 @@
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
-                        table.draw();
+                        var table = $('.data-table').DataTable(); 
+                        table.ajax.reload( null, false );
                     },
                     error: function (data) {
                         var errors = "";
@@ -194,6 +233,12 @@
                 <tbody>
                 
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6" style="text-align:right">Total:</th>
+                        <th colspan="8"></th>
+                    </tr>
+                </tfoot>
             </table>
             </div>
         </div>

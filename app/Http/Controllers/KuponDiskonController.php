@@ -19,6 +19,9 @@ class KuponDiskonController extends Controller
             $datas = KuponDiskon::latest()->get();
 
             return Datatables::of($datas)
+                    ->editColumn('JumlahPotongan', function($data){
+                        return "Rp. ".number_format($data->JumlahPotongan,0,',','.')."";
+                    })
                     ->addColumn('Status', function($data){
                         $tglskrg = date_format(date_create(),'yy-m-d h:i:s');
                         $tglmulai = $data->TglMulai;

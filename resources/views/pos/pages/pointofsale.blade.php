@@ -23,6 +23,7 @@
   <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
   <script src="{{ asset('vendor/jquery-autocomplete/jquery.autocomplete.min.js') }}"></script>
+  <script src="{{ asset('vendor/moment/moment.min.js') }}"></script>
 
   <script type="text/javascript">
     $.ajaxSetup({
@@ -188,7 +189,7 @@
             url:  "{{ url('/pos/pointofsale/addproduk') }}/"+$(ini).val()+"/",
             data:  "IdProduk=" + $(ini).val(),
             success: function(msg){
-                //console.log(msg);
+                //console.log(msg.produk);
                 var warna,ukuran;
                 
                 if(msg.produk) {              
@@ -210,8 +211,16 @@
                     calculate(ini);
                     Ttl();
                 } else {
-                    alert('Produk Tidak Ada!');
-                    $("input[name='IdProduk\\[\\]']:eq("+index+")").val("").focus();
+                    swal({
+                        title: "Error!",
+                        text: "Produk Tidak Ada!",
+                        icon: "error",
+                        closeModal: false
+                    }).then(function() {
+                            swal.close();
+                            $("input[name='IdProduk\\[\\]']:eq("+index+")").val("").focus();
+                    });
+                    
                 }
             }
         });
@@ -273,6 +282,8 @@
             return false;
         }
     });
+
+    $("input[name='Tanggal']").val(moment().format("DD-MM-YYYY"));
     
   </script>
   @if(session()->has('alert'))
@@ -304,7 +315,7 @@
                             
                             <tr>
                                 <td>Tanggal</td>
-                                <td><input type="text" name="Tanggal" class="form-control " value="17-07-2020" readonly></td>
+                                <td><input type="text" name="Tanggal" class="form-control " readonly></td>
                             </tr>
                         </table>
                     </div>
@@ -334,8 +345,8 @@
                         <tbody>
                             <tr onkeydown="del(this)">
                                 <td>1</td>
-                                <td><input type="text" name="IdProduk[]" class="form-control " onchange='viewProduk(this)'></td>
-                                <td><input type="text" name="NamaProduk[]" class="form-control "></td>
+                                <td><input type="text" name="IdProduk[]" class="form-control " onchange='viewProduk(this)' required></td>
+                                <td><input type="text" name="NamaProduk[]" class="form-control " required></td>
                                 <td><select class="form-control" name="Warna[]" onchange='viewUkuran(this)'><option>-</option></select></td>
                                 <td><select class="form-control" name="Ukuran[]"><option>-</option></select></td>
                                 <td><input type="number" name="Qty[]" step="0.1" class="form-control " value=1 onkeydown="dblTab(this,'HargaJual')" onfocus="this.select()" onblur="calculate(this)"></td>
@@ -390,6 +401,7 @@
                             </div>
 
                             <div class="form-group">
+                                <div class="error"></div>
                                 <label>Bayar</label>
                                 <div class="input-group mb-2">
                                     <div class="input-group-prepend">
@@ -411,8 +423,8 @@
         
                         </div>
                         <div class="modal-footer">
-                            <button type="submit" class="btn btn-primary">Simpan</button>
-                            <button type="button" id="btnSimpanPrint" class="btn btn-success">Simpan & Print</button>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                            <button tabindex="13" type="submit" id="btnSimpanPrint" class="btn btn-primary" name="print">Simpan & Print</button>
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Batal</button>
                         </div>
                     </div>

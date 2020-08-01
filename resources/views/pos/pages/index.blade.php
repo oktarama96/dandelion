@@ -222,6 +222,7 @@
       }
     });
 
+    //console.log("{{ $kategoriChartLabel }}");
     // Pie Chart Example
     var ctx = document.getElementById("myPieChart");
     var myPieChart = new Chart(ctx, {
@@ -409,15 +410,21 @@
                 <canvas id="myPieChart"></canvas>
               </div>
               <div class="mt-4 text-center small">
-                <span class="mr-2">
-                  <i class="fas fa-circle text-primary"></i> Direct
-                </span>
-                <span class="mr-2">
-                  <i class="fas fa-circle text-success"></i> Social
-                </span>
-                <span class="mr-2">
-                  <i class="fas fa-circle text-info"></i> Referral
-                </span>
+
+                @php
+                  $warna = array('#4e73df', '#1cc88a', '#36b9cc', '#245DEF', '#8247AE');
+                  $i = 0;
+                @endphp
+                @foreach ($kategoriTerlaris as $label)
+                  
+                  <span class="mr-2">
+                  <i class="fas fa-circle" style="color: {{ $warna[$i] }}"></i> {{ $label->NamaKategori }}
+                  </span>
+                  @php
+                      $i++;
+                  @endphp
+                @endforeach
+
               </div>
             </div>
           </div>
@@ -428,8 +435,61 @@
 
       <div class="row">
 
+        <!-- Last Order -->
+        <div class="col-xl-5 col-lg-5">
+          <div class="card shadow mb-4">
+            <!-- Card Header - Dropdown -->
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+              <h6 class="m-0 font-weight-bold text-primary">Pesanan Terbaru Yang Harus Diproses</h6>
+              <div class="dropdown no-arrow">
+                <a class="dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="fas fa-ellipsis-v fa-sm fa-fw text-gray-400"></i>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right shadow animated--fade-in" aria-labelledby="dropdownMenuLink">
+                  <div class="dropdown-header">Dropdown Header:</div>
+                  <a class="dropdown-item" href="#">Action</a>
+                  <a class="dropdown-item" href="#">Another action</a>
+                  <div class="dropdown-divider"></div>
+                  <a class="dropdown-item" href="#">Something else here</a>
+                </div>
+              </div>
+            </div>
+            <!-- Card Body -->
+            <div class="card-body">
+              <div class="table-responsive">
+                <table class="table table-hover">
+                  <thead>
+                  <tr>
+                    <th>Id Transaksi</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Grandtotal</th>
+                    <th>Action</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr>
+                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
+                    <td>Call of Duty IV</td>
+                    <td><span class="label label-success">Shipped</span></td>
+                    <td><button type='button' class='btn btn-success btn-flat' title='Show Data' data-toggle='modal' data-target='#detail' onclick='detail()'><i class='fa fa-info'></i></button></td>
+                  </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <div class="card-footer">
+              <a href="#" class="btn btn-info btn-icon-split">
+                <span class="icon text-white-50">
+                  <i class="fas fa-arrow-right"></i>
+                </span>
+                <span class="text">Lihat Semua Pesanan</span>
+              </a>
+            </div>
+          </div>
+        </div>
+
         <!-- Area Chart -->
-        <div class="col-xl-8 col-lg-7">
+        <div class="col-xl-7 col-lg-7">
           <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">

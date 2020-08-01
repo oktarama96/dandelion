@@ -70,7 +70,7 @@ class DashboardController extends Controller
                 FROM transaksi t INNER JOIN detailtransaksi dt USING(IdTransaksi) 
                 INNER JOIN produk p USING(IdProduk) 
                 INNER JOIN kategoriproduk kp USING(IdKategoriProduk) 
-                WHERE YEAR(TglTransaksi) = 2020 AND StatusPembayaran = 1
+                WHERE YEAR(TglTransaksi) = date('Y') AND StatusPembayaran = 1
                 GROUP BY p.IdKategoriProduk ORDER BY jumlah_dipesan DESC LIMIT 5
             ")
         );
@@ -79,6 +79,8 @@ class DashboardController extends Controller
         $count = [];
         $total = 0;
         
+        //dd($kategoriTerlaris);
+
         foreach($kategoriTerlaris as $kategori){
             $total += $kategori->jumlah_dipesan;
         }
@@ -98,6 +100,7 @@ class DashboardController extends Controller
                 ->with('transaksiCount', $transaksiCount)
                 ->with('pesananbelumdiproses', $pesananbelumdiproses)
                 ->with('kategoriChartLabel', $kategoriChartLabel)
-                ->with('kategoriChartCount', $kategoriChartCount);
+                ->with('kategoriChartCount', $kategoriChartCount)
+                ->with('kategoriTerlaris', $kategoriTerlaris);
     }
 }

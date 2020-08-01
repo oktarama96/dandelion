@@ -61,6 +61,30 @@
                     pageSize: 'LEGAL'
                 }
             ],
+            footerCallback: function ( row, data, start, end, display ) {
+                var api = this.api(), data;
+    
+                // Remove the formatting to get integer data for summation
+                var intVal = function ( i ) {
+                    return typeof i === 'string' ?
+                        i.replace(/[\Rp.,]/g, '')*1 :
+                        typeof i === 'number' ?
+                            i : 0;
+                };
+    
+                // Total over all pages
+                total = api
+                    .column( 6 )
+                    .data()
+                    .reduce( function (a, b) {
+                        return intVal(a) + intVal(b);
+                    }, 0 );
+            
+                // Update footer
+                $( api.column( 6 ).footer() ).html(
+                    '$'+ total +''
+                );
+            },
             columns: [
                 {data: 'IdTransaksi', name: 'IdTransaksi'},
                 {data: 'TglTransaksi', name: 'TglTransaksi'},
@@ -107,13 +131,13 @@
 @section('content')
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
-        <h1 class="h3 mb-0 text-gray-800">Laporan Transaksi</h1>
+        <h1 class="h3 mb-0 text-gray-800">Laporan Transaksi & Keuntungan</h1>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Laporan Transaksi</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Laporan Transaksi Keseluruhan</h6>
         </div>
         <div class="card-body">
             <div class="row justify-content-md-center input-daterange">
@@ -150,8 +174,24 @@
                 <tbody>
                 
                 </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6" style="text-align:right">Total:</th>
+                        <th colspan="7"></th>
+                    </tr>
+                </tfoot>
             </table>
             </div>
+        </div>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Keuntungan Transaksi</h6>
+        </div>
+        <div class="card-body">
+            
         </div>
     </div>
 @endsection

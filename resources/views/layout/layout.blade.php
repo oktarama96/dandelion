@@ -21,6 +21,8 @@
         <link rel="stylesheet" href="assets/css/plugins.css">
         <!-- Main Style CSS -->
         <link rel="stylesheet" href="assets/css/style.css">
+
+        @yield('add-css')
         <!-- Modernizer JS -->
         <script src="assets/js/vendor/modernizr-2.8.3.min.js"></script>
     </head>
@@ -39,8 +41,6 @@
         <script src="assets/js/bootstrap.min.js"></script>
         <!-- Plugins JS -->
         <script src="assets/js/plugins.js"></script>
-        <!-- Ajax Mail -->
-        <script src="assets/js/ajax-mail.js"></script>
         <!-- Main JS -->
         <script src="assets/js/main.js"></script>
 

@@ -4,21 +4,30 @@
     Dandelion Fashion Shop
 @endsection
 
+@section('add-css')
+    <style>
+        .product-wrap-2 .product-img .product-action-2 a {
+            padding: 5px;
+            width: auto;
+            height: auto;
+        }
+    </style>
+@endsection
+
 @section('add-js')
     <script type="text/javascript">
 
-        function viewUkuran(ini) {
+        function viewUkuran(IdProduk, ini) {
             //console.log(ini);
             $.ajax({
                 type: "GET",
-                url:  "{{ url('/pos/pages/pos/addukuran') }}/"+$(ini).val()+"/",
-                data:  "IdProduk=" + $(ini).val(),
-                success: function(msg){
+                url:  "{{ url('/shop/get-ukuran') }}/"+IdProduk+"/"+$(ini).val()+"/",
+                success: function(data){
                     //console.log(msg);
                     var ukuran;
-                    if(msg.stokproduk.length != 0) {              
-                        for(var j = 0; j < msg.stokproduk.length; j++){
-                            ukuran = ukuran+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                    if(data.length != 0) {              
+                        for(var j = 0; j < data.length; j++){
+                            ukuran = ukuran+"<option value='"+data[j].IdUkuran+"'>"+data[j].NamaUkuran+"</option>";
                         }
                         $("select[name='Ukuran']").empty().append(ukuran);
                     }
@@ -45,6 +54,7 @@
                                     "</div>"+
                                     "<div class='col-md-7 col-sm-12 col-xs-12'>"+
                                         "<div class='product-details-content quickview-content'>"+
+                                            "<input type='hidden' id='IdProduk' value='"+msg.produk.IdProduk+"'>"+
                                             "<h2>"+msg.produk.NamaProduk+"</h2>"+
                                             "<div class='product-details-price'>"+
                                                 "<span>Rp. "+msg.produk.HargaJual+"</span>"+
@@ -66,10 +76,10 @@
                                                 "<div class='pro-details-color-wrap'>"+
                                                     "<span>Color</span>"+
                                                     "<div class='pro-details-color-content'>"+
-                                                        "<select class='form-control' name='Warna' onchange='viewUkuran(this)'>";
+                                                        `<select class='form-control' name="Warna" id='IdWarna' onchange='viewUkuran("`+msg.produk.IdProduk+`", this)'>`;
 
-                                                        for(var i = 0; i < msg.stokproduk.length; i++){
-                                                            data = data+"<option value='"+msg.stokproduk[i].IdWarna+"'>"+msg.stokproduk[i].warna.NamaWarna+"</option>";
+                                                        for(var i = 0; i < msg.warna.length; i++){
+                                                            data = data+"<option value='"+msg.warna[i].IdWarna+"'>"+msg.warna[i].NamaWarna+"</option>";
                                                         }
                                                         
                                                     data = data+"</select>"+
@@ -80,8 +90,8 @@
                                                     "<div class='pro-details-color-content'>"+
                                                         "<select class='form-control' name='Ukuran'>";
 
-                                                            for(var j = 0; j < msg.stokproduk.length; j++){
-                                                            data = data+"<option value='"+msg.stokproduk[j].IdUkuran+"'>"+msg.stokproduk[j].ukuran.NamaUkuran+"</option>";
+                                                            for(var j = 0; j < msg.ukuran.length; j++){
+                                                            data = data+"<option value='"+msg.ukuran[j].IdUkuran+"'>"+msg.ukuran[j].NamaUkuran+"</option>";
                                                         }
                                                         
                                                     data = data+"</select>"+
@@ -167,9 +177,6 @@
                 </div>
                 <div class="col-xl-10 col-lg-102 col-md-6 col-8">
                     <div class="header-right-wrap">
-                        <div class="same-style header-search">
-                            <a href="#"><i class="pe-7s-search"></i></a>
-                        </div>
                         <div class="same-style account-satting">
                             <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
                             <div class="account-dropdown">
@@ -189,52 +196,6 @@
                             @endif
                             </div>
                         </div>
-                        @if (Auth::guard('web')->user())
-                        <div class="same-style cart-wrap">
-                            <button class="icon-cart">
-                                <i class="pe-7s-shopbag"></i>
-                                <span class="count-style">02</span>
-                            </button>
-                            <div class="shopping-cart-content">
-                                <ul>
-                                    <li class="single-shopping-cart">
-                                        <div class="shopping-cart-img">
-                                            <a href="#"><img alt="" src="assets/img/cart/cart-1.png"></a>
-                                        </div>
-                                        <div class="shopping-cart-title">
-                                            <h4><a href="#">T- Shart & Jeans </a></h4>
-                                            <h6>Qty: 02</h6>
-                                            <span>$260.00</span>
-                                        </div>
-                                        <div class="shopping-cart-delete">
-                                            <a href="#"><i class="fa fa-times-circle"></i></a>
-                                        </div>
-                                    </li>
-                                    <li class="single-shopping-cart">
-                                        <div class="shopping-cart-img">
-                                            <a href="#"><img alt="" src="assets/img/cart/cart-2.png"></a>
-                                        </div>
-                                        <div class="shopping-cart-title">
-                                            <h4><a href="#">T- Shart & Jeans </a></h4>
-                                            <h6>Qty: 02</h6>
-                                            <span>$260.00</span>
-                                        </div>
-                                        <div class="shopping-cart-delete">
-                                            <a href="#"><i class="fa fa-times-circle"></i></a>
-                                        </div>
-                                    </li>
-                                </ul>
-                                <div class="shopping-cart-total">
-                                    <h4>Shipping : <span>$20.00</span></h4>
-                                    <h4>Total : <span class="shop-total">$260.00</span></h4>
-                                </div>
-                                <div class="shopping-cart-btn btn-hover text-center">
-                                    <a class="default-btn" href="cart-page.html">view cart</a>
-                                    <a class="default-btn" href="checkout.html">checkout</a>
-                                </div>
-                            </div>
-                        </div>
-                    @endif
                     </div>
                 </div>
             </div>
@@ -364,8 +325,7 @@
                                                 <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
                                             </a>
                                             <div class="product-action-2">
-                                                <a title="Add To Cart" href="#"><i class="fa fa-shopping-cart"></i></a>
-                                                <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="fa fa-eye"></i></a>
+                                                <a title="View Detail Product" href="/shop">Detail Product</a>
                                             </div>
                                         </div>
                                         <div class="product-content-2">
@@ -387,30 +347,6 @@
                         </div>
                     </div>
                     
-                </div>
-            </div>
-        </div>
-
-        <div class="subscribe-area pb-100 pl-30 pr-30">
-            <div class="row no-gutters">
-                <div class="col-xl-6 col-lg-8 ml-auto mr-auto">
-                    <div class="subscribe-style-2 text-center">
-                        <h2>Subscribe </h2>
-                        <p>Subscribe to our newsletter to receive news on update</p>
-                        <div class="subscribe-form-2">
-                            <form class="validate" novalidate="" target="_blank" name="mc-embedded-subscribe-form" method="post" action="http://devitems.us11.list-manage.com/subscribe/post?u=6bbb9b6f5827bd842d9640c82&amp;id=05d85f18ef">
-                                <div class="mc-form">
-                                    <input class="email" type="email" required="" placeholder="Your Email Address" name="EMAIL" value="">
-                                    <div class="mc-news" aria-hidden="true">
-                                        <input type="text" value="" tabindex="-1" name="b_6bbb9b6f5827bd842d9640c82_05d85f18ef">
-                                    </div>
-                                    <div class="clear-2">
-                                        <input class="button" type="submit" name="subscribe" value="Subscribe">
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

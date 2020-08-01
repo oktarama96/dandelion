@@ -19,16 +19,33 @@ class LaporanController extends Controller
             if($request->from_date == NULL){
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
+                ->where('StatusPembayaran', 1)
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }else{
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                ->where('StatusPembayaran', 1)
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
             }
             //dd($datas);
             return Datatables::of($datas)
+                    ->editColumn('Total', function($data){
+                        return "Rp. ".number_format($data->Total,0,',',',')."";
+                    })
+                    ->editColumn('Potongan', function($data){
+                        return "Rp. ".number_format($data->Potongan,0,',',',')."";
+                    })
+                    ->editColumn('OngkosKirim', function($data){
+                        return "Rp. ".number_format($data->OngkosKirim,0,',',',')."";
+                    })
+                    ->editColumn('GrandTotal', function($data){
+                        return "Rp. ".number_format($data->GrandTotal,0,',',',')."";
+                    })
+                    ->editColumn('Total', function($data){
+                        return "Rp. ".number_format($data->Total,0,',',',')."";
+                    })
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){
                             $status = "Lunas";
