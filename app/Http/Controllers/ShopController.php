@@ -135,41 +135,45 @@ class ShopController extends Controller
     }
 
     public function addCartItem(Request $request){
-        $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
+        if(Auth::guard('web')->check()){
+            $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
 
-        $IdStokProduk = StokProduk::where([
-            ['IdProduk', '=', $request->IdProduk],
-            ['IdWarna', '=', $request->IdWarna],
-            ['IdUkuran', '=', $request->IdUkuran],
-        ])->pluck('IdStokProduk')->first();
+            $IdStokProduk = StokProduk::where([
+                ['IdProduk', '=', $request->IdProduk],
+                ['IdWarna', '=', $request->IdWarna],
+                ['IdUkuran', '=', $request->IdUkuran],
+            ])->pluck('IdStokProduk')->first();
 
-        $cart_item = Cart::where([
-            ['IdPelanggan', $id_pelanggan],
-            ['IdStokProduk', $IdStokProduk]
-        ])->first();
+            $cart_item = Cart::where([
+                ['IdPelanggan', $id_pelanggan],
+                ['IdStokProduk', $IdStokProduk]
+            ])->first();
 
-        if(!$cart_item){
-            $cart_item = new Cart;
-            $cart_item->IdPelanggan = Auth::guard('web')->user()->IdPelanggan;
-            $cart_item->IdStokProduk = $IdStokProduk;
-            $cart_item->Qty = $request->Qty;
-            $cart_item->save();
-        } else {
-            $cart_item->Qty += $request->Qty;
-            $cart_item->save();
-        }
-        
-        $item = Cart::join('stokproduk', 'cart.IdStokProduk', '=', 'stokproduk.IdStokProduk')
-                ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
-                ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
-                ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
-                ->select('warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
-                ->where([
-                    ['IdPelanggan', $id_pelanggan],
-                    ['stokproduk.IdStokProduk', $cart_item->IdStokProduk]
-                ])->first();
+            if(!$cart_item){
+                $cart_item = new Cart;
+                $cart_item->IdPelanggan = Auth::guard('web')->user()->IdPelanggan;
+                $cart_item->IdStokProduk = $IdStokProduk;
+                $cart_item->Qty = $request->Qty;
+                $cart_item->save();
+            } else {
+                $cart_item->Qty += $request->Qty;
+                $cart_item->save();
+            }
+            
+            $item = Cart::join('stokproduk', 'cart.IdStokProduk', '=', 'stokproduk.IdStokProduk')
+                    ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
+                    ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
+                    ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
+                    ->select('warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
+                    ->where([
+                        ['IdPelanggan', $id_pelanggan],
+                        ['stokproduk.IdStokProduk', $cart_item->IdStokProduk]
+                    ])->first();
 
-        return $item;
+            return $item;
+        }else{
+            return redirect()->route('login');
+        } 
     }
 
     public function showcart()

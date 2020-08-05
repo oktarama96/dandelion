@@ -11,6 +11,13 @@
             width: auto;
             height: auto;
         }
+
+        .login-text {
+            font-size: 14px;
+            font-style: normal;
+            font-weight: 400;
+            vertical-align: middle;
+        }
     </style>
 @endsection
 
@@ -131,7 +138,11 @@
         </div>
         <div class="header-right-wrap">
             <div class="same-style account-satting">
-                <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
+                @if (Auth::guard('web')->user())
+                    <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">{{Auth::guard('web')->user()->NamaPelanggan}}</span></a>
+                @else
+                    <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
+                @endif
                 <div class="account-dropdown">
                     @if (Auth::guard('web')->user())
                         <ul>
@@ -178,7 +189,11 @@
                 <div class="col-xl-10 col-lg-102 col-md-6 col-8">
                     <div class="header-right-wrap">
                         <div class="same-style account-satting">
-                            <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
+                            @if (Auth::guard('web')->user())
+                                <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span>{{Auth::guard('web')->user()->NamaPelanggan}}</span></a>
+                            @else
+                                <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span>Login</span></a>
+                            @endif
                             <div class="account-dropdown">
                             @if (Auth::guard('web')->user())
                                 <ul>
@@ -261,52 +276,10 @@
             </div>
         </div>
 
-        <div class="banner-area banner-area-2 pt-10 pb-85">
-            <div class="container-fluid">
-                <div class="custom-row-2">
-                    <div class="col-xl-3 col-lg-6 col-md-6">
-                        <div class="single-banner mb-10">
-                            <a href="#"><img src="assets/img/banner/banner-1.png" alt=""></a>
-                            <div class="banner-content">
-                                <h3>Jackets</h3>
-                                <a href="product-details.html"><i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6">
-                        <div class="single-banner mb-10">
-                            <a href="#"><img src="assets/img/banner/banner-2.png" alt=""></a>
-                            <div class="banner-content">
-                                <h3>Sweater</h3>
-                                <a href="product-details.html"><i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6">
-                        <div class="single-banner mb-10">
-                            <a href="#"><img src="assets/img/banner/banner-3.png" alt=""></a>
-                            <div class="banner-content">
-                                <h3>Blazzer</h3>
-                                <a href="product-details.html"><i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-xl-3 col-lg-6 col-md-6">
-                        <div class="single-banner mb-10">
-                            <a href="#"><img src="assets/img/banner/banner-4.png" alt=""></a>
-                            <div class="banner-content">
-                                <h3>Shirt</h3>
-                                <a href="product-details.html"><i class="fa fa-long-arrow-right"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-        <div class="product-area hm4-section-padding pb-100">
+        <div class="product-area hm4-section-padding pt-80 pb-100">
             <div class="container-fluid">
                 <div class="section-title text-center">
-                    <h2>DAILY DEALS!</h2>
+                    <h2>NEWEST PRODUCT!</h2>
                 </div>
                 <div class="product-tab-list nav pt-30 pb-55 text-center">
         
@@ -332,7 +305,7 @@
                                             <div class="title-price-wrap-2">
                                                 <h3>{{ $produk->NamaProduk }}</h3>
                                                 <div class="price-2">
-                                                    <span>Rp. {{ $produk->HargaJual }}</span>
+                                                    <span>Rp. {{ number_format($produk->HargaJual,0,',',',') }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -371,9 +344,8 @@
                             </div>
                             <div class="footer-list">
                                 <ul>
-                                    <li><a href="#">About us</a></li>
-                                    <li><a href="#">Store location</a></li>
-                                    <li><a href="#">Contact</a></li>
+                                    <li><a href="/about">About us</a></li>
+                                    <li><a href="/contact">Contact</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -385,7 +357,7 @@
                             </div>
                             <div class="footer-list">
                                 <ul>
-                                    <li><a href="about.html">Instagram</a></li>
+                                    <li><a href="#">Instagram</a></li>
                                     <li><a href="#">Facebook</a></li>
                                 </ul>
                             </div>

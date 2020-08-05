@@ -4,11 +4,23 @@
     POS - Dashboard
 @endsection
 
+@section('add-css')
+  <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+@endsection
+
 @section('add-js')
-    <!-- Page level plugins -->
+  <!-- Page level plugins -->
+  <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
+  <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
   <script src="{{ asset('/vendor/chart.js/Chart.min.js') }}"></script>
 
   <script type="text/javascript">
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+    
     var dataaoff = @php echo $totaltransaksioff; @endphp;
     var dataaon = @php echo $totaltransaksion; @endphp;
 
@@ -255,6 +267,104 @@
       },
     });
 
+    var table = $('.data-table').DataTable({
+        processing: true,
+        serverSide: true,
+        ajax: "",
+        ordering: false,
+        paging: false,
+        keys: true,
+        columns: [
+            {data: 'IdTransaksi', name: 'IdTransaksi'},
+            {data: 'NamaPelanggan', name: 'NamaPelanggan'},
+            {data: 'StatusPesanan', name: 'StatusPesanan'},
+            {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
+        ]
+    });
+
+
+    function detail(a){
+        var kode = 'IdTransaksi='+ a;
+        $.ajax({
+            type: "GET",
+            url: "{{ url('/pos/detailtransaksi/') }}/"+a+"/",
+            data: kode,
+            success: function(msg){
+                //console.log(msg);
+                document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
+                $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
+                document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
+
+                document.getElementById("Total").innerHTML = "Rp. "+msg.transaksi[0].Total.toLocaleString();
+                document.getElementById("OngkosKirim").innerHTML = "Rp. "+msg.transaksi[0].OngkosKirim.toLocaleString();
+                document.getElementById("Potongan").innerHTML = "Rp. "+msg.transaksi[0].Potongan.toLocaleString();
+                document.getElementById("GrandTotal").innerHTML = "Rp. "+msg.transaksi[0].GrandTotal.toLocaleString();
+
+                document.getElementById("NamaPelanggan").innerHTML = msg.transaksi[0].pelanggan.NamaPelanggan;
+                document.getElementById("Alamat").innerHTML = msg.transaksi[0].pelanggan.Alamat;
+                document.getElementById("Kota").innerHTML = msg.transaksi[0].pelanggan.NamaKecamatan +", "+ msg.transaksi[0].pelanggan.NamaKabupaten +", "+ msg.transaksi[0].pelanggan.NamaProvinsi;
+                document.getElementById("NoHandphone").innerHTML = msg.transaksi[0].pelanggan.NoHandphone;
+
+                var dataa = "";
+                for(var i = 0; i < msg.detailtransaksi.length; i++){
+                    var dataa = '<tr class="border-bottom append">'+
+                                    '<td>'+
+                                        '<div class="font-weight-bold">'+msg.detailtransaksi[i].produk.NamaProduk+'</div>'+
+                                        '<div class="small text-muted d-none d-md-block">'+msg.detailtransaksi[i].IdProduk+' - '+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+' - '+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+'</div>'+
+                                    '</td>'+
+                                    '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+'</td>'+
+                                    '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].Qty+'</td>'+
+                                    '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
+                                '</tr>';
+                }
+            
+                $("#detail-trans").prepend(dataa);
+            }
+        })
+    }
+    $('#pesanan').on('hidden.bs.modal', function(e){
+        $('.append').remove();
+        document.getElementById("IdTransaksi").innerHTML = "";
+        $("input[name=IdTransaksi]").val("");
+        document.getElementById("TglTransaksi").innerHTML = "";
+
+        document.getElementById("Total").innerHTML = "";
+        document.getElementById("OngkosKirim").innerHTML = "";
+        document.getElementById("Potongan").innerHTML = "";
+        document.getElementById("GrandTotal").innerHTML = "";
+
+        document.getElementById("NamaPelanggan").innerHTML = "";
+        document.getElementById("Alamat").innerHTML = "";
+        document.getElementById("Kota").innerHTML = "";
+        document.getElementById("NoHandphone").innerHTML = ""; 
+    });
+
+    $("#Update").click(function(e){
+        e.preventDefault();
+
+        a = $("input[name=IdTransaksi]").val();
+
+        $.ajax({
+            type: 'PATCH',
+            url: "{{ url('/pos/updatetransaksi/') }}/"+a+"/",
+            data: $('#form-updatepesanan').serialize(),
+            
+            success: function (data) {
+                swal("Selamat!", "Berhasil Mengupdate Pesanan", "success");
+                $('#pesanan').modal('hide');
+                table.draw();
+            },
+            error: function (data) {
+                var errors = "";
+                $.each(data.responseJSON.errors, function(key,value) {
+                    errors = errors +' '+ value +'\n';
+                });
+                
+                swal("Gagal!","Gagal Mengupdate Pesanan : \n"+errors+"","error");
+            },
+        });
+    });
+
   </script>
 
 @endsection
@@ -277,7 +387,7 @@
                   <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Pendapatan Hari Ini</div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
                     @foreach($pendapatanSum as $p)
-                    Rp. {{ $p->pendapatanSum }}
+                    Rp. {{ number_format($p->pendapatanSum,0,',',',') }}
                     @endforeach  
                   </div>
                 </div>
@@ -337,10 +447,10 @@
             <div class="card-body">
               <div class="row no-gutters align-items-center">
                 <div class="col mr-2">
-                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Online Order Belum Di Proses</div>
+                  <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">Online Order Belum Selesai</div>
                   <div class="h5 mb-0 font-weight-bold text-gray-800">
-                    @foreach($pesananbelumdiproses as $p)
-                    {{ $p->pesananbelumdiproses }} Transaksi
+                    @foreach($pesananbelumselesai as $p)
+                    {{ $p->pesananbelumselesai }} Transaksi
                     @endforeach  
                   </div>
                 </div>
@@ -436,7 +546,7 @@
       <div class="row">
 
         <!-- Last Order -->
-        <div class="col-xl-5 col-lg-5">
+        <div class="col-xl-6 col-lg-12">
           <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -457,39 +567,33 @@
             <!-- Card Body -->
             <div class="card-body">
               <div class="table-responsive">
-                <table class="table table-hover">
+                <table class="table table-hover data-table" style="white-space: nowrap;">
                   <thead>
                   <tr>
                     <th>Id Transaksi</th>
                     <th>Nama Pelanggan</th>
-                    <th>Grandtotal</th>
+                    <th>Status Pesanan</th>
                     <th>Action</th>
                   </tr>
                   </thead>
                   <tbody>
-                  <tr>
-                    <td><a href="pages/examples/invoice.html">OR9842</a></td>
-                    <td>Call of Duty IV</td>
-                    <td><span class="label label-success">Shipped</span></td>
-                    <td><button type='button' class='btn btn-success btn-flat' title='Show Data' data-toggle='modal' data-target='#detail' onclick='detail()'><i class='fa fa-info'></i></button></td>
-                  </tr>
                   </tbody>
                 </table>
               </div>
             </div>
             <div class="card-footer">
-              <a href="#" class="btn btn-info btn-icon-split">
+              <a href="/pos/transaksi/" class="btn btn-info btn-icon-split">
                 <span class="icon text-white-50">
                   <i class="fas fa-arrow-right"></i>
                 </span>
-                <span class="text">Lihat Semua Pesanan</span>
+                <span class="text">Lihat Pesanan Hari Ini</span>
               </a>
             </div>
           </div>
         </div>
 
         <!-- Area Chart -->
-        <div class="col-xl-7 col-lg-7">
+        <div class="col-xl-6 col-lg-12">
           <div class="card shadow mb-4">
             <!-- Card Header - Dropdown -->
             <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
@@ -517,4 +621,118 @@
         </div>
       </div>
 
+      <!--Modal pesanan-->
+      <div class="modal fade" id="pesanan" tabindex="-1" role="dialog" aria-labelledby="pesanan" aria-hidden="true">
+          <div class="modal-dialog  modal-lg" role="document">
+              <div class="modal-content">
+                  <div class="modal-header">
+                      <h5 class="modal-title" id="pesanan">Update Status Pesanan</h5>
+                      <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                          <span aria-hidden="true">×</span>
+                      </button>
+                  </div>
+                  <div class="modal-body">
+                      <form method="post" action="#" id="form-updatepesanan">
+                        <!-- Invoice-->
+                        <div class="card invoice">
+                            <div class="card-header p-4 p-md-5 border-bottom-0">
+                                <div class="row justify-content-between align-items-center">
+                                    <div class="col-12 col-lg-auto mb-5 mb-lg-0 text-center text-lg-left">
+                                        <!-- Invoice branding-->
+                                        <div class="h2 mb-0">Dandelion Fashion Shop</div>
+                                    </div>
+                                    <div class="col-12 col-lg-auto text-center text-lg-right">
+                                        <!-- Invoice details-->
+                                        <div class="h3">Id Transaksi : <div id="IdTransaksi"></div></div>
+                                        <input type="hidden" name="IdTransaksi">
+                                        <br />
+                                        <div id="TglTransaksi"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body p-4 p-md-5">
+                                <!-- Invoice table-->
+                                <div class="table-responsive">
+                                    <table class="table table-borderless mb-0">
+                                        <thead class="border-bottom">
+                                            <tr class="small text-uppercase text-muted">
+                                                <th scope="col">Nama Barang</th>
+                                                <th class="text-right" scope="col">Harga</th>
+                                                <th class="text-right" scope="col">Qty</th>
+                                                <th class="text-right" scope="col">SubTotal</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="detail-trans">                                          
+                                          <!-- Invoice subtotal-->
+                                          <tr>
+                                              <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Total:</div></td>
+                                              <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="Total"></div></td>
+                                          </tr>
+
+                                          <!-- Invoice tax column-->
+                                          <tr>
+                                              <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Ongkos Kirim:</div></td>
+                                              <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="OngkosKirim"></div></td>
+                                          </tr>
+
+                                          <tr>
+                                              <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Potongan:</div></td>
+                                              <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="Potongan"></div></td>
+                                          </tr>
+                                          <!-- Invoice total-->
+                                          <tr>
+                                              <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Grandtotal:</div></td>
+                                              <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700 text-green" id="GrandTotal"></div></td>
+                                          </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="card-footer p-4 p-lg-5 border-top-0">
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
+                                        <!-- Invoice - sent to info-->
+                                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Untuk</div>
+                                        <div class="h6 mb-1">
+                                          <div id="NamaPelanggan"></div>
+                                        </div>
+                                        <div class="small">
+                                          <div id="Alamat"></div>
+                                        </div>
+                                        <div class="small">
+                                          <div id="Kota"></div>
+                                        </div>
+                                        <div class="small">
+                                          <div id="NoHandphone"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
+                                        <!-- Invoice - sent from info-->
+                                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
+                                        <div class="h6 mb-1">Dandelion Fashion Shop</div>
+                                        <div class="small">Jln. Raya Abianbase No. 128</div>
+                                        <div class="small">Badung, Bali, Indonesia</div>
+                                    </div>
+                                    <div class="col-lg-4 mt-1">
+                                        <!-- Invoice - additional notes-->
+                                        <div class="form-group">
+                                          <label>Status Pesanan</label>
+                                          <select class="form-control" name="StatusPesanan">
+                                            <option value="1">DiProses</option>
+                                            <option value="2">DiKirim</option>
+                                          </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                      </form>
+                  </div>
+                  <div class="modal-footer">
+                      <button class="btn btn-secondary" type="button" data-dismiss="modal">Exit</button>
+                      <button class="btn btn-primary" type="button" id="Update">Update</button>
+                  </div>
+              </div>
+          </div>
+      </div>
 @endsection

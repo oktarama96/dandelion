@@ -117,9 +117,9 @@
           <div id="collapsePages1" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
 
-              <a class="collapse-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}" href="/pos/admin/report/transaksi">Laporan Transaksi</a>
+              <a class="collapse-item {{ Request::path() === 'pos/admin/report/transaksi' ? 'active' : '' }}" href="/pos/admin/report/transaksi" style="white-space: pre-line;">Laporan Transaksi & Keuntungan</a>
               <a class="collapse-item {{ Request::path() === 'pos/admin/report/stokproduk' ? 'active' : '' }}" href="/pos/admin/report/stokproduk">Laporan Stok Produk</a>
-              <a class="collapse-item {{ Request::path() === 'pos/admin/report/keuntungan' ? 'active' : '' }}" href="/pos/admin/report/keuntungan">Laporan Keuntungan</a>
+              {{-- <a class="collapse-item {{ Request::path() === 'pos/admin/report/keuntungan' ? 'active' : '' }}" href="/pos/admin/report/keuntungan">Laporan Keuntungan</a> --}}
               <a class="collapse-item {{ Request::path() === 'pos/admin/report/stokhabis' ? 'active' : '' }}" href="/pos/admin/report/stokhabis">Laporan Stok Habis</a>
               <a class="collapse-item {{ Request::path() === 'pos/admin/report/stoklaris' ? 'active' : '' }}" href="/pos/admin/report/stoklaris">Laporan Stok Paling Laris</a>
 

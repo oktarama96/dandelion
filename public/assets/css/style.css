@@ -1908,7 +1908,7 @@ a.default-btn {
       position: absolute;
       text-align: left;
       top: 190%;
-      width: 125px;
+      width: 150px;
       z-index: 220;
       display: none; }
       @media only screen and (max-width: 767px) {
@@ -5568,7 +5568,7 @@ a.default-btn {
         border-right: 1px solid rgba(255, 255, 255, 0.2); }
       .product-wrap .product-img .product-action .pro-cart {
         font-size: 14px;
-        width: calc(100% - 48px - 48px);
+        width: 100%;
         -webkit-transition-delay: .1s;
         -o-transition-delay: .1s;
         transition-delay: .1s; }
@@ -12204,3 +12204,8 @@ h3.cart-page-title {
   @media only screen and (max-width: 767px) {
     .searchform.mb-50 {
       margin-bottom: 20px; } }
+
+  .disabled {
+      pointer-events: none;
+      cursor: pointer;
+  }

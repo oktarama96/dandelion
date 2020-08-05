@@ -7,10 +7,11 @@ use Illuminate\Support\Facades\DB;
 use App\Transaksi;
 use App\DetailTransaksi;
 use Carbon\Carbon;
+use DataTables;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $now = Carbon::today();
 
@@ -60,9 +61,46 @@ class DashboardController extends Controller
                         ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                         ->get();
 
-        $pesananbelumdiproses = Transaksi::select(DB::raw('COALESCE(COUNT(StatusPesanan),0) as pesananbelumdiproses'))
-                        ->where('StatusPesanan', 0)
+        $pesananbelumselesai = Transaksi::select(DB::raw('COALESCE(COUNT(StatusPesanan),0) as pesananbelumselesai'))
+                        ->whereIn('StatusPesanan', [0,1,2])
+                        ->where([
+                            ['MetodePembayaran', '=', 'MidTrans'],
+                            ['StatusPembayaran', '=', 1],
+                        ])
                         ->get();
+
+        if ($request->ajax()) {
+            $listpesanan = Transaksi::join('pelanggan','transaksi.IdPelanggan','=','pelanggan.IdPelanggan')
+                            ->select('IdTransaksi','pelanggan.NamaPelanggan','StatusPesanan')
+                            ->whereIn('StatusPesanan', [0,1,2])
+                            ->where([
+                                ['MetodePembayaran', '=', 'MidTrans'],
+                                ['StatusPembayaran', '=', 1],
+                            ])
+                            ->orderBy('TglTransaksi', 'desc')
+                            ->get();
+
+            return Datatables::of($listpesanan)
+            ->editColumn('StatusPesanan', function($data){
+                if($data->StatusPesanan == 0){
+                    $statuspesanan = "<span class='badge badge-danger'>Belum Diproses</span>";
+                }else if($data->StatusPesanan == 1){
+                    $statuspesanan = "<span class='badge badge-warning'>Diproses</span>";
+                }else if($data->StatusPesanan == 2){
+                    $statuspesanan = "<span class='badge badge-primary'>Dikirim</span>";
+                }else if($data->StatusPesanan == 3){
+                    $statuspesanan = "<span class='badge badge-success'>Selesai</span>";
+                }
+                return $statuspesanan;
+            })
+            ->addColumn('Aksi', function($data){
+                $btn = "<button type='button' class='btn btn-primary btn-flat' title='Update Pesanan' data-toggle='modal' data-target='#pesanan' onclick='detail(".$data->IdTransaksi.")'><i class='fa fa-edit'></i></button>";
+
+                return $btn;
+            })
+            ->rawColumns(['Aksi', 'StatusPesanan'])
+            ->make(true);
+        }
 
         $kategoriTerlaris = DB::select(
             DB::raw("
@@ -90,7 +128,7 @@ class DashboardController extends Controller
         }
         $kategoriChartLabel= "['" . join("','", $label) . "']";
         $kategoriChartCount = "['" . join("','", $count) . "']";
-
+        // dd($listpesanan);
         // return $pesananbelumdiproses;
         return view("pos.pages.index")
                 ->with('totaltransaksioff', json_encode($datatransaksioff,JSON_NUMERIC_CHECK))
@@ -98,9 +136,17 @@ class DashboardController extends Controller
                 ->with('pendapatanSum', $pendapatanSum)
                 ->with('qtySum', $qtySum)
                 ->with('transaksiCount', $transaksiCount)
-                ->with('pesananbelumdiproses', $pesananbelumdiproses)
+                ->with('pesananbelumselesai', $pesananbelumselesai)
                 ->with('kategoriChartLabel', $kategoriChartLabel)
                 ->with('kategoriChartCount', $kategoriChartCount)
                 ->with('kategoriTerlaris', $kategoriTerlaris);
+    }
+
+    public function showdetailtrans($id)    
+    {
+        $transaksi = Transaksi::with('pelanggan')->where('IdTransaksi', $id)->get();
+        $detailtransaksi = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $id)->get();
+        
+        return response()->json(['transaksi' => $transaksi, 'detailtransaksi' => $detailtransaksi]);
     }
 }

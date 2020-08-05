@@ -50,6 +50,7 @@
                 data: kode,
                 success: function(msg){
                     //console.log(msg.produk.NamaProduk);
+
                     var imgurl = "{{ asset('img/produk/') }}/";
                     var data = "<div class='row append'>"+
                                     "<div class='col-md-5 col-sm-12 col-xs-12'>"+
@@ -99,7 +100,7 @@
                                             "</div>"+
                                             "<div class='pro-details-quality'>"+
                                                 "<div class='cart-plus-minus'>"+
-                                                    "<input class='cart-plus-minus-box' type='number' id='Qty' value='1'>"+
+                                                    "<input class='cart-plus-minus-box' type='text' id='Qty' value='1'>"+
                                                 "</div>"+
                                                 "<div class='pro-details-cart btn-hover'>"+
                                                     "<a href='#' onclick='addToCart()'>Add To Cart</a>"+
@@ -110,8 +111,27 @@
                                 "</div>";
 
                     $("#detail").append(data);
+
+                    var CartPlusMinus = $('.cart-plus-minus');
+                    CartPlusMinus.prepend('<div class="dec qtybutton">-</div>');
+                    CartPlusMinus.append('<div class="inc qtybutton">+</div>');
+                    $(".qtybutton").on("click", function () {
+                        var $button = $(this);
+                        var oldValue = $button.parent().find("input").val();
+                        if ($button.text() === "+") {
+                            var newVal = parseFloat(oldValue) + 1;
+                        } else {
+                            // Don't allow decrementing below zero
+                            if (oldValue > 0) {
+                                var newVal = parseFloat(oldValue) - 1;
+                            } else {
+                                newVal = 1;
+                            }
+                        }
+                        $button.parent().find("input").val(newVal);
+                    });
                 }
-            })
+            });
         }
 
         $('#exampleModal').on('hidden.bs.modal', function(e){
@@ -161,15 +181,15 @@
                                                         <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
                                                     </a>
                                                     <div class="product-action">
-                                                        <div class="pro-same-action pro-quickview">
-                                                            <a title="Quick View" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="pe-7s-look"></i></a>
+                                                        <div class="pro-same-action pro-cart">
+                                                            <a title="Add To Cart" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="pe-7s-cart"></i> Add to cart</a>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="product-content text-center">
-                                                    
+                                                    <h3><a href="#">{{ $produk->NamaProduk }}</a></h3>
                                                     <div class="product-price">
-                                                        <span>{{ $produk->NamaProduk }} - Rp. {{ $produk->HargaJual }}</span>
+                                                        <span>Rp. {{ $produk->HargaJual }}</span>
                                                     </div>
                                                 </div>
                                             </div>

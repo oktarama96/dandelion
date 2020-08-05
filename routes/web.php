@@ -50,7 +50,9 @@ Route::group(['prefix' => 'pos/admin', 'middleware' => ['auth:pengguna', 'is_adm
 Route::group(['prefix' => 'pos/', 'middleware' => ['auth:pengguna']], function() {
     //Route::get('/', 'PenggunaController@kasirDash')->name('kasir.dash');
     Route::get('/', 'DashboardController@index')->name('kasir.index');
+    Route::get('/detailtransaksi/{id}', 'DashboardController@showdetailtrans');
 
+    Route::patch('/updatetransaksi/{id}', 'TransaksiController@updatetransaksi');
     Route::get('/pointofsale', 'TransaksiController@pointofsale');
     Route::get('/pointofsale/acproduk', 'TransaksiController@acproduk');
     // Route::get('/pointofsale/addproduk/{id}', 'TransaksiController@addproduk');
@@ -61,6 +63,7 @@ Route::group(['prefix' => 'pos/', 'middleware' => ['auth:pengguna']], function()
     Route::post('/pointofsale/addtransaksi', 'TransaksiController@simpantransaksi');
 
     Route::get('/transaksi', 'TransaksiController@index');
+    Route::get('/transaksi/{id}', 'TransaksiController@loaddata');
     Route::get('/transaksi/detailtransaksi/{id}', 'TransaksiController@showdetailtrans'); 
 });
 
@@ -75,10 +78,9 @@ Route::group(['prefix' => 'pos/', 'middleware' => ['auth:pengguna']], function()
 Route::get('/login', 'Auth\LoginController@showLoginForm')->name('login');
 Route::post('/login', 'Auth\LoginController@login')->name('login');
 Route::post('/logout', 'Auth\LoginController@logout')->name('logout');
-
-Route::get('/profile-management', function () {
-    return view('pos.profile');
-})->name('profile');
+Route::post('/register', 'Auth\LoginController@register')->name('register');
+Route::post('/register/add/provinsi/{id}', 'Auth\LoginController@tampilkabupaten');
+Route::post('/register/add/kabupaten/{id}', 'Auth\LoginController@tampilkecamatan');
 
 Route::get('/', 'IndexController@index')->name('index');
 Route::get('/produk/detail/{id}','ProdukController@edit');
@@ -86,19 +88,21 @@ Route::get('/shop', 'ShopController@index');
 
 Route::post('/shop', 'ShopController@index');
 Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
-
-Route::get('/shop/cart', 'ShopController@showcart');
-Route::get('/shop/get-cart', 'ShopController@getCart');
-Route::get('/shop/delete-cart/{id_cart}', 'ShopController@deleteCartItem');
-Route::post('/shop/add-cart', 'ShopController@addCartItem');
-
-Route::get('/shop/checkout', 'ShopController@showcheckout')->name('checkout');
-
 Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
 Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
-Route::post('/transaksi/online', 'TransaksiController@simpantransaksionline');
 
-Route::post('/midtrans/finish', function(){
-    return redirect()->route('checkout')->with('status', 'Pembayaran Sukses!');;
-})->name('checkout.finish');
-Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
+Route::group(['middleware' => ['auth:web']], function() {
+    Route::get('/shop/cart', 'ShopController@showcart');
+    Route::get('/shop/get-cart', 'ShopController@getCart');
+    Route::get('/shop/delete-cart/{id_cart}', 'ShopController@deleteCartItem');
+    Route::post('/shop/add-cart', 'ShopController@addCartItem');
+
+    Route::get('/shop/checkout', 'ShopController@showcheckout')->name('checkout');
+    Route::post('/transaksi/online', 'TransaksiController@simpantransaksionline');
+
+    Route::post('/midtrans/finish', function(){
+        return redirect()->route('checkout')->with('status', 'Pembayaran Sukses!');;
+    })->name('checkout.finish');
+    Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
+});
+

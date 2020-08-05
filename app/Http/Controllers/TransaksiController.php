@@ -110,7 +110,7 @@ class TransaksiController extends Controller
                     $transaksi->GrandTotal = $request->GrandTotal;
                     $transaksi->MetodePembayaran = "Cash";
                     $transaksi->StatusPembayaran = 1;
-                    $transaksi->StatusPesanan = 3; //1=diproses, 2=dikirim,  3=selesai
+                    $transaksi->StatusPesanan = 3; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai
                     $transaksi->Snap_token = "-";
                     $transaksi->IdKuponDiskon = "-";
                     $transaksi->IdPengguna = $request->IdPengguna;
@@ -294,7 +294,7 @@ class TransaksiController extends Controller
             $transaksi->GrandTotal = $request->GrandTotal;
             $transaksi->MetodePembayaran = "Midtrans";
             $transaksi->StatusPembayaran = 0;
-            $transaksi->StatusPesanan = 0; //1=diproses, 2=dikirim,  3=selesai
+            $transaksi->StatusPesanan = 0; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai
             $transaksi->IdKuponDiskon = "-";
             $transaksi->IdPengguna = 0;
             $transaksi->IdPelanggan = $id_pelanggan;
@@ -329,32 +329,48 @@ class TransaksiController extends Controller
         return response()->json($this->response);
     }
 
-    public function index(Request $request)
+    public function index()
+    {
+        return view('pos.pages.transaksi');
+    }
+
+    public function loaddata(Request $request)
     {
         $now = Carbon::today();
         // $now->format('Y-m-d')  
 
         if ($request->ajax()) {
+            $method = "";
+            if($request->method == 'Cash'){
+                $method = "Cash";
+            }else{
+                $method = "Midtrans";
+            }
             if($request->from_date == NULL){
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
+                ->where('MetodePembayaran', $method)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
-                $sum_total = Transaksi::whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
+                $sum_total = Transaksi::where('MetodePembayaran', $method)
+                ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('GrandTotal');
             }else{
                 // return $request->to_date;
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
+                ->where('MetodePembayaran', $method)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
-                $sum_total = Transaksi::whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
+                $sum_total = Transaksi::where('MetodePembayaran', $method)
+                ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('GrandTotal');
             }
-            //dd($datas);
+            
             return Datatables::of($datas)
+                    ->with(['sum_total' => $sum_total])
                     ->editColumn('Total', function($data){
                         return "Rp. ".number_format($data->Total,0,',',',')."";
                     })
@@ -372,36 +388,37 @@ class TransaksiController extends Controller
                     })
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){
-                            $status = "Lunas";
+                            $status = "<span class='badge badge-success'>Lunas</span>";
                         }else{
-                            $status = "Belum Lunas";
+                            $status = "<span class='badge badge-danger'>Belum Lunas</span>";
                         }
                         return $status;
                     })
                     ->editColumn('StatusPesanan', function($data){
                         if($data->StatusPesanan == 0){
-                            $statuspesanan = "DiProses";
+                            $statuspesanan = "<span class='badge badge-danger'>Belum Diproses</span>";
                         }else if($data->StatusPesanan == 1){
-                            $statuspesanan = "DiKirim";
+                            $statuspesanan = "<span class='badge badge-warning'>Diproses</span>";
                         }else if($data->StatusPesanan == 2){
-                            $statuspesanan = "Diterima";
+                            $statuspesanan = "<span class='badge badge-primary'>Dikirim</span>";
                         }else if($data->StatusPesanan == 3){
-                            $statuspesanan = "Selesai";
+                            $statuspesanan = "<span class='badge badge-success'>Selesai</span>";
                         }
                         return $statuspesanan;
                     })
                     ->addColumn('Aksi', function($data){
                         $btn = "<button type='button' class='btn btn-success btn-flat' title='Show Data' data-toggle='modal' data-target='#detail' onclick='detail(\"".$data->IdTransaksi."\")'><i class='fa fa-info'></i></button>";
+                        if ($data->MetodePembayaran == "Midtrans") {
+                            $btn = $btn." <button type='button' class='btn btn-primary btn-flat' title='Update Pesanan' data-toggle='modal' data-target='#pesanan' onclick='pesanan(\"".$data->IdTransaksi."\")'><i class='fa fa-edit'></i></button>";
+                        }
                         if (auth()->guard('pengguna')->user()->Is_admin == 1) {
                             $btn = $btn." <button type='button' class='btn btn-danger btn-flat' title='Delete Data' onclick='deletee(\"".$data->IdTransaksi."\")'><i class='fa fa-trash'></i></button>";
                         }
                         return $btn;
                     })
-                    ->rawColumns(['Aksi'])
+                    ->rawColumns(['Aksi', 'StatusPesanan', 'StatusPembayaran'])
                     ->make(true);
         }
-
-        return view('pos.pages.transaksi');
     }
 
     public function showdetailtrans($id)    
@@ -534,6 +551,18 @@ class TransaksiController extends Controller
         $printer -> cut();
         $printer -> close();
 
+    }
+
+    public function updatetransaksi(Request $request, $id)        
+    {
+        $id_pengguna = Auth::guard('pengguna')->user()->IdPengguna;
+        $transaksi = Transaksi::find($id);
+
+        $transaksi->StatusPesanan = $request->StatusPesanan;
+        $transaksi->IdPengguna = $id_pengguna;
+        $transaksi->save();
+
+        return response()->json(['success'=>'sukses']);
     }
 
 }

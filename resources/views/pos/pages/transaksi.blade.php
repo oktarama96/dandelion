@@ -25,41 +25,19 @@
             format: "yyyy-mm-dd"
         });
 
-        load_data();
+        load_data_pos();
+        load_data_online();
 
-        function load_data(from_date = '', to_date = '')
+        function load_data_pos(from_date = '', to_date = '', method = 'Cash')
         {
-            $('.data-table').DataTable({
+            $('.data-table-pos').DataTable({
                 scrollX: true,
                 processing: true,
                 serverSide: true,
                 ordering: false,
                 ajax: {
-                    data:{from_date:from_date, to_date:to_date}
-                },
-                footerCallback: function ( row, data, start, end, display ) {
-                    var api = this.api(), data;
-        
-                    // Remove the formatting to get integer data for summation
-                    var intVal = function ( i ) {
-                        return typeof i === 'string' ?
-                            i.replace(/[\Rp.,]/g, '')*1 :
-                            typeof i === 'number' ?
-                                i : 0;
-                    };
-        
-                    // Total over all pages
-                    total = api
-                        .column( 6 )
-                        .data()
-                        .reduce( function (a, b) {
-                            return intVal(a) + intVal(b);
-                        }, 0 );
-                
-                    // Update footer
-                    $( api.column( 6 ).footer() ).html(
-                        '$'+ total +' total)'
-                    );
+                    url: "{{ url('/pos/transaksi/') }}"+"/"+method+"/",
+                    data:{from_date:from_date, to_date:to_date, method:method}
                 },
                 columns: [
                     {data: 'IdTransaksi', name: 'IdTransaksi'},
@@ -77,41 +55,105 @@
                     {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'},
                     {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
                 ],
-                // footerCallback: function ( row, data, start, end, display ) {
-                //     var api = this.api(), data;
+                footerCallback: function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
 
-                //     // Total over all pages
-                //     // var json = this.api().ajax.json();
-                //     // total = json.total;
+                    // Total over all pages
+                    var json = this.api().ajax.json();
+                    total = json.sum_total;
                     
-                //     // Update footer
-                //     $( api.column( 6 ).footer() ).html(
-                //         // 'Rp. '+ total.toLocaleString()
-                //         'Total'
-                //     );
-                // },
+                    // Update footer
+                    $( api.column( 6 ).footer() ).html(
+                        'Rp. '+ parseInt(total).toLocaleString()
+                        // 'Total'
+                    );
+                },
             });
         }
 
-        $('#filter').click(function(){
-            var from_date = $('#from_date').val();
-            var to_date = $('#to_date').val();
+        $('#filter_pos').click(function(){
+            var from_date = $('#from_date_pos').val();
+            var to_date = $('#to_date_pos').val();
             if(from_date != '' &&  to_date != '')
             {
-                $('.data-table').DataTable().destroy();
-                load_data(from_date, to_date);
+                $('.data-table-pos').DataTable().destroy();
+                load_data_pos(from_date, to_date);
             }
             else
             {
-                alert('Both Date is required');
+                swal("Peringatan!", "Both Date is required", "warning");
             }
         });
 
-        $('#refresh').click(function(){
-            $('#from_date').val('');
-            $('#to_date').val('');
-            $('.data-table').DataTable().destroy();
-            load_data();
+        $('#refresh_pos').click(function(){
+            $('#from_date_pos').val('');
+            $('#to_date_pos').val('');
+            $('.data-table-pos').DataTable().destroy();
+            load_data_pos();
+        });
+
+        function load_data_online(from_date = '', to_date = '', method = 'Midtrans')
+        {
+            $('.data-table-online').DataTable({
+                scrollX: true,
+                processing: true,
+                serverSide: true,
+                ordering: false,
+                ajax: {
+                    url: "{{ url('/pos/transaksi/') }}"+"/"+method+"/",
+                    data:{from_date:from_date, to_date:to_date, method:method}
+                },
+                columns: [
+                    {data: 'IdTransaksi', name: 'IdTransaksi'},
+                    {data: 'TglTransaksi', name: 'TglTransaksi'},
+                    {data: 'Total', name: 'Total'},
+                    {data: 'Potongan', name: 'Potongan'},
+                    {data: 'OngkosKirim', name: 'OngkosKirim'},
+                    {data: 'NamaEkspedisi', name: 'NamaEkspedisi'},
+                    {data: 'GrandTotal', name: 'GrandTotal'},
+                    {data: 'MetodePembayaran', name: 'MetodePembayaran'},
+                    {data: 'StatusPembayaran', name: 'StatusPembayaran'},
+                    {data: 'StatusPesanan', name: 'StatusPesanan'},
+                    {data: 'kupondiskon.NamaKupon', name: 'NamaKuponDiskon'},
+                    {data: 'pelanggan.NamaPelanggan', name: 'NamaPelanggan'},
+                    {data: 'pengguna.NamaPengguna', name: 'NamaPengguna'},
+                    {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
+                ],
+                footerCallback: function ( row, data, start, end, display ) {
+                    var api = this.api(), data;
+
+                    // Total over all pages
+                    var json = this.api().ajax.json();
+                    total = json.sum_total;
+                    
+                    // Update footer
+                    $( api.column( 6 ).footer() ).html(
+                        'Rp. '+ parseInt(total).toLocaleString()
+                        // 'Total'
+                    );
+                },
+            });
+        }
+
+        $('#filter_online').click(function(){
+            var from_date = $('#from_date_online').val();
+            var to_date = $('#to_date_online').val();
+            if(from_date != '' &&  to_date != '')
+            {
+                $('.data-table-online').DataTable().destroy();
+                load_data_online(from_date, to_date);
+            }
+            else
+            {
+                swal("Peringatan!", "Both Date is required", "warning");
+            }
+        });
+
+        $('#refresh_online').click(function(){
+            $('#from_date_online').val('');
+            $('#to_date_online').val('');
+            $('.data-table-online').DataTable().destroy();
+            load_data_online();
         });
 
     });
@@ -123,7 +165,7 @@
             url: "{{ url('/pos/transaksi/detailtransaksi/') }}/"+a+"/",
             data: kode,
             success: function(msg){
-                console.log(msg);
+                // console.log(msg);
 
                 var dataa = "";
                 for(var i = 0; i < msg.detailtransaksi.length; i++){
@@ -165,8 +207,10 @@
                     data: kode,
                     success: function (data) {
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
-                        var table = $('.data-table').DataTable(); 
-                        table.ajax.reload( null, false );
+                        var table_pos = $('.data-table-pos').DataTable(); 
+                        table_pos.ajax.reload( null, false );
+                        var table_online = $('.data-table-online').DataTable(); 
+                        table_online.ajax.reload( null, false );
                     },
                     error: function (data) {
                         var errors = "";
@@ -181,6 +225,92 @@
         });
     }
 
+    function pesanan(a){
+        var kode = 'IdTransaksi='+ a;
+        $.ajax({
+            type: "GET",
+            url: "{{ url('/pos/detailtransaksi/') }}/"+a+"/",
+            data: kode,
+            success: function(msg){
+                //console.log(msg);
+                document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
+                $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
+                document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
+
+                document.getElementById("Total").innerHTML = "Rp. "+msg.transaksi[0].Total.toLocaleString();
+                document.getElementById("OngkosKirim").innerHTML = "Rp. "+msg.transaksi[0].OngkosKirim.toLocaleString();
+                document.getElementById("Potongan").innerHTML = "Rp. "+msg.transaksi[0].Potongan.toLocaleString();
+                document.getElementById("GrandTotal").innerHTML = "Rp. "+msg.transaksi[0].GrandTotal.toLocaleString();
+
+                document.getElementById("NamaPelanggan").innerHTML = msg.transaksi[0].pelanggan.NamaPelanggan;
+                document.getElementById("Alamat").innerHTML = msg.transaksi[0].pelanggan.Alamat;
+                document.getElementById("Kota").innerHTML = msg.transaksi[0].pelanggan.NamaKecamatan +", "+ msg.transaksi[0].pelanggan.NamaKabupaten +", "+ msg.transaksi[0].pelanggan.NamaProvinsi;
+                document.getElementById("NoHandphone").innerHTML = msg.transaksi[0].pelanggan.NoHandphone;
+
+                var dataa = "";
+                for(var i = 0; i < msg.detailtransaksi.length; i++){
+                    var dataa = '<tr class="border-bottom append">'+
+                                    '<td>'+
+                                        '<div class="font-weight-bold">'+msg.detailtransaksi[i].produk.NamaProduk+'</div>'+
+                                        '<div class="small text-muted d-none d-md-block">'+msg.detailtransaksi[i].IdProduk+' - '+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+' - '+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+'</div>'+
+                                    '</td>'+
+                                    '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+'</td>'+
+                                    '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].Qty+'</td>'+
+                                    '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
+                                '</tr>';
+                }
+            
+                $("#detail-trans-pesanan").prepend(dataa);
+            }
+        })
+    }
+    $('#pesanan').on('hidden.bs.modal', function(e){
+        $('.append').remove();
+        document.getElementById("IdTransaksi").innerHTML = "";
+        $("input[name=IdTransaksi]").val("");
+        document.getElementById("TglTransaksi").innerHTML = "";
+
+        document.getElementById("Total").innerHTML = "";
+        document.getElementById("OngkosKirim").innerHTML = "";
+        document.getElementById("Potongan").innerHTML = "";
+        document.getElementById("GrandTotal").innerHTML = "";
+
+        document.getElementById("NamaPelanggan").innerHTML = "";
+        document.getElementById("Alamat").innerHTML = "";
+        document.getElementById("Kota").innerHTML = "";
+        document.getElementById("NoHandphone").innerHTML = ""; 
+    });
+
+    $("#Update").click(function(e){
+        e.preventDefault();
+
+        a = $("input[name=IdTransaksi]").val();
+
+        $.ajax({
+            type: 'PATCH',
+            url: "{{ url('/pos/updatetransaksi/') }}/"+a+"/",
+            data: $('#form-updatepesanan').serialize(),
+            
+            success: function (data) {
+                swal("Selamat!", "Berhasil Mengupdate Pesanan", "success");
+                $('#pesanan').modal('hide');
+                var table_pos = $('.data-table-pos').DataTable(); 
+                table_pos.ajax.reload( null, false );
+                var table_online = $('.data-table-online').DataTable(); 
+                table_online.ajax.reload( null, false );
+            },
+            error: function (data) {
+                var errors = "";
+                $.each(data.responseJSON.errors, function(key,value) {
+                    errors = errors +' '+ value +'\n';
+                });
+                
+                swal("Gagal!","Gagal Mengupdate Pesanan : \n"+errors+"","error");
+            },
+        });
+    });
+
+
     
 
   </script>
@@ -189,29 +319,80 @@
     <!-- Page Heading -->
     <div class="d-sm-flex align-items-center justify-content-between mb-4">
         <h1 class="h3 mb-0 text-gray-800">Data Transaksi</h1>
-        <a href="#" class="d-sm-inline-block btn btn-sm btn-success shadow-sm" data-toggle="modal" data-target="#pesanan"><i class="fas fa-plus fa-sm text-white-50"></i> Update Status Pesanan</a>
     </div>
 
     <!-- DataTales Example -->
     <div class="card shadow mb-4">
         <div class="card-header py-3">
-            <h6 class="m-0 font-weight-bold text-primary">Data Transaksi</h6>
+            <h6 class="m-0 font-weight-bold text-primary">Data Transaksi Point Of Sale</h6>
         </div>
         <div class="card-body">
             <div class="row justify-content-md-center input-daterange">
                 <div class="col col-lg-2">
-                    <input type="text" name="from_date" id="from_date" class="form-control" placeholder="From Date" readonly />
+                    <input type="text" name="from_date" id="from_date_pos" class="form-control" placeholder="From Date" readonly />
                 </div>
                 <div class="col col-md-auto">
-                    <input type="text" name="to_date" id="to_date" class="form-control" placeholder="To Date" readonly />
+                    <input type="text" name="to_date" id="to_date_pos" class="form-control" placeholder="To Date" readonly />
                 </div>
                 <div class="col col-lg-2">
-                    <button type="button" name="filter" id="filter" class="btn btn-primary">Filter</button>
-                    <button type="button" name="refresh" id="refresh" class="btn btn-default">Refresh</button>
+                    <button type="button" name="filter" id="filter_pos" class="btn btn-primary">Filter</button>
+                    <button type="button" name="refresh" id="refresh_pos" class="btn btn-default">Refresh</button>
                 </div>
             </div>
             <div class="table-responsive">
-            <table class="table table-bordered data-table" width="100%" cellspacing="0" style="white-space: nowrap;">
+            <table class="table table-bordered data-table-pos" width="100%" cellspacing="0" style="white-space: nowrap;">
+                <thead>
+                <tr>
+                    <th>Id Transaksi</th>
+                    <th>Tgl Transaksi</th>
+                    <th>Total</th>
+                    <th>Potongan</th>
+                    <th>Ongkos Kirim</th>
+                    <th>Nama Ekspedisi</th>
+                    <th>Grand Total</th>
+                    <th>Metode Pembayaran</th>
+                    <th>Status Pembayaran</th>
+                    <th>Status Pesanan</th>
+                    <th>Nama Kupon Diskon</th>
+                    <th>Nama Pelanggan</th>
+                    <th>Nama Pengguna</th>
+                    <th>Aksi</th>
+                </tr>
+                </thead>
+                <tbody>
+                
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <th colspan="6" style="text-align:right">Total:</th>
+                        <th colspan="8"></th>
+                    </tr>
+                </tfoot>
+            </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- DataTales Example -->
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary">Data Transaksi Online Shop</h6>
+        </div>
+        <div class="card-body">
+            <div class="row justify-content-md-center input-daterange">
+                <div class="col col-lg-2">
+                    <input type="text" name="from_date" id="from_date_online" class="form-control" placeholder="From Date" readonly />
+                </div>
+                <div class="col col-md-auto">
+                    <input type="text" name="to_date" id="to_date_online" class="form-control" placeholder="To Date" readonly />
+                </div>
+                <div class="col col-lg-2">
+                    <button type="button" name="filter" id="filter_online" class="btn btn-primary">Filter</button>
+                    <button type="button" name="refresh" id="refresh_online" class="btn btn-default">Refresh</button>
+                </div>
+            </div>
+            <div class="table-responsive">
+            <table class="table table-bordered data-table-online" width="100%" cellspacing="0" style="white-space: nowrap;">
                 <thead>
                 <tr>
                     <th>Id Transaksi</th>
@@ -281,7 +462,7 @@
 
     <!--Modal pesanan-->
     <div class="modal fade" id="pesanan" tabindex="-1" role="dialog" aria-labelledby="pesanan" aria-hidden="true">
-        <div class="modal-dialog" role="document">
+        <div class="modal-dialog  modal-lg" role="document">
             <div class="modal-content">
                 <div class="modal-header">
                     <h5 class="modal-title" id="pesanan">Update Status Pesanan</h5>
@@ -290,7 +471,101 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    
+                    <form method="post" action="#" id="form-updatepesanan">
+                      <!-- Invoice-->
+                      <div class="card invoice">
+                          <div class="card-header p-4 p-md-5 border-bottom-0">
+                              <div class="row justify-content-between align-items-center">
+                                  <div class="col-12 col-lg-auto mb-5 mb-lg-0 text-center text-lg-left">
+                                      <!-- Invoice branding-->
+                                      <div class="h2 mb-0">Dandelion Fashion Shop</div>
+                                  </div>
+                                  <div class="col-12 col-lg-auto text-center text-lg-right">
+                                      <!-- Invoice details-->
+                                      <div class="h3">Id Transaksi : <div id="IdTransaksi"></div></div>
+                                      <input type="hidden" name="IdTransaksi">
+                                      <br />
+                                      <div id="TglTransaksi"></div>
+                                  </div>
+                              </div>
+                          </div>
+                          <div class="card-body p-4 p-md-5">
+                              <!-- Invoice table-->
+                              <div class="table-responsive">
+                                  <table class="table table-borderless mb-0">
+                                      <thead class="border-bottom">
+                                          <tr class="small text-uppercase text-muted">
+                                              <th scope="col">Nama Barang</th>
+                                              <th class="text-right" scope="col">Harga</th>
+                                              <th class="text-right" scope="col">Qty</th>
+                                              <th class="text-right" scope="col">SubTotal</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody id="detail-trans-pesanan">                                          
+                                        <!-- Invoice subtotal-->
+                                        <tr>
+                                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Total:</div></td>
+                                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="Total"></div></td>
+                                        </tr>
+
+                                        <!-- Invoice tax column-->
+                                        <tr>
+                                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Ongkos Kirim:</div></td>
+                                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="OngkosKirim"></div></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Potongan:</div></td>
+                                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700" id="Potongan"></div></td>
+                                        </tr>
+                                        <!-- Invoice total-->
+                                        <tr>
+                                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Grandtotal:</div></td>
+                                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700 text-green" id="GrandTotal"></div></td>
+                                        </tr>
+                                      </tbody>
+                                  </table>
+                              </div>
+                          </div>
+                          <div class="card-footer p-4 p-lg-5 border-top-0">
+                              <div class="row">
+                                  <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
+                                      <!-- Invoice - sent to info-->
+                                      <div class="small text-muted text-uppercase font-weight-700 mb-2">Untuk</div>
+                                      <div class="h6 mb-1">
+                                        <div id="NamaPelanggan"></div>
+                                      </div>
+                                      <div class="small">
+                                        <div id="Alamat"></div>
+                                      </div>
+                                      <div class="small">
+                                        <div id="Kota"></div>
+                                      </div>
+                                      <div class="small">
+                                        <div id="NoHandphone"></div>
+                                      </div>
+                                  </div>
+                                  <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
+                                      <!-- Invoice - sent from info-->
+                                      <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
+                                      <div class="h6 mb-1">Dandelion Fashion Shop</div>
+                                      <div class="small">Jln. Raya Abianbase No. 128</div>
+                                      <div class="small">Badung, Bali, Indonesia</div>
+                                  </div>
+                                  <div class="col-lg-4 mt-1">
+                                      <!-- Invoice - additional notes-->
+                                      <div class="form-group">
+                                        <label>Status Pesanan</label>
+                                        <select class="form-control" name="StatusPesanan">
+                                          <option value="1">DiProses</option>
+                                          <option value="2">DiKirim</option>
+                                        </select>
+                                      </div>
+                                  </div>
+                              </div>
+                          </div>
+                      </div>
+                    </form>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Exit</button>

@@ -22,6 +22,15 @@
         <!-- Main Style CSS -->
         <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
 
+        <style>
+            .login-text {
+                font-size: 14px;
+                font-style: normal;
+                font-weight: 400;
+                vertical-align: middle;
+            }
+        </style>
+
         @yield('add-css')
         <!-- Modernizer JS -->
         <script src="{{ asset('assets/js/vendor/modernizr-2.8.3.min.js') }}"></script>
@@ -54,7 +63,11 @@
                         <div class="col-xl-2 col-lg-2 col-md-6 col-8">
                             <div class="header-right-wrap">
                                 <div class="same-style account-satting">
-                                    <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i></a>
+                                    @if (Auth::guard('web')->user())
+                                        <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">{{Auth::guard('web')->user()->NamaPelanggan}}</span></a>
+                                    @else
+                                        <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
+                                    @endif
                                     <div class="account-dropdown">
                                     @if (Auth::guard('web')->user())
                                         <ul>
@@ -113,8 +126,8 @@
                             </div>
                             <div class="footer-list">
                                 <ul>
-                                    <li><a href="about.html">About us</a></li>
-                                    <li><a href="contact.html">Contact</a></li>
+                                    <li><a href="/about">About us</a></li>
+                                    <li><a href="/contact">Contact</a></li>
                                 </ul>
                             </div>
                         </div>
@@ -150,6 +163,8 @@
         <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
         <!-- Plugins JS -->
         <script src="{{ asset('assets/js/plugins.js') }}"></script>
+        <!-- Sweet Alert -->
+        <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
         <!-- Main JS -->
         <script src="{{ asset('assets/js/main.js') }}"></script>
 
