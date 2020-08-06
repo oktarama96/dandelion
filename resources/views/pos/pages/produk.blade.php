@@ -29,6 +29,7 @@
             {data: 'NamaProduk', name: 'NamaProduk'},
             {data: 'HargaPokok', name: 'HargaPokok'},
             {data: 'HargaJual', name: 'HargaJual'},
+            {data: 'kategori.NamaKategori', name: 'Kategori'},
             {data: 'Berat', name: 'Berat'},
             {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
         ]
@@ -392,7 +393,8 @@
                         <th>Nama Produk</th>
                         <th>HargaPokok</th>
                         <th>HargaJual</th>
-                        <th>Berat</th>
+                        <th>Kategori</th>
+                        <th>Berat</>
                         <th>Aksi</th>
                     </tr>
                     </thead>

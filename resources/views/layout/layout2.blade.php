@@ -66,12 +66,12 @@
                                     @if (Auth::guard('web')->user())
                                         <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">{{Auth::guard('web')->user()->NamaPelanggan}}</span></a>
                                     @else
-                                        <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
+                                        <a class="account-satting-active" href="{{ url('/login') }}"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
                                     @endif
                                     <div class="account-dropdown">
                                     @if (Auth::guard('web')->user())
                                         <ul>
-                                            <li>{{Auth::guard('web')->user()->NamaPelanggan}}</li>
+                                            <li><a href="{{ url('/my-account').'/'.Auth::guard('web')->user()->IdPelanggan }}">{{Auth::guard('web')->user()->NamaPelanggan}}</a></li>
                                             <li><a ref="{{ route('logout') }}" onclick="event.preventDefault();
                                                 document.getElementById('logout-form').submit();">Logout</a></li>                            
                                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -80,7 +80,7 @@
                                         </ul>
                                     @else
                                         <ul>
-                                            <li><a href="/login">Login</a></li>
+                                            <li><a href="{{ url('/login') }}">Login</a></li>
                                         </ul>
                                     @endif
                                     </div>

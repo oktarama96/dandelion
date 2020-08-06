@@ -10,22 +10,35 @@
     function delete_cart(delete_cart) {
         key = $('.delete_cart').index($(delete_cart))
 
-        alert(cart_produk[key].NamaProduk)
-        $.ajax({
-            type: "GET",
-            url: "{{ url('/shop/delete-cart') }}/" + cart_produk[key].IdCart,
-            success: function (msg) {
+        // alert(cart_produk[key].NamaProduk)
 
-                cart_total -= cart_produk[key].sub_total
-                cart_produk.splice(key, 1)
+        swal({
+            title: "Apakah anda yakin ?",
+            text: "Ini akan menghapus data secara permanen.",
+            icon: "warning",
+            buttons: true,
+            dangerMode: true,
+        })
+        .then((willDelete) => {
+            if (willDelete) {
+                $.ajax({
+                    type: "GET",
+                    url: "{{ url('/shop/delete-cart') }}/" + cart_produk[key].IdCart,
+                    success: function (msg) {
 
-                $('#cart_total').html('Rp' + cart_total.toLocaleString())
-                $('#cart_count').html(cart_produk.length)
-                $('#cart_content li').eq(key).remove()
+                        cart_total -= cart_produk[key].sub_total
+                        cart_produk.splice(key, 1)
 
-                swal("Selamat!", "Berhasil Menghapus Produk dari Keranjang Belanja", "success");
+                        $('#cart_total').html('Rp' + cart_total.toLocaleString())
+                        $('#cart_count').html(cart_produk.length)
+                        $('#cart_content li').eq(key).remove()
+
+                        swal("Berhasil!", "Berhasil Menghapus Produk dari Keranjang Belanja", "success");
+                    }
+                })
             }
         });
+        
     }
 
     function addToCart() {

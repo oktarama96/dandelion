@@ -104,5 +104,10 @@ Route::group(['middleware' => ['auth:web']], function() {
         return redirect()->route('checkout')->with('status', 'Pembayaran Sukses!');;
     })->name('checkout.finish');
     Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
+
+    Route::get('/my-account/{id_pelanggan}', 'PelangganController@tampilakun');
+    Route::patch('/my-account/{id_pelanggan}', 'PelangganController@update');
+    Route::post('/my-account/add/provinsi/{id}', 'PelangganController@tampilkabupaten');
+    Route::post('/my-account/add/kabupaten/{id}', 'PelangganController@tampilkecamatan');
 });
 

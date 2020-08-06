@@ -175,7 +175,7 @@ class ProdukController extends Controller
     {
         $warna = '';
         $ukuran = '';
-        $produk = Produk::where('IdProduk', $id)->first();
+        $produk = Produk::with('kategori')->where('IdProduk', $id)->first();
         if($produk){
             $warna = $produk->warnas()->groupBy('IdWarna')->get();
             $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);

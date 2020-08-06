@@ -65,16 +65,18 @@
                                             "<input type='hidden' id='IdProduk' value='"+msg.produk.IdProduk+"'>"+
                                             "<h2>"+msg.produk.NamaProduk+"</h2>"+
                                             "<div class='product-details-price'>"+
-                                                "<span>Rp. "+msg.produk.HargaJual+"</span>"+
+                                                "<span>Rp. "+msg.produk.HargaJual.toLocaleString()+"</span>"+
                                             "</div>"+
-                                            "<div class='pro-details-rating-wrap' style='border-top: 5px solid #6f42c1'>"+
+                                            "<div class='pro-details-rating-wrap'>"+
                                             "</div>"+
-                                            "<p>"+msg.produk.Deskripsi+"</p>"+
-                                            "<p>Berat : "+msg.produk.Berat+" Gram</p>"+
-                                            "<br/>"+
+                                            '<div class="pro-details-list">'+
+                                                "<p>"+msg.produk.Deskripsi+"</p>"+
+                                                "<br/>"+
+                                                "<p>Berat : "+msg.produk.Berat+" Gram</p>"+
+                                            '</div>'+
                                             "<div class='pro-details-size-color'>"+
                                                 "<div class='pro-details-color-wrap'>"+
-                                                    "<span>Color</span>"+
+                                                    "<span>Warna</span>"+
                                                     "<div class='pro-details-color-content'>"+
                                                         `<select class='form-control' name="Warna" id='IdWarna' onchange='viewUkuran("`+msg.produk.IdProduk+`", this)'>`;
 
@@ -86,7 +88,7 @@
                                                     "</div>"+
                                                 "</div>"+
                                                 "<div class='pro-details-color-wrap'>"+
-                                                    "<span>Size</span>"+
+                                                    "<span>Ukuran</span>"+
                                                     "<div class='pro-details-color-content'>"+
                                                         "<select class='form-control' name='Ukuran' id='IdUkuran'>";
 
@@ -106,6 +108,12 @@
                                                     "<a href='#' onclick='addToCart()'>Add To Cart</a>"+
                                                 "</div>"+
                                             "</div>"+
+                                            '<div class="pro-details-meta">'+
+                                                '<span>Kategori :</span>'+
+                                                '<ul>'+
+                                                    '<li><span>'+msg.produk.kategori.NamaKategori+'</span></li>'+
+                                                '</ul>'+
+                                            '</div>'+
                                         "</div>"+
                                     "</div>"+
                                 "</div>";
@@ -169,44 +177,60 @@
                         
                     </div>
                     <div class="shop-bottom-area mt-35">
-                        <div class="tab-content jump">
-                            <div id="shop-1" class="tab-pane active">
-                                <div class="row">
-                                    @foreach ($produks as $produk)
-                                        <div class="col-xl-4 col-md-6 col-lg-6 col-sm-6">
-                                            <div class="product-wrap mb-25 scroll-zoom">
-                                                <div class="product-img">
-                                                    <a href="/shop/product-detail/{{ $produk->IdProduk }}">
-                                                        <img class="default-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
-                                                        <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
-                                                    </a>
-                                                    <div class="product-action">
-                                                        <div class="pro-same-action pro-cart">
-                                                            <a title="Add To Cart" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="pe-7s-cart"></i> Add to cart</a>
+                        @if ($produks->isNotEmpty())
+                            <div class="tab-content jump">
+                                <div id="shop-1" class="tab-pane active">
+                                    <div class="row">
+                                        @foreach ($produks as $produk)
+                                            <div class="col-xl-4 col-md-6 col-lg-6 col-sm-6">
+                                                <div class="product-wrap mb-25 scroll-zoom">
+                                                    <div class="product-img">
+                                                        <a href="/shop/product-detail/{{ $produk->IdProduk }}">
+                                                            <img class="default-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                            <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                        </a>
+                                                        <div class="product-action">
+                                                            <div class="pro-same-action pro-cart">
+                                                                <a title="Add To Cart" href="#" data-toggle="modal" data-target="#exampleModal" onclick="detail('{{ $produk->IdProduk }}')"><i class="pe-7s-cart"></i> Add to cart</a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="product-content text-center">
+                                                        <h3><a href="/shop/product-detail/{{ $produk->IdProduk }}">{{ $produk->NamaProduk }}</a></h3>
+                                                        <div class="product-price">
+                                                            <span>Rp. {{ number_format($produk->HargaJual,0,',',',') }}</span>
                                                         </div>
                                                     </div>
                                                 </div>
-                                                <div class="product-content text-center">
-                                                    <h3><a href="#">{{ $produk->NamaProduk }}</a></h3>
-                                                    <div class="product-price">
-                                                        <span>Rp. {{ $produk->HargaJual }}</span>
-                                                    </div>
-                                                </div>
                                             </div>
-                                        </div>
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                        <div class="pro-pagination-style row justify-content-center mt-30">
-                            {{-- <ul>
-                                <li><a class="prev" href="#"><i class="fa fa-angle-double-left"></i></a></li>
-                                <li><a class="active" href="#">1</a></li>
-                                <li><a href="#">2</a></li>
-                                <li><a class="next" href="#"><i class="fa fa-angle-double-right"></i></a></li>
-                            </ul> --}}
-                            {{ $produks->links() }}
-                        </div>
+                            <div class="pro-pagination-style row justify-content-center mt-30">
+                                {{-- <ul>
+                                    <li><a class="prev" href="#"><i class="fa fa-angle-double-left"></i></a></li>
+                                    <li><a class="active" href="#">1</a></li>
+                                    <li><a href="#">2</a></li>
+                                    <li><a class="next" href="#"><i class="fa fa-angle-double-right"></i></a></li>
+                                </ul> --}}
+                                {{ $produks->links() }}
+                            </div>
+                        @else
+                            <div class="error-area col-lg-12 pt-40 pb-100">
+                                <div class="container">
+                                    <div class="row justify-content-center">
+                                        <div class="col-lg-12 text-center">
+                                            <div class="error">
+                                                <h1>204</h1>
+                                                <h2>OPPS! Konten Tidak Tersedia</h2>
+                                                <p>Maaf, konten produk dari Dandelion Fashion Shop tidak tersedia, kami akan bekerja untuk ini.</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endif
                     </div>
                 </div>
                 <div class="col-lg-3">
@@ -215,10 +239,10 @@
                     <div class="sidebar-style mr-30">
                         
                         <div class="sidebar-widget">
-                            <h4 class="pro-sidebar-title">Search </h4>
+                            <h4 class="pro-sidebar-title">Pencarian </h4>
                             <div class="pro-sidebar-search mb-50 mt-25">
                                 <div class="pro-sidebar-search-form">
-                                    <input type="text" name="search" value="{{ $filter['search'] }}" placeholder="Search here...">
+                                    <input type="text" name="search" value="{{ $filter['search'] }}" placeholder="Cari disini...">
                                     <button>
                                         <i class="pe-7s-search"></i>
                                     </button>
@@ -236,7 +260,7 @@
                             </div>
                         </div>-->
                         <div class="sidebar-widget mt-50">
-                            <h4 class="pro-sidebar-title">Colour </h4>
+                            <h4 class="pro-sidebar-title">Warna </h4>
                             <div class="sidebar-widget-list mt-20">
                                 <ul>
                                     @foreach ($warnas as $warna)
@@ -251,7 +275,7 @@
                             </div>
                         </div>
                         <div class="sidebar-widget mt-40">
-                            <h4 class="pro-sidebar-title">Size </h4>
+                            <h4 class="pro-sidebar-title">Ukuran </h4>
                             <div class="sidebar-widget-list mt-20">
                                 <ul>
                                     @foreach ($ukurans as $ukuran)
@@ -266,7 +290,7 @@
                             </div>
                         </div>
                         <div class="sidebar-widget mt-40">
-                            <h4 class="pro-sidebar-title">Categories </h4>
+                            <h4 class="pro-sidebar-title">Kategori </h4>
                             <div class="sidebar-widget-list mt-20">
                                 <ul>
                                     @foreach ($kategoris as $kategori)

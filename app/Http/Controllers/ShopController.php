@@ -101,7 +101,18 @@ class ShopController extends Controller
 
     public function productdetail($id)
     {
-        $produks = Produk::find($id);
+        $warnas = '';
+        $ukurans = '';
+        $produks = Produk::where('IdProduk', $id)->first();
+        if($produks){
+            $warnas = $produks->warnas()->groupBy('IdWarna')->get();
+            $ukurans = $this->getUkuran($produks->IdProduk, $warnas[0]->IdWarna);
+        }
+
+        $relatedproduks = Produk::where('IdKategoriProduk', $produks->IdKategoriProduk)
+                        ->orderBy('created_at', 'desc')
+                        ->take(4)
+                        ->get();
 
         $cart_produk = "[]";
         $cart_total = 0;
@@ -114,8 +125,18 @@ class ShopController extends Controller
                 $cart_total+=$produk->sub_total;
             }
         }
+        // dd($relatedproduks);
         
-        return view('product-detail', compact('produks','cart_produk', 'cart_total'));
+        return view('product-detail', compact('produks','warnas','ukurans','relatedproduks','cart_produk','cart_total'));
+    }
+
+    public function getUkuran($IdProduk, $IdWarna){
+        $ukuran = StokProduk::join('ukuran', 'ukuran.IdUkuran', '=', 'stokproduk.IdUkuran')
+        ->where([
+            ['IdProduk',$IdProduk],
+            ['IdWarna',$IdWarna],
+        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
+        return $ukuran;
     }
 
     public function getCart()

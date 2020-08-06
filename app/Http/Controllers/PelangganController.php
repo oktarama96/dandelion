@@ -4,8 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Pelanggan;
+use App\Produk;
 use DataTables;
 use RuangApi;
+use Auth;
 
 class PelangganController extends Controller
 {
@@ -199,5 +201,32 @@ class PelangganController extends Controller
         $kecamatans = RuangApi::getDistricts($id, null, null);
         //dd($kabupatens);
         return response()->json($kecamatans);
+    }
+
+    public function tampilakun($id)
+    {
+        $warnas = '';
+        $ukurans = '';
+
+        $cart_produk = "[]";
+        $cart_total = 0;
+
+        if(Auth::guard('web')->check()){
+            $cart_produk = [];
+            $cart_produk = app('App\Http\Controllers\ShopController')->getCart();
+
+            foreach($cart_produk as $produk){
+                $cart_total+=$produk->sub_total;
+            }
+        }
+
+        $pelanggans = Pelanggan::find($id);
+        $provinsis = RuangApi::getProvinces();
+        $kabupatens = RuangApi::getCities($pelanggans->IdProvinsi, null, null);
+        $kecamatans = RuangApi::getDistricts($pelanggans->IdKabupaten, null, null);
+
+        // dd($provinsis);
+        // dd($kabupatens);
+        return view('my-account', compact('pelanggans','warnas','ukurans','cart_produk','cart_total','provinsis','kabupatens','kecamatans'));
     }
 }

@@ -141,12 +141,12 @@
                 @if (Auth::guard('web')->user())
                     <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">{{Auth::guard('web')->user()->NamaPelanggan}}</span></a>
                 @else
-                    <a class="account-satting-active" href="#"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
+                    <a class="account-satting-active" href="{{ url('/login') }}"><i class="pe-7s-user-female"></i> - <span class="login-text">Login</span></a>
                 @endif
                 <div class="account-dropdown">
                     @if (Auth::guard('web')->user())
                         <ul>
-                            <li>{{Auth::guard('web')->user()->NamaPelanggan}}</li>
+                            <li><a href="{{ url('/my-account').'/'.Auth::guard('web')->user()->IdPelanggan }}">{{Auth::guard('web')->user()->NamaPelanggan}}</a></li>
                             <li><a ref="{{ route('logout') }}" onclick="event.preventDefault();
                                 document.getElementById('logout-form').submit();">Logout</a></li>                            
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -288,35 +288,52 @@
                     <div class="tab-pane active" id="product-1">
                         <div class="custom-row-3 item-wrapper3">
 
-                            @foreach ($produks as $produk)
-                        
-                                <div class="col-xl-3 col-md-6 col-lg-4 col-sm-6 toggle-item-active3">
-                                    <div class="product-wrap-2 mb-25">
-                                        <div class="product-img">
-                                            <a href="product-details.html">
-                                                <img class="default-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
-                                                <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
-                                            </a>
-                                            <div class="product-action-2">
-                                                <a title="View Detail Product" href="/shop">Detail Product</a>
+                            @if ($produks->isNotEmpty())
+                                @foreach ($produks as $produk)
+                            
+                                    <div class="col-xl-3 col-md-6 col-lg-4 col-sm-6 toggle-item-active3">
+                                        <div class="product-wrap-2 mb-25">
+                                            <div class="product-img">
+                                                <a href="/shop/product-detail/{{ $produk->IdProduk }}">
+                                                    <img class="default-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                    <img class="hover-img" src="/img/produk/{{ $produk->GambarProduk }}" alt="">
+                                                </a>
+                                                <div class="product-action-2">
+                                                    <a title="View Detail Product" href="/shop/product-detail/{{ $produk->IdProduk }}">Detail Product</a>
+                                                </div>
+                                            </div>
+                                            <div class="product-content-2">
+                                                <div class="title-price-wrap-2">
+                                                    <h3>{{ $produk->NamaProduk }}</h3>
+                                                    <div class="price-2">
+                                                        <span>Rp. {{ number_format($produk->HargaJual,0,',',',') }}</span>
+                                                    </div>
+                                                </div>
                                             </div>
                                         </div>
-                                        <div class="product-content-2">
-                                            <div class="title-price-wrap-2">
-                                                <h3>{{ $produk->NamaProduk }}</h3>
-                                                <div class="price-2">
-                                                    <span>Rp. {{ number_format($produk->HargaJual,0,',',',') }}</span>
+                                    </div>
+                                    
+                                @endforeach
+                            
+                            <div class="view-more text-center mt-20 col-12">
+                                <a href="/shop">VIEW MORE PRODUCTS</a>
+                            </div>
+
+                            @else
+                                <div class="error-area col-lg-12 pt-40 pb-100">
+                                    <div class="container">
+                                        <div class="row justify-content-center">
+                                            <div class="col-lg-12 text-center">
+                                                <div class="error">
+                                                    <h1>204</h1>
+                                                    <h2>OPPS! Konten Tidak Tersedia</h2>
+                                                    <p>Maaf, konten produk dari Dandelion Fashion Shop tidak tersedia, kami akan bekerja untuk ini.</p>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
-                                
-                            @endforeach
-                            
-                            <div class="view-more text-center mt-20 col-12">
-                                <a href="/shop">VIEW MORE PRODUCTS</a>
-                            </div>
+                            @endif
                         </div>
                     </div>
                     

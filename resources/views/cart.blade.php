@@ -25,7 +25,7 @@
     </div>
     <div class="cart-main-area pt-90 pb-100">
         <div class="container">
-            <h3 class="cart-page-title">Your cart items</h3>
+            <h3 class="cart-page-title">Keranjang Belanja Anda</h3>
             <div class="row">
                 <div class="col-lg-12 col-md-12 col-sm-12 col-12">
                     <form action="#">
@@ -35,33 +35,40 @@
                                     <table>
                                         <thead>
                                             <tr>
-                                                <th>Image</th>
+                                                <th>Gambar</th>
                                                 <th>Nama Produk</th>
                                                 <th>Harga</th>
                                                 <th>Qty</th>
                                                 <th>Subtotal</th>
-                                                <th>Action</th>
+                                                <th>Aksi</th>
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            @foreach ($carts as $cart)
-                                            <tr>
-                                                <td class="product-thumbnail">
-                                                    <a href="#"><img src="/img/produk/{{ $cart->GambarProduk }}" width="82px" height="82px" alt=""></a>
-                                                </td>
-                                                <td class="product-name"><a href="#">{{ $cart->NamaProduk }}</a></td>
-                                                <td class="product-price-cart"><span class="amount">Rp. {{ $cart->HargaJual }}</span></td>
-                                                <td class="product-quantity">
-                                                    <div class="cart-plus-minus">
-                                                        <input class="cart-plus-minus-box" type="text" name="qtybutton" value="{{ $cart->Qty }}">
-                                                    </div>
-                                                </td>
-                                                <td class="product-subtotal">Rp. {{ ($cart->sub_total) }}</td>
-                                                <td class="product-remove">
-                                                    <a href="#"><i class="fa fa-times"></i></a>
-                                                </td>
-                                            </tr>
-                                            @endforeach
+                                            @if ($carts->isNotEmpty())
+                                                @foreach ($carts as $cart)
+                                                <tr>
+                                                    <td class="product-thumbnail">
+                                                        <a href="#"><img src="/img/produk/{{ $cart->GambarProduk }}" width="82px" height="82px" alt=""></a>
+                                                    </td>
+                                                    <td class="product-name"><a href="#">{{ $cart->NamaProduk }}</a></td>
+                                                    <td class="product-price-cart"><span class="amount">Rp. {{ $cart->HargaJual }}</span></td>
+                                                    <td class="product-quantity">
+                                                        <div class="cart-plus-minus">
+                                                            <input class="cart-plus-minus-box" type="text" name="qtybutton" value="{{ $cart->Qty }}">
+                                                        </div>
+                                                    </td>
+                                                    <td class="product-subtotal">Rp. {{ ($cart->sub_total) }}</td>
+                                                    <td class="product-remove">
+                                                        <a href="#"><i class="fa fa-times"></i></a>
+                                                    </td>
+                                                </tr>
+                                                @endforeach
+                                            @else
+                                                <tr>
+                                                    <td colspan="6">Keranjang Belanja Anda Kosong! Ayo Tambah Produk Kita <a href="{{ url('/shop') }}" style="text-decoration: underline">Disini!</a></td>
+                                                </tr>
+                                            @endif
+                                            
                                         </tbody>
                                     </table>
                                 </div>
@@ -73,7 +80,12 @@
                                     </div>
                                     <br/>
                                     <h4 class="grand-totall-title">Total  <span>Rp. {{ $cart_total }}</span></h4>
-                                    <a href="/shop/checkout">Proceed to Checkout</a>
+
+                                    @if ($carts->isNotEmpty())
+                                        <a href="/shop/checkout">Checkout</a>
+                                    @else 
+                                        <a href="/shop/">Tambah Produk ?</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -81,7 +93,7 @@
                             <div class="col-lg-12">
                                 <div class="cart-shiping-update-wrapper">
                                     <div class="cart-shiping-update">
-                                        <a href="/shop">Continue Shopping</a>
+                                        <a href="/shop">Lanjutkan Berbelanja</a>
                                     </div>
                                 </div>
                             </div>
