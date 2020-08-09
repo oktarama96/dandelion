@@ -96,6 +96,12 @@ class LaporanController extends Controller
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){
                             $status = "<span class='badge badge-success'>Lunas</span>";
+                        }else if($data->StatusPembayaran == 2){
+                            $status = "<span class='badge badge-danger'>Pending</span>";
+                        }else if($data->StatusPembayaran == 3){
+                            $status = "<span class='badge badge-danger'>Gagal</span>";
+                        }else if($data->StatusPembayaran == 4){
+                            $status = "<span class='badge badge-danger'>Kadaluarsa</span>";
                         }else{
                             $status = "<span class='badge badge-danger'>Belum Lunas</span>";
                         }

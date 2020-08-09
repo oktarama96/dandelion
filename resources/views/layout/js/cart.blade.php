@@ -80,7 +80,7 @@
                     content = `
                     <li class="single-shopping-cart">
                         <div class="shopping-cart-img">
-                            <a href="#"><img alt="" width="82px" height="82px" src="img/produk/`+ data.GambarProduk + `"></a>
+                            <a href="#"><img alt="" width="82px" height="82px" src="/img/produk/`+ data.GambarProduk + `"></a>
                         </div>
                         <div class="shopping-cart-title">
                             <h4><a href="#">`+ data.NamaProduk + `(` + data.NamaWarna + `/` + data.NamaUkuran + `)</a></h4>

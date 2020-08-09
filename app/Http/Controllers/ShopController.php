@@ -58,7 +58,7 @@ class ShopController extends Controller
         // echo $query;   
         // $produks = DB::select(DB::raw($query)->paginate(6));   
         
-        $stokprodukid = DB::table('stokproduk');
+        $stokprodukid = DB::table('stokproduk')->where("StokAkhir",">",0);
         if (!empty($filter['warna'])) 
         $stokprodukid = $stokprodukid->whereIn("IdWarna", $filter['warna'], 'and');
         if (!empty($filter['ukuran'])) 
@@ -105,14 +105,20 @@ class ShopController extends Controller
         $ukurans = '';
         $produks = Produk::where('IdProduk', $id)->first();
         if($produks){
-            $warnas = $produks->warnas()->groupBy('IdWarna')->get();
+            $warnas = $produks->warnas()->groupBy('IdWarna')->where('StokAkhir','>',0)->get();
             $ukurans = $this->getUkuran($produks->IdProduk, $warnas[0]->IdWarna);
         }
 
-        $relatedproduks = Produk::where('IdKategoriProduk', $produks->IdKategoriProduk)
-                        ->orderBy('created_at', 'desc')
-                        ->take(4)
-                        ->get();
+        // $relatedproduks = Produk::where('IdKategoriProduk', $produks->IdKategoriProduk)
+        //                 ->where('')
+        //                 ->orderBy('created_at', 'desc')
+        //                 ->take(4)
+        //                 ->get();
+
+        $stokprodukid = DB::table('stokproduk')->where("StokAkhir",">",0);
+        $stokprodukid = $stokprodukid->get('IdProduk')->pluck('IdProduk');
+        $relatedproduks = DB::table('produk')->where('IdKategoriProduk', $produks->IdKategoriProduk);
+        $relatedproduks = $relatedproduks->whereIn("IdProduk", $stokprodukid)->orderBy('created_at', 'desc')->take(4)->get();
 
         $cart_produk = "[]";
         $cart_total = 0;
@@ -135,7 +141,8 @@ class ShopController extends Controller
         ->where([
             ['IdProduk',$IdProduk],
             ['IdWarna',$IdWarna],
-        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
+            ['StokAkhir', '>', 0],
+        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*','stokproduk.StokAkhir')->get();
         return $ukuran;
     }
 
@@ -147,7 +154,9 @@ class ShopController extends Controller
                 ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
                 ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
                 ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
-                ->where('IdPelanggan', $id_pelanggan)->get();
+                ->where('IdPelanggan', $id_pelanggan)
+                ->where('stokproduk.StokAkhir','>', 0)
+                ->get();
         return $cart;
     }
 
@@ -206,7 +215,9 @@ class ShopController extends Controller
                 ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
                 ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
                 ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
-                ->where('IdPelanggan', $id_pelanggan)->get();
+                ->where('IdPelanggan', $id_pelanggan)
+                ->where('stokproduk.StokAkhir','>', 0)
+                ->get();
 
         foreach($carts as $cart){
             $cart_total+=$cart->sub_total;

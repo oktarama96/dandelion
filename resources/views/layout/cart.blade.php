@@ -12,7 +12,7 @@
                     @foreach($cart_produk as $key=>$produk)
                     <li class="single-shopping-cart">
                         <div class="shopping-cart-img">
-                            <a href="#"><img alt="" width="82px" height="82px" src="/img/produk/{{ $produk->GambarProduk }}"></a>
+                            <a href="#"><img alt="" width="82px" height="82px" src="{{ url('/img/produk/').'/'. $produk->GambarProduk }}"></a>
                         </div>
                         <div class="shopping-cart-title">
                             <h4><a href="#">{{ $produk->NamaProduk }} ({{ $produk->NamaWarna }}/{{ $produk->NamaUkuran }}) </a></h4>

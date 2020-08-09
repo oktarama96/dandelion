@@ -51,13 +51,13 @@
                                                         <a href="#"><img src="/img/produk/{{ $cart->GambarProduk }}" width="82px" height="82px" alt=""></a>
                                                     </td>
                                                     <td class="product-name"><a href="#">{{ $cart->NamaProduk }}</a></td>
-                                                    <td class="product-price-cart"><span class="amount">Rp. {{ $cart->HargaJual }}</span></td>
+                                                    <td class="product-price-cart"><span class="amount">Rp. {{ number_format($cart->HargaJual,0,',','.') }}</span></td>
                                                     <td class="product-quantity">
                                                         <div class="cart-plus-minus">
                                                             <input class="cart-plus-minus-box" type="text" name="qtybutton" value="{{ $cart->Qty }}">
                                                         </div>
                                                     </td>
-                                                    <td class="product-subtotal">Rp. {{ ($cart->sub_total) }}</td>
+                                                    <td class="product-subtotal">Rp. {{ number_format($cart->sub_total,0,',','.') }}</td>
                                                     <td class="product-remove">
                                                         <a href="#"><i class="fa fa-times"></i></a>
                                                     </td>
@@ -79,7 +79,7 @@
                                         <h4 class="cart-bottom-title section-bg-gary-cart">Cart Total</h4>
                                     </div>
                                     <br/>
-                                    <h4 class="grand-totall-title">Total  <span>Rp. {{ $cart_total }}</span></h4>
+                                    <h4 class="grand-totall-title">Total  <span>Rp. {{ number_format($cart_total,0,',','.') }}</span></h4>
 
                                     @if ($carts->isNotEmpty())
                                         <a href="/shop/checkout">Checkout</a>

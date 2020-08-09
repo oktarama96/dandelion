@@ -1,5 +1,9 @@
 @extends('layout.layout2')
 
+@section('title-page')
+    Checkout - Dandelion Fashion Shop
+@endsection
+
 @section('add-js')
 
     <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
@@ -15,32 +19,43 @@
 
         $( document ).ready(function() {
             $("#btn_checkout").click(function(){
-                var formData = new FormData($('#checkout_form')[0]);
-                console.log(formData)
-                $.ajax({
-                    type: "POST",
-                    processData: false,
-                    contentType: false,
-                    url:  "{{ url('/transaksi/online') }}/",
-                    data: formData,
-                    success: function(data){
-                        snap.pay(data.snap_token, {
-                            // Optional
-                            onSuccess: function (result) {
-                                location.reload();
-                            },
-                            // Optional
-                            onPending: function (result) {
-                                location.reload();
-                            },
-                            // Optional
-                            onError: function (result) {
-                                location.reload();
-                            }
-                        });
-
-                    }
+                swal({
+                    title: "Apakah anda yakin ?",
+                    text: " Pastikan Pesanan Anda Sudah Sesuai.",
+                    icon: "info",
+                    buttons: true,
+                    dangerMode: true,
                 })
+                .then((willDelete) => {
+                    if (willDelete) {
+                        var formData = new FormData($('#checkout_form')[0]);
+                        // console.log(formData)
+                        $.ajax({
+                            type: "POST",
+                            processData: false,
+                            contentType: false,
+                            url:  "{{ url('/transaksi/online') }}/",
+                            data: formData,
+                            success: function(data){
+                                snap.pay(data.snap_token, {
+                                    // Optional
+                                    onSuccess: function (result) {
+                                        window.location.replace("{{ route('shop') }}");
+                                    },
+                                    // Optional
+                                    onPending: function (result) {
+                                        window.location.replace("{{ route('shop') }}");
+                                    },
+                                    // Optional
+                                    onError: function (result) {
+                                        window.location.replace("{{ route('shop') }}");
+                                    }
+                                });
+
+                            }
+                        })
+                    }
+                });
             })
 
             $("#shipping_cost").change(function(){
@@ -48,12 +63,13 @@
 
                 var grand_total = parseInt(val[0]) + total
                 $("#total_shipping").html('Rp' + formatNumber(val[0]))
-                $("#nama_ekspedisi").val(val[1])
+                $("#nama_ekspedisi").val('JNE - '+val[1])
                 $("#total_order").html('Rp'+formatNumber(grand_total))
                 $("#total_order_val").val(grand_total)
             })
         });
     </script>
+    
 @endsection
 @section('content')
     <div class="breadcrumb-area pt-35 pb-35 bg-gray-3">

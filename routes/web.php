@@ -86,7 +86,7 @@ Route::get('/', 'IndexController@index')->name('index');
 Route::get('/produk/detail/{id}','ProdukController@edit');
 Route::get('/shop', 'ShopController@index');
 
-Route::post('/shop', 'ShopController@index');
+Route::post('/shop', 'ShopController@index')->name('shop');
 Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
 Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
 Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
@@ -100,14 +100,18 @@ Route::group(['middleware' => ['auth:web']], function() {
     Route::get('/shop/checkout', 'ShopController@showcheckout')->name('checkout');
     Route::post('/transaksi/online', 'TransaksiController@simpantransaksionline');
 
-    Route::post('/midtrans/finish', function(){
-        return redirect()->route('checkout')->with('status', 'Pembayaran Sukses!');;
-    })->name('checkout.finish');
-    Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
-
-    Route::get('/my-account/{id_pelanggan}', 'PelangganController@tampilakun');
+    Route::get('/my-account/{id_pelanggan}', 'PelangganController@tampilakun')->name('my-account');
     Route::patch('/my-account/{id_pelanggan}', 'PelangganController@update');
     Route::post('/my-account/add/provinsi/{id}', 'PelangganController@tampilkabupaten');
     Route::post('/my-account/add/kabupaten/{id}', 'PelangganController@tampilkecamatan');
+
+    Route::patch('my-account/updatetransaksi/{id}', 'PelangganController@updatetransaksi');
+
+    Route::get('/invoice/{id_transaksi}', 'TransaksiController@printinvoice');
 });
+
+Route::post('/midtrans/finish', function(){
+    return redirect()->route('shop')->with('status', 'Pembayaran Sukses!');
+})->name('shop.finish');
+Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
 

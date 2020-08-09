@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Pelanggan;
 use App\Produk;
+use App\Transaksi;
 use DataTables;
 use RuangApi;
 use Auth;
@@ -203,7 +204,7 @@ class PelangganController extends Controller
         return response()->json($kecamatans);
     }
 
-    public function tampilakun($id)
+    public function tampilakun(Request $request, $id)
     {
         $warnas = '';
         $ukurans = '';
@@ -220,6 +221,62 @@ class PelangganController extends Controller
             }
         }
 
+        if ($request->ajax()) {
+            $datas = Transaksi::where('IdPelanggan', $id)->orderBy('TglTransaksi', 'DESC')->get();
+
+            return Datatables::of($datas)
+                            ->editColumn('Total', function($data){
+                                return "Rp. ".number_format($data->Total,0,',',',')."";
+                            })
+                            ->editColumn('Potongan', function($data){
+                                return "Rp. ".number_format($data->Potongan,0,',',',')."";
+                            })
+                            ->editColumn('OngkosKirim', function($data){
+                                return "Rp. ".number_format($data->OngkosKirim,0,',',',')."";
+                            })
+                            ->editColumn('GrandTotal', function($data){
+                                return "Rp. ".number_format($data->GrandTotal,0,',',',')."";
+                            })
+                            ->editColumn('StatusPembayaran', function($data){
+                                if($data->StatusPembayaran == 1){
+                                    $status = "<span class='badge badge-success'>Lunas</span>";
+                                }else if($data->StatusPembayaran == 2){
+                                    $status = "<span class='badge badge-danger'>Pending</span>";
+                                }else if($data->StatusPembayaran == 3){
+                                    $status = "<span class='badge badge-danger'>Gagal</span>";
+                                }else if($data->StatusPembayaran == 4){
+                                    $status = "<span class='badge badge-danger'>Kadaluarsa</span>";
+                                }else{
+                                    $status = "<span class='badge badge-danger'>Belum Lunas</span>";
+                                }
+                                return $status;
+                            })
+                            ->editColumn('StatusPesanan', function($data){
+                                if($data->StatusPesanan == 0){
+                                    $statuspesanan = "<span class='badge badge-danger'>Belum Diproses</span>";
+                                }else if($data->StatusPesanan == 1){
+                                    $statuspesanan = "<span class='badge badge-warning'>Diproses</span>";
+                                }else if($data->StatusPesanan == 2){
+                                    $statuspesanan = "<span class='badge badge-primary'>Dikirim</span>";
+                                }else if($data->StatusPesanan == 3){
+                                    $statuspesanan = "<span class='badge badge-success'>Selesai</span>";
+                                }
+                                return $statuspesanan;
+                            })
+                            ->addColumn('Aksi', function($data){
+                                $btn = "<button type='button' class='btn btn-success btn-flat' title='Show Data' data-toggle='modal' data-target='#pesanan' onclick='detail(\"".$data->IdTransaksi."\")'><i class='fa fa-info'></i></button>";
+                                if ($data->StatusPesanan == 2) {
+                                    $btn = $btn." <button type='button' class='btn btn-primary btn-flat' title='Update Pesanan' onclick='pesanan(\"".$data->IdTransaksi."\")'><i class='fa fa-check'></i></button>";
+                                }
+                                if ($data->StatusPembayaran == 0 || $data->StatusPembayaran == 2) {
+                                    $btn = $btn." <button type='button' class='btn btn-danger btn-flat' title='Info Pembayaran' data-toggle='modal' data-target='#pembayaran' onclick='pembayaran(\"".$data->Snap_token."\")'><i class='fa fa-dollar'></i></button>";
+                                }
+                                return $btn;
+                            })
+                            ->rawColumns(['Aksi', 'StatusPesanan', 'StatusPembayaran'])
+                            ->make(true);
+        }
+
         $pelanggans = Pelanggan::find($id);
         $provinsis = RuangApi::getProvinces();
         $kabupatens = RuangApi::getCities($pelanggans->IdProvinsi, null, null);
@@ -228,5 +285,15 @@ class PelangganController extends Controller
         // dd($provinsis);
         // dd($kabupatens);
         return view('my-account', compact('pelanggans','warnas','ukurans','cart_produk','cart_total','provinsis','kabupatens','kecamatans'));
+    }
+
+    public function updatetransaksi($id)        
+    {
+        $transaksi = Transaksi::find($id);
+
+        $transaksi->StatusPesanan = 3;
+        $transaksi->save();
+
+        return response()->json(['success'=>'sukses']);
     }
 }

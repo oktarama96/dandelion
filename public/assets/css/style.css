@@ -1993,7 +1993,9 @@ a.default-btn {
         opacity: 1;
         visibility: visible;
         -webkit-transform: rotateX(0deg);
-        transform: rotateX(0deg); }
+        transform: rotateX(0deg);
+        overflow-y: scroll;
+        max-height: 500px; }
       @media only screen and (max-width: 767px) {
         .header-right-wrap .same-style.cart-wrap .shopping-cart-content {
           width: 295px;

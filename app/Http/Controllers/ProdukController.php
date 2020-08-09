@@ -177,7 +177,7 @@ class ProdukController extends Controller
         $ukuran = '';
         $produk = Produk::with('kategori')->where('IdProduk', $id)->first();
         if($produk){
-            $warna = $produk->warnas()->groupBy('IdWarna')->get();
+            $warna = $produk->warnas()->groupBy('IdWarna')->where('StokAkhir','>',0)->get();
             $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
         }
         // return $warna;
@@ -189,6 +189,7 @@ class ProdukController extends Controller
         ->where([
             ['IdProduk',$IdProduk],
             ['IdWarna',$IdWarna],
+            ['StokAkhir','>',0]
         ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
         return $ukuran;
     }

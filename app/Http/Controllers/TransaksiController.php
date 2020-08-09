@@ -258,7 +258,7 @@ class TransaksiController extends Controller
           }
         });
  
-        return;
+        return ;
     }
 
     public function getCart()
@@ -298,7 +298,6 @@ class TransaksiController extends Controller
             $transaksi->IdKuponDiskon = "-";
             $transaksi->IdPengguna = 0;
             $transaksi->IdPelanggan = $id_pelanggan;
-            $transaksi->save();
 
             $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0]);
             
@@ -306,16 +305,30 @@ class TransaksiController extends Controller
             $transaksi->save();
 
             for($i=0;$i<count($request->IdProduk);$i++){
-                $detailtransaksi = new DetailTransaksi;
-            
-                $detailtransaksi->Qty = $request->Qty[$i];
-                $detailtransaksi->Diskon = 0;
-                $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                $detailtransaksi->IdStokProduk = $request->IdStokProduk[$i];
-                $detailtransaksi->IdTransaksi = $IdTransaksi;
+                $stokproduk = StokProduk::find($request->IdStokProduk[$i]);
+                
+                if($stokproduk){
+                    //dd($stokproduk->StokKeluar);
+                    $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                    
+                    $stokproduk->StokKeluar = $stokkeluar;
+                    $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
 
-                $detailtransaksi->save();                        
+                    $stokproduk->save();
+                
+                    $detailtransaksi = new DetailTransaksi;
+                
+                    $detailtransaksi->Qty = $request->Qty[$i];
+                    $detailtransaksi->Diskon = 0;
+                    $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                    $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                    $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                    $detailtransaksi->IdTransaksi = $IdTransaksi;
+
+                    $detailtransaksi->save();
+
+                    $this->deleteCart($id_pelanggan);
+                }                        
             }
             
             
@@ -327,6 +340,10 @@ class TransaksiController extends Controller
             $this->response['error'] = $e;
         }
         return response()->json($this->response);
+    }
+
+    public function deleteCart($id_pelanggan){
+        Cart::where('IdPelanggan', $id_pelanggan)->delete();
     }
 
     public function index()
@@ -383,12 +400,15 @@ class TransaksiController extends Controller
                     ->editColumn('GrandTotal', function($data){
                         return "Rp. ".number_format($data->GrandTotal,0,',',',')."";
                     })
-                    ->editColumn('Total', function($data){
-                        return "Rp. ".number_format($data->Total,0,',',',')."";
-                    })
                     ->editColumn('StatusPembayaran', function($data){
                         if($data->StatusPembayaran == 1){
                             $status = "<span class='badge badge-success'>Lunas</span>";
+                        }else if($data->StatusPembayaran == 2){
+                            $status = "<span class='badge badge-danger'>Pending</span>";
+                        }else if($data->StatusPembayaran == 3){
+                            $status = "<span class='badge badge-danger'>Gagal</span>";
+                        }else if($data->StatusPembayaran == 4){
+                            $status = "<span class='badge badge-danger'>Kadaluarsa</span>";
                         }else{
                             $status = "<span class='badge badge-danger'>Belum Lunas</span>";
                         }
@@ -563,6 +583,11 @@ class TransaksiController extends Controller
         $transaksi->save();
 
         return response()->json(['success'=>'sukses']);
+    }
+
+    public function printinvoice($id_transaksi)
+    {
+        return view('invoice');
     }
 
 }

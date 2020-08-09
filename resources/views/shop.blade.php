@@ -208,13 +208,7 @@
                                 </div>
                             </div>
                             <div class="pro-pagination-style row justify-content-center mt-30">
-                                {{-- <ul>
-                                    <li><a class="prev" href="#"><i class="fa fa-angle-double-left"></i></a></li>
-                                    <li><a class="active" href="#">1</a></li>
-                                    <li><a href="#">2</a></li>
-                                    <li><a class="next" href="#"><i class="fa fa-angle-double-right"></i></a></li>
-                                </ul> --}}
-                                {{ $produks->links() }}
+                                {{ $produks->links('layout.pagination') }}
                             </div>
                         @else
                             <div class="error-area col-lg-12 pt-40 pb-100">
