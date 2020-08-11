@@ -39,6 +39,8 @@ class DashboardController extends Controller
                 )
                 ->whereYear('TglTransaksi', date('Y'))
                 ->where('MetodePembayaran', '!=' ,'Cash')
+                ->where('StatusPembayaran', '=' , 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->groupBy('monthKey')
                 ->orderBy('TglTransaksi', 'ASC')
                 ->get();
@@ -50,11 +52,16 @@ class DashboardController extends Controller
         }
 
         $pendapatanSum = Transaksi::select(DB::raw('COALESCE(SUM(GrandTotal),0) as pendapatanSum'))
+                        ->where('StatusPembayaran', '=' , 1)
+                        ->where('StatusPesanan', '!=', 4)
                         ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                         ->get();
 
-        $qtySum = DetailTransaksi::select(DB::raw('COALESCE(SUM(Qty),0) as qtySum'))
-                ->whereBetween('created_at', [$now, $now->format('Y-m-d').' 23:59:59'])
+        $qtySum = DetailTransaksi::join('transaksi', 'transaksi.IdTransaksi', '=', 'detailtransaksi.IdTransaksi')
+                ->where('transaksi.StatusPembayaran', '=' , 1)
+                ->where('transaksi.StatusPesanan', '!=', 4)
+                ->select(DB::raw('COALESCE(SUM(detailtransaksi.Qty),0) as qtySum'))
+                ->whereBetween('detailtransaksi.created_at', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->get();
         
         $transaksiCount = Transaksi::select(DB::raw('COALESCE(COUNT(IdTransaksi),0) as transaksiCount'))
@@ -108,7 +115,7 @@ class DashboardController extends Controller
                 FROM transaksi t INNER JOIN detailtransaksi dt USING(IdTransaksi) 
                 INNER JOIN produk p USING(IdProduk) 
                 INNER JOIN kategoriproduk kp USING(IdKategoriProduk) 
-                WHERE YEAR(TglTransaksi) = date('Y') AND StatusPembayaran = 1
+                WHERE YEAR(TglTransaksi) = date('Y') AND StatusPembayaran = 1 AND StatusPesanan != 4
                 GROUP BY p.IdKategoriProduk ORDER BY jumlah_dipesan DESC LIMIT 5
             ")
         );

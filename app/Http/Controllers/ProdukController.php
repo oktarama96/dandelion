@@ -190,7 +190,7 @@ class ProdukController extends Controller
             ['IdProduk',$IdProduk],
             ['IdWarna',$IdWarna],
             ['StokAkhir','>',0]
-        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.IdProduk','ukuran.*')->get();
+        ])->groupBy('IdUkuran')->select('stokproduk.IdWarna','stokproduk.StokAkhir','stokproduk.IdProduk','ukuran.*')->get();
         return $ukuran;
     }
 

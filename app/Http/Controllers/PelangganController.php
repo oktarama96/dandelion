@@ -260,6 +260,8 @@ class PelangganController extends Controller
                                     $statuspesanan = "<span class='badge badge-primary'>Dikirim</span>";
                                 }else if($data->StatusPesanan == 3){
                                     $statuspesanan = "<span class='badge badge-success'>Selesai</span>";
+                                }else if($data->StatusPesanan == 4){
+                                    $statuspesanan = "<span class='badge badge-danger'>Dibatalkan</span>";
                                 }
                                 return $statuspesanan;
                             })

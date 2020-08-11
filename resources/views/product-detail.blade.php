@@ -13,6 +13,9 @@
     @include('layout.js.cart')
 
     <script type="text/javascript">
+        var dataUkuran = {!! $ukurans !!}
+        var data_stok = []
+
         function viewUkuran(IdProduk, ini) {
             //console.log(ini);
             $.ajax({
@@ -26,6 +29,12 @@
                             ukuran = ukuran+"<option value='"+data[j].IdUkuran+"'>"+data[j].NamaUkuran+"</option>";
                         }
                         $("select[name='Ukuran']").empty().append(ukuran);
+                        $("#Qty").data("max", data[0].StokAkhir)
+                        $("#QtyDetail").data("max", data[0].StokAkhir)
+                        $("#Qty").val("1")
+                        $("#QtyDetail").val("1")
+                        dataUkuran = data
+                        data_stok = data
                     }
                 }
             });
@@ -91,7 +100,7 @@
                                             "</div>"+
                                             "<div class='pro-details-quality'>"+
                                                 "<div class='cart-plus-minus'>"+
-                                                    "<input class='cart-plus-minus-box' type='text' id='Qty' value='1'>"+
+                                                    "<input class='cart-plus-minus-box' type='text' id='Qty' value='1' data-max='"+msg.ukuran[0].StokAkhir+"'>"+
                                                 "</div>"+
                                                 "<div class='pro-details-cart btn-hover'>"+
                                                     "<a href='#' onclick='addToCart()'>Add To Cart</a>"+
@@ -106,24 +115,34 @@
                                         "</div>"+
                                     "</div>"+
                                 "</div>";
-
+                                                    
                     $("#detail").append(data);
-
+                    data_stok = msg.ukuran                                   
+                    
+                    $("#IdUkuran").change(function(){
+                        var selected_index = $(this).prop('selectedIndex')
+                        $("#Qty").data("max", data_stok[selected_index].StokAkhir)
+                        $("#Qty").val("1")
+                    })
                     var CartPlusMinus = $('.cart-plus-minus');
                     CartPlusMinus.prepend('<div class="dec qtybutton">-</div>');
                     CartPlusMinus.append('<div class="inc qtybutton">+</div>');
                     $(".qtybutton").on("click", function () {
                         var $button = $(this);
+                        var max = $button.parent().find("input").data("max")
                         var oldValue = $button.parent().find("input").val();
                         if ($button.text() === "+") {
                             var newVal = parseFloat(oldValue) + 1;
-                        } else {
-                            // Don't allow decrementing below zero
-                            if (oldValue > 0) {
-                                var newVal = parseFloat(oldValue) - 1;
-                            } else {
-                                newVal = 1;
+                            
+                            if (newVal > max) {
+                                newVal = max;
                             }
+                        } else {
+                            var newVal = parseFloat(oldValue) - 1;
+                            // Don't allow decrementing below zero
+                            if (newVal <= 0) {
+                                var newVal = 1
+                            } 
                         }
                         $button.parent().find("input").val(newVal);
                     });
@@ -133,6 +152,35 @@
 
         $('#exampleModal').on('hidden.bs.modal', function(e){
             $('.append').remove(); 
+        });
+
+        $("#IdUkuranDetail").change(function(){
+            var selected_index = $(this).prop('selectedIndex')
+            $("#QtyDetail").data("max", dataUkuran[selected_index].StokAkhir)
+            $("#QtyDetail").val("1")
+        })
+
+        var CartPlusMinus = $('.cart-plus-minus');
+        CartPlusMinus.prepend('<div class="dec qtybutton">-</div>');
+        CartPlusMinus.append('<div class="inc qtybutton">+</div>');
+        $(".qtybutton").on("click", function () {
+            var $button = $(this);
+            var max = $button.parent().find("input").data("max")
+            var oldValue = $button.parent().find("input").val();
+            if ($button.text() === "+") {
+                var newVal = parseFloat(oldValue) + 1;
+                
+                if (newVal > max) {
+                    newVal = max;
+                }
+            } else {
+                var newVal = parseFloat(oldValue) - 1;
+                // Don't allow decrementing below zero
+                if (newVal <= 0) {
+                    var newVal = 1
+                } 
+            }
+            $button.parent().find("input").val(newVal);
         });
 
     </script>
@@ -188,7 +236,7 @@
                                 <div class="pro-details-color-wrap">
                                     <span>Color</span>
                                     <div class="pro-details-color-content">
-                                        <select class='form-control' name="Warna" id='IdWarna' onchange='viewUkuran("{{ $produks->IdProduk }}", this)'>
+                                        <select class='form-control' name="Warna" id='IdWarnaDetail' onchange='viewUkuran("{{ $produks->IdProduk }}", this)'>
                                             @foreach ($warnas as $warna)
                                                 <option value="{{ $warna->IdWarna }}">{{ $warna->NamaWarna }}</option>
                                             @endforeach
@@ -198,7 +246,7 @@
                                 <div class="pro-details-color-wrap">
                                     <span>Size</span>
                                     <div class="pro-details-color-content">
-                                        <select class='form-control' name='Ukuran' id='IdUkuran'>
+                                        <select class='form-control' name='Ukuran' id='IdUkuranDetail'>
                                             @foreach ($ukurans as $ukuran)
                                                 <option value="{{ $ukuran->IdUkuran }}">{{ $ukuran->NamaUkuran }}</option>
                                             @endforeach
@@ -208,7 +256,7 @@
                             </div>
                             <div class="pro-details-quality">
                                 <div class="cart-plus-minus">
-                                    <input class="cart-plus-minus-box" type="text"  value="1">
+                                    <input id="QtyDetail" class="cart-plus-minus-box" type="text" value="1" data-max="{{ $ukurans[0]->StokAkhir }}">
                                 </div>
                                 <div class="pro-details-cart btn-hover">
                                     <a href="#" onclick='addToCart()'>Add To Cart</a>

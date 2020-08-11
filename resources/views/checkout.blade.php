@@ -9,12 +9,80 @@
     <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
     
     <script type="text/javascript">
+        $.ajaxSetup({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            }
+        });
+
         var cost_jne = {!! json_encode($cost_jne) !!}
         var total = {{ $cart_total }};
 
         
         function formatNumber (num) {
             return num.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1.")
+        }
+
+        $("#CekKupon").click(function() {
+            var id_coupon = $("input[name='IdKuponDiskon']").val();
+
+            $.ajax({
+                type: "POST",
+                url:  "{{ url('/shop/cek-kupon') }}/",
+                data: "IdKuponDiskon="+id_coupon,
+                success: function(data){
+                    // console.log(data);
+                    if(data.kupondiskon == null){
+                        $("#alert-kupon").html('<div class="alert alert-danger alert-dismissible" id="myAlert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Gagal!</strong> Kode Kupon tersebut tidak tersedia.</div>');
+                        
+                        var potongan = 0;
+                        $("#NamaPotongan").html("-")
+                        $("#JumlahPotongan").html("0")
+                        $("#id_kupon").val("-")
+                        $("#potongan").val(0)
+
+                    }else{
+                        $("#alert-kupon").html('<div class="alert alert-success alert-dismissible" id="myAlert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Berhasil!</strong> Kode Kupon tersebut berhasil digunakan.</div>');
+                        
+                        var potongan = data.kupondiskon.JumlahPotongan;
+                        $("#NamaPotongan").html(data.kupondiskon.NamaKupon)
+                        $("#JumlahPotongan").html(new Number(data.kupondiskon.JumlahPotongan).toLocaleString())
+                        $("#id_kupon").val(data.kupondiskon.IdKuponDiskon)
+                        $("#potongan").val(data.kupondiskon.JumlahPotongan)
+                        
+                    }
+
+                    var val = $("#shipping_cost").val().split('-');
+                    var grand_total = ((parseInt(val[0]) + total) - potongan);
+
+                    $("#total_order").html('Rp. '+formatNumber(grand_total))
+                    $("#total_order_val").val(grand_total)
+                }
+            })
+        });
+
+        function delete_coupon() {
+            swal({
+                title: "Apakah anda yakin ?",
+                icon: "warning",
+                buttons: true,
+                dangerMode: true,
+            })
+            .then((willDelete) => {
+                if (willDelete) {
+                    $("#NamaPotongan").html("-")
+                    $("#JumlahPotongan").html("0")
+                    $("#id_kupon").val("-")
+                    $("#potongan").val(0)
+
+                    var potongan = 0;
+                    var val = $("#shipping_cost").val().split('-');
+                    var grand_total = ((parseInt(val[0]) + total) - potongan);
+
+                    $("#total_order").html('Rp. '+formatNumber(grand_total))
+                    $("#total_order_val").val(grand_total)
+                }
+            });
         }
 
         $( document ).ready(function() {
@@ -60,11 +128,12 @@
 
             $("#shipping_cost").change(function(){
                 var val = $(this).val().split('-');
+                var potongan = $("#potongan").val();
 
-                var grand_total = parseInt(val[0]) + total
-                $("#total_shipping").html('Rp' + formatNumber(val[0]))
+                var grand_total = (parseInt(val[0]) + total) - potongan
+                $("#total_shipping").html('Rp. ' + formatNumber(val[0]))
                 $("#nama_ekspedisi").val('JNE - '+val[1])
-                $("#total_order").html('Rp'+formatNumber(grand_total))
+                $("#total_order").html('Rp. '+formatNumber(grand_total))
                 $("#total_order_val").val(grand_total)
             })
         });
@@ -133,6 +202,17 @@
                             </div>
                         </div>
                     </div>
+                    <div class="billing-info-wrap">
+                        <h3>Punya Kode Kupon Diskon ?</h3>
+                        <div class="billing-info checkout-account-toggle mb-20">
+                            <form id="coupon_form" action="#" method="POST">
+                                <label>Masukan Disini</label>
+                                <input type="text" name="IdKuponDiskon" placeholder="Ex: DFS10">
+                                <button class="btn-hover checkout-btn" type="button" id="CekKupon">Check</button>
+                            </form>
+                        </div>
+                        <div id="alert-kupon"></div>
+                    </div>
                 </div>
                 <div class="col-lg-5">
                     <div class="your-order-area">
@@ -153,8 +233,8 @@
                                         <li>
                                             <span class="order-middle-left"><b>{{ $produk->NamaProduk }}</b></span>
                                             <span class="order-middle-left">{{ $produk->NamaWarna }} / {{ $produk->NamaUkuran }} </span>
-                                            <span class="order-middle">Rp{{ number_format($produk->HargaJual, 0, '', '.') }} X {{ $produk->Qty }}</span>
-                                            <span class="order-price"><b>Rp{{ number_format($produk->sub_total, 0, '', '.') }} </b></span>
+                                            <span class="order-middle">Rp. {{ number_format($produk->HargaJual, 0, '', '.') }} X {{ $produk->Qty }}</span>
+                                            <span class="order-price"><b>Rp. {{ number_format($produk->sub_total, 0, '', '.') }} </b></span>
                                         </li>
                                         <input type="hidden" name="IdProduk[]" value="{{ $produk->IdProduk }}"/>
                                         <input type="hidden" name="IdStokProduk[]" value="{{ $produk->IdStokProduk }}"/>
@@ -166,18 +246,35 @@
                                 <div class="your-order-total">
                                     <ul>
                                         <li class="order-total">Sub Total</li>
-                                        <li>Rp{{ number_format($cart_total, 0, '', '.') }}</li>
+                                        <li>Rp. {{ number_format($cart_total, 0, '', '.') }}</li>
                                         <input type="hidden" id="total_cart_val" name="Total" value="{{ $cart_total }}" />
                                     </ul>
                                 </div>
-                                <div class="your-order-bottom">
+                                <div class="your-order-total">
+                                    <ul>
+                                        <li class="order-total">Coupon Code</li>
+                                        <li>
+                                            <div class="shopping-cart-delete text-right">
+                                                <span id="NamaPotongan">-</span>
+                                                <input type="hidden" id="id_kupon" name="IdKuponDiskon" value="-"/>
+                                                <a href="#" onclick="delete_coupon()"><i class="fa fa-times-circle"></i></a>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <ul>
+                                        <li class="order-total">Discount</li>
+                                        <li>- Rp. <span id="JumlahPotongan">0</span></li>
+                                        <input type="hidden" id="potongan" name="Potongan" value=0 />
+                                    </ul>
+                                </div>
+                                <div class="your-order-total">
                                     <ul>
                                         <li class="your-order-shipping" style="font-weight: 500;color: #212121;font-size: 18px;">Shipping (JNE)</li>
                                         <li>
                                             <div class='pro-details-color-content'>
                                                 <select id="shipping_cost" class='form-control' name="OngkosKirim">
                                                     @foreach($cost_jne as $cost)
-                                                    <option value='{{ $cost->cost[0]->value }}-{{ $cost->service }}'>{{ $cost->service }} / Rp{{ number_format($cost->cost[0]->value, 0, '', '.') }} / {{ $cost->cost[0]->etd }} hari</option>"
+                                                    <option value='{{ $cost->cost[0]->value }}-{{ $cost->service }}'>{{ $cost->service }} / Rp. {{ number_format($cost->cost[0]->value, 0, '', '.') }} / {{ $cost->cost[0]->etd }} hari</option>"
                                                     @endforeach
                                                 </select>
                                             </div>
@@ -187,14 +284,14 @@
                                 <div class="your-order-total">
                                     <ul>
                                         <li class="order-total">Shipping Cost</li>
-                                        <li id="total_shipping">Rp{{ number_format($cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
+                                        <li id="total_shipping">Rp. {{ number_format($cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
                                         <input type="hidden" id="nama_ekspedisi" name="NamaEkspedisi" value="JNE - {{ $cost_jne[0]->service }}" />
                                     </ul>
                                 </div>
                                 <div class="your-order-total">
                                     <ul>
                                         <li class="order-total">Total</li>
-                                        <li id="total_order">Rp{{ number_format($cart_total + $cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
+                                        <li id="total_order">Rp. {{ number_format($cart_total + $cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
                                         <input type="hidden" name="GrandTotal" id="total_order_val" value="{{ ($cart_total + $cost_jne[0]->cost[0]->value) }}" />
                                     </ul>
                                 </div>

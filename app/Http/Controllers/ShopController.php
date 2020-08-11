@@ -9,6 +9,7 @@ use App\Warna;
 use App\KategoriProduk;
 use App\StokProduk;
 use App\Cart;
+use App\KuponDiskon;
 use DB;
 use Auth;
 
@@ -131,7 +132,7 @@ class ShopController extends Controller
                 $cart_total+=$produk->sub_total;
             }
         }
-        // dd($relatedproduks);
+        // dd($ukurans[]);
         
         return view('product-detail', compact('produks','warnas','ukurans','relatedproduks','cart_produk','cart_total'));
     }
@@ -214,7 +215,7 @@ class ShopController extends Controller
                 ->join('produk', 'stokproduk.IdProduk', '=', 'produk.IdProduk')
                 ->join('warna', 'stokproduk.IdWarna', '=', 'warna.IdWarna')
                 ->join('ukuran', 'stokproduk.IdUkuran', '=', 'ukuran.IdUkuran')
-                ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
+                ->select('cart.IdStokProduk', 'warna.NamaWarna','ukuran.NamaUkuran','cart.IdCart', 'stokproduk.StokAkhir', 'produk.*', 'cart.Qty', DB::raw('produk.HargaJual * cart.Qty as sub_total, stokproduk.StokAkhir-cart.Qty as selisih_stok'))
                 ->where('IdPelanggan', $id_pelanggan)
                 ->where('stokproduk.StokAkhir','>', 0)
                 ->get();
@@ -271,5 +272,42 @@ class ShopController extends Controller
             return $err;
         else 
             return $response;
+    }
+
+    public function minStokCart($id)
+    {
+        $cart = Cart::find($id);
+        $cart->Qty -= 1;
+        $cart->save();
+        
+        return response()->json(['success'=>'sukses']);
+    }
+
+    public function plusStokCart($id)
+    {
+        $cart = Cart::find($id);
+        $cart->Qty += 1;
+        $cart->save();
+        
+        return response()->json(['success'=>'sukses']);
+    }
+
+    public function cekKupon(Request $request)
+    {
+        $kupondiskon = KuponDiskon::find($request->IdKuponDiskon);
+
+        if($kupondiskon){
+            $tglskrg = date_format(date_create(),'yy-m-d h:i:s');
+            $tglmulai = $kupondiskon->TglMulai;
+            $tglselesai = $kupondiskon->TglSelesai;
+
+            if($tglmulai <= $tglskrg && $tglselesai >= $tglskrg){
+                return response()->json(['kupondiskon' => $kupondiskon]);
+            }else{
+                return response()->json(['kupondiskon' => null]);
+            }
+        }else{
+            return response()->json(['kupondiskon' => null]);
+        }
     }
 }

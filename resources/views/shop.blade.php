@@ -24,6 +24,8 @@
             $("#form-filter").submit();
         });
 
+        var data_stok = []
+
         function viewUkuran(IdProduk, ini) {
             //console.log(ini);
             $.ajax({
@@ -37,6 +39,9 @@
                             ukuran = ukuran+"<option value='"+data[j].IdUkuran+"'>"+data[j].NamaUkuran+"</option>";
                         }
                         $("select[name='Ukuran']").empty().append(ukuran);
+                        data_stok = data
+                        $("#Qty").data("max", data[0].StokAkhir)
+                        $("#Qty").val("1")
                     }
                 }
             });
@@ -102,7 +107,7 @@
                                             "</div>"+
                                             "<div class='pro-details-quality'>"+
                                                 "<div class='cart-plus-minus'>"+
-                                                    "<input class='cart-plus-minus-box' type='text' id='Qty' value='1'>"+
+                                                    "<input class='cart-plus-minus-box' type='text' id='Qty' value='1' data-max='"+msg.ukuran[0].StokAkhir+"'>"+
                                                 "</div>"+
                                                 "<div class='pro-details-cart btn-hover'>"+
                                                     "<a href='#' onclick='addToCart()'>Add To Cart</a>"+
@@ -117,24 +122,33 @@
                                         "</div>"+
                                     "</div>"+
                                 "</div>";
-
+                    data_stok = msg.ukuran
                     $("#detail").append(data);
+                    $("#IdUkuran").change(function(){
+                        var selected_index = $(this).prop('selectedIndex')
+                        $("#Qty").data("max", data_stok[selected_index].StokAkhir)
+                        $("#Qty").val("1")
+                    })
 
                     var CartPlusMinus = $('.cart-plus-minus');
                     CartPlusMinus.prepend('<div class="dec qtybutton">-</div>');
                     CartPlusMinus.append('<div class="inc qtybutton">+</div>');
                     $(".qtybutton").on("click", function () {
                         var $button = $(this);
+                        var max = $button.parent().find("input").data("max")
                         var oldValue = $button.parent().find("input").val();
                         if ($button.text() === "+") {
                             var newVal = parseFloat(oldValue) + 1;
-                        } else {
-                            // Don't allow decrementing below zero
-                            if (oldValue > 0) {
-                                var newVal = parseFloat(oldValue) - 1;
-                            } else {
-                                newVal = 1;
+                            
+                            if (newVal > max) {
+                                newVal = max;
                             }
+                        } else {
+                            var newVal = parseFloat(oldValue) - 1;
+                            // Don't allow decrementing below zero
+                            if (newVal <= 0) {
+                                var newVal = 1
+                            } 
                         }
                         $button.parent().find("input").val(newVal);
                     });

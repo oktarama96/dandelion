@@ -128,7 +128,7 @@
                     
                     // Update footer
                     $( api.column( 6 ).footer() ).html(
-                        'Rp. '+ parseInt(total).toLocaleString()
+                        'Rp. '+ parseInt(total).toLocaleString() + ' (Yang Lunas)'
                         // 'Total'
                     );
                 },
@@ -166,20 +166,26 @@
             data: kode,
             success: function(msg){
                 // console.log(msg);
-
-                var dataa = "";
-                for(var i = 0; i < msg.detailtransaksi.length; i++){
-                    var dataa = dataa+"<tr class='append'>"+
-                        "<td>"+msg.detailtransaksi[i].IdProduk+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].produk.NamaProduk+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+"</td>"+
-                        "<td>Rp. "+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].Qty+"</td>"+
-                        "<td>"+msg.detailtransaksi[i].Diskon+"</td>"+
-                        "<td>Rp. "+msg.detailtransaksi[i].SubTotal.toLocaleString()+"</td>"+
+                if(msg.detailtransaksi.length == 0){
+                    var dataa = "<tr class='append'>"+
+                        "<td colspan=8 class='text-center'>Maaf Data Produk Tidak Tersedia!</td>"+
                     "</tr>";
+                }else{
+                    var dataa = "";
+                    for(var i = 0; i < msg.detailtransaksi.length; i++){
+                        var dataa = dataa+"<tr class='append'>"+
+                            "<td>"+msg.detailtransaksi[i].IdProduk+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].produk.NamaProduk+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+"</td>"+
+                            "<td>Rp. "+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].Qty+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].Diskon+"</td>"+
+                            "<td>Rp. "+msg.detailtransaksi[i].SubTotal.toLocaleString()+"</td>"+
+                        "</tr>";
+                    }
                 }
+                
             
                 $("#detail-trans").append(dataa);
             }
@@ -559,6 +565,7 @@
                                         <select class="form-control" name="StatusPesanan">
                                           <option value="1">DiProses</option>
                                           <option value="2">DiKirim</option>
+                                          <option value="4">Dibatalkan</option>
                                         </select>
                                       </div>
                                   </div>

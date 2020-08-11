@@ -21,19 +21,24 @@ class LaporanController extends Controller
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
                 $sum_gtotal = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('GrandTotal');
                 $sum_total = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('Total');
                 $sum_potongan = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('Potongan');
                 $sum_ongkir = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('OngkosKirim');
 
@@ -42,6 +47,7 @@ class LaporanController extends Controller
                 ->join('produk', 'detailtransaksi.IdProduk', '=', 'produk.IdProduk')
                 ->select(DB::raw('SUM(detailtransaksi.SubTotal - (produk.HargaPokok * detailtransaksi.Qty)) as untungkotor, SUM(transaksi.Potongan) as sumpotongan'))
                 ->where('transaksi.StatusPembayaran', 1)
+                ->where('transaksi.StatusPesanan', '!=', 4)
                 ->whereBetween('transaksi.TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->get();
 
@@ -49,19 +55,24 @@ class LaporanController extends Controller
                 $datas = Transaksi::with(['pengguna:IdPengguna,NamaPengguna', 'pelanggan:IdPelanggan,NamaPelanggan', 'kupondiskon:IdKuponDiskon,NamaKupon'])
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
                 $sum_gtotal = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('GrandTotal');
                 $sum_total = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('Total');
                 $sum_potongan = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('Potongan');
                 $sum_ongkir = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('OngkosKirim');
 
@@ -70,6 +81,7 @@ class LaporanController extends Controller
                 ->join('produk', 'detailtransaksi.IdProduk', '=', 'produk.IdProduk')
                 ->select(DB::raw('SUM(detailtransaksi.SubTotal - (produk.HargaPokok * detailtransaksi.Qty)) as untungkotor, SUM(transaksi.Potongan) as sumpotongan'))
                 ->where('transaksi.StatusPembayaran', 1)
+                ->where('transaksi.StatusPesanan', '!=', 4)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->first();
             }

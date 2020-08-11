@@ -314,7 +314,7 @@
                                     '</td>'+
                                     '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+'</td>'+
                                     '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].Qty+'</td>'+
-                                    '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
+                                    '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
                                 '</tr>';
                 }
             

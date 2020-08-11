@@ -5,109 +5,104 @@
 @endsection
 
 @section('content')
+    <nav class="navbar fixed-top navbar-light bg-light">
+        <a class="navbar-brand" href="#">Fixed top</a>
+    </nav>
     <!-- Main page content-->
-    <div class="container mt-4">
+    <div class="container mt-100">
         <!-- Invoice-->
         <div class="card invoice">
-            <div class="card-header p-4 p-md-5 border-bottom-0 bg-gradient-primary-to-secondary text-white-50">
+            <div class="card-header p-4 p-md-5 border-bottom-0">
                 <div class="row justify-content-between align-items-center">
                     <div class="col-12 col-lg-auto mb-5 mb-lg-0 text-center text-lg-left">
                         <!-- Invoice branding-->
-                        <img class="invoice-brand-img rounded-circle mb-4" src="assets/img/logo-invoice.svg" alt />
-                        <div class="h2 text-white mb-0">Start Bootstrap</div>
-                        Web Design &amp; Development
+                        <div class="h2 mb-0">Dandelion Fashion Shop</div>
                     </div>
                     <div class="col-12 col-lg-auto text-center text-lg-right">
                         <!-- Invoice details-->
-                        <div class="h3 text-white">Invoice</div>
-                        #29301
+                        <div class="h3">Id Transaksi : {{ $transaksi->IdTransaksi }}</div>
                         <br />
-                        January 1, 2020
+                        {{ $transaksi->TglTransaksi }}
                     </div>
                 </div>
             </div>
             <div class="card-body p-4 p-md-5">
                 <!-- Invoice table-->
-                <div class="table-responsive">
-                    <table class="table table-borderless mb-0">
-                        <thead class="border-bottom">
-                            <tr class="small text-uppercase text-muted">
-                                <th scope="col">Description</th>
-                                <th class="text-right" scope="col">Hours</th>
-                                <th class="text-right" scope="col">Rate</th>
-                                <th class="text-right" scope="col">Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!-- Invoice item 1-->
-                            <tr class="border-bottom">
+                <table class="table table-borderless mb-0">
+                    <thead class="border-bottom">
+                        <tr class="small text-uppercase text-muted">
+                            <th scope="col">Nama Barang</th>
+                            <th class="text-right" scope="col">Harga</th>
+                            <th class="text-right" scope="col">Qty</th>
+                            <th class="text-right" scope="col">SubTotal</th>
+                        </tr>
+                    </thead>
+                    <tbody id="detail-trans">
+                        
+                        @foreach ($detailtransaksis as $detailtransaksi)
+                            <tr class="border-bottom append">
                                 <td>
-                                    <div class="font-weight-bold">SB Admin Pro</div>
-                                    <div class="small text-muted d-none d-md-block">A professional UI toolkit for designing admin dashboards and web applications</div>
+                                    <div class="font-weight-bold">{{ $detailtransaksi->produk->NamaProduk }}</div>
+                                    <div class="small text-muted d-none d-md-block">{{ $detailtransaksi->IdProduk }} - {{ $detailtransaksi->stokproduk->warna->NamaWarna }} - {{ $detailtransaksi->stokproduk->ukuran->NamaUkuran }}</div>
                                 </td>
-                                <td class="text-right font-weight-bold">12</td>
-                                <td class="text-right font-weight-bold">$50.00</td>
-                                <td class="text-right font-weight-bold">$600.00</td>
+                                <td class="text-right font-weight-bold">Rp. {{ number_format($detailtransaksi->produk->HargaJual,0,',',',') }}</td>
+                                <td class="text-right font-weight-bold">{{ $detailtransaksi->Qty }}</td>
+                                <td class="text-right font-weight-bold">Rp. {{ number_format($detailtransaksi->SubTotal,0,',',',') }}</td>
                             </tr>
-                            <!-- Invoice item 2-->
-                            <tr class="border-bottom">
-                                <td>
-                                    <div class="font-weight-bold">SB UI Kit Pro</div>
-                                    <div class="small text-muted d-none d-md-block">A UI toolkit for creating marketing websites and landing pages</div>
-                                </td>
-                                <td class="text-right font-weight-bold">15</td>
-                                <td class="text-right font-weight-bold">$55.00</td>
-                                <td class="text-right font-weight-bold">$825.00</td>
-                            </tr>
-                            <!-- Invoice item 3-->
-                            <tr class="border-bottom">
-                                <td>
-                                    <div class="font-weight-bold">Pro HTML Bundle</div>
-                                    <div class="small text-muted d-none d-md-block">A fully coded set of UI resources for creating a comprehensive web application</div>
-                                </td>
-                                <td class="text-right font-weight-bold">4</td>
-                                <td class="text-right font-weight-bold">$125.00</td>
-                                <td class="text-right font-weight-bold">$500.00</td>
-                            </tr>
-                            <!-- Invoice subtotal-->
-                            <tr>
-                                <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Subtotal:</div></td>
-                                <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700">$,1925.00</div></td>
-                            </tr>
-                            <!-- Invoice tax column-->
-                            <tr>
-                                <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Tax (7%):</div></td>
-                                <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700">$134.75</div></td>
-                            </tr>
-                            <!-- Invoice total-->
-                            <tr>
-                                <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Total Amount Due:</div></td>
-                                <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700 text-green">$2059.75</div></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
+                        @endforeach
+
+                        <!-- Invoice subtotal-->
+                        <tr>
+                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Total:</div></td>
+                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700">Rp. {{ number_format($transaksi->Total,0,',',',') }}</div></td>
+                        </tr>
+
+                        <!-- Invoice tax column-->
+                        <tr>
+                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Ongkos Kirim:</div></td>
+                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700">Rp. {{ number_format($transaksi->OngkosKirim,0,',',',') }}</div></td>
+                        </tr>
+
+                        <tr>
+                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Potongan:</div></td>
+                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700">Rp. {{ number_format($transaksi->Potongan,0,',',',') }}</div></td>
+                        </tr>
+                        <!-- Invoice total-->
+                        <tr>
+                            <td class="text-right pb-0" colspan="3"><div class="text-uppercase small font-weight-700 text-muted">Grandtotal:</div></td>
+                            <td class="text-right pb-0"><div class="h5 mb-0 font-weight-700 text-green">Rp. {{ number_format($transaksi->GrandTotal,0,',',',') }}</div></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
             <div class="card-footer p-4 p-lg-5 border-top-0">
                 <div class="row">
-                    <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
                         <!-- Invoice - sent to info-->
-                        <div class="small text-muted text-uppercase font-weight-700 mb-2">To</div>
-                        <div class="h6 mb-1">Company Name</div>
-                        <div class="small">1234 Company Dr.</div>
-                        <div class="small">Yorktown, MA 39201</div>
+                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Untuk</div>
+                        <div class="h6 mb-1">
+                          {{ $transaksi->pelanggan->NamaPelanggan }}
+                        </div>
+                        <div class="small">
+                          {{ $transaksi->pelanggan->Alamat }}
+                        </div>
+                        <div class="small">
+                          {{ $transaksi->pelanggan->NamaKecamatan.", ".$transaksi->pelanggan->NamaKabupaten.", ".$transaksi->pelanggan->NamaProvinsi }}
+                        </div>
+                        <div class="small">
+                          {{ $transaksi->pelanggan->NoHandphone }}
+                        </div>
                     </div>
-                    <div class="col-md-6 col-lg-3 mb-4 mb-lg-0">
+                    <div class="col-md-6 col-lg-4 mb-4 mb-lg-0">
                         <!-- Invoice - sent from info-->
-                        <div class="small text-muted text-uppercase font-weight-700 mb-2">From</div>
-                        <div class="h6 mb-0">Start Bootstrap</div>
-                        <div class="small">5678 Company Rd.</div>
-                        <div class="small">Yorktown, MA 39201</div>
+                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
+                        <div class="h6 mb-1">Dandelion Fashion Shop</div>
+                        <div class="small">Jln. Raya Abianbase No. 128</div>
+                        <div class="small">Badung, Bali, Indonesia</div>
                     </div>
-                    <div class="col-lg-6">
-                        <!-- Invoice - additional notes-->
-                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Note</div>
-                        <div class="small mb-0">Payment is due 15 days after receipt of this invoice. Please make checks or money orders out to Company Name, and include the invoice number in the memo. We appreciate your business, and hope to be working with you again very soon!</div>
+                    <div class="col-lg-4 my-auto">
+                        <div class="small text-muted text-uppercase font-weight-700 mb-2">Catatan</div>
+                        <div class="small mb-0">Perhatian!, jika terdapat komplain terhadap barang mohon hubungi langsung 082123456789 atau email ke <a href="mailto:dandelionshop128@gmail.com">dandelionshop128@gmail.com</a></div>
                     </div>
                 </div>
             </div>

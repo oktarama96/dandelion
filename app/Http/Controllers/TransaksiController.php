@@ -209,9 +209,9 @@ class TransaksiController extends Controller
             ],
             'item_details' => $transaction_detail,
             'expiry' => array (
-              "start_time" => $Now." +0700",
-              "unit" => "hour",
-              "duration" => 1
+              "start_time" => $Now." +0800",
+              "unit" => "minute",
+              "duration" => 2
             )
         ];
         
@@ -252,7 +252,26 @@ class TransaksiController extends Controller
           } elseif ($transaction == 'deny') {
             $transaksi->setFailed();
           } elseif ($transaction == 'expire') {
-            $transaksi->setExpired();
+              //delete
+                $transaksi->StatusPesanan = 4;
+                $transaksi->save();
+
+                $details = DetailTransaksi::where('IdTransaksi', $orderId)->get();
+            
+                foreach ($details as $detail) {
+                    $stokproduk = StokProduk::find($detail->IdStokProduk);
+
+                    $stokkeluar = $stokproduk->StokKeluar - $detail->Qty;
+                    $stokmasuk = $stokproduk->StokMasuk + $detail->Qty;
+                    $stokproduk->StokMasuk = $stokmasuk;
+                    $stokproduk->StokKeluar = $stokkeluar;
+                    $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+
+                    $stokproduk->save();
+                }
+
+                DetailTransaksi::where('IdTransaksi', $orderId)->delete();
+                $transaksi->setExpired();
           } elseif ($transaction == 'cancel') {
             $transaksi->setFailed();
           }
@@ -288,14 +307,14 @@ class TransaksiController extends Controller
             $transaksi->IdTransaksi = $IdTransaksi;
             $transaksi->TglTransaksi = $TglTransaksi;
             $transaksi->Total = $request->Total;
-            $transaksi->Potongan = 0;
+            $transaksi->Potongan = $request->Potongan;
             $transaksi->OngkosKirim = $ongkir[0];
             $transaksi->NamaEkspedisi = $request->NamaEkspedisi;
             $transaksi->GrandTotal = $request->GrandTotal;
             $transaksi->MetodePembayaran = "Midtrans";
             $transaksi->StatusPembayaran = 0;
-            $transaksi->StatusPesanan = 0; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai
-            $transaksi->IdKuponDiskon = "-";
+            $transaksi->StatusPesanan = 0; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai, 4=dibatalkan
+            $transaksi->IdKuponDiskon = $request->IdKuponDiskon;
             $transaksi->IdPengguna = 0;
             $transaksi->IdPelanggan = $id_pelanggan;
 
@@ -309,25 +328,30 @@ class TransaksiController extends Controller
                 
                 if($stokproduk){
                     //dd($stokproduk->StokKeluar);
-                    $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                    if($stokproduk->StokAkhir > 0){
+                        
+                        $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                        
+                        $stokproduk->StokKeluar = $stokkeluar;
+                        $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+
+                        $stokproduk->save();
                     
-                    $stokproduk->StokKeluar = $stokkeluar;
-                    $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+                        $detailtransaksi = new DetailTransaksi;
+                    
+                        $detailtransaksi->Qty = $request->Qty[$i];
+                        $detailtransaksi->Diskon = 0;
+                        $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                        $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                        $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                        $detailtransaksi->IdTransaksi = $IdTransaksi;
 
-                    $stokproduk->save();
-                
-                    $detailtransaksi = new DetailTransaksi;
-                
-                    $detailtransaksi->Qty = $request->Qty[$i];
-                    $detailtransaksi->Diskon = 0;
-                    $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                    $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                    $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
-                    $detailtransaksi->IdTransaksi = $IdTransaksi;
+                        $detailtransaksi->save();
 
-                    $detailtransaksi->save();
-
-                    $this->deleteCart($id_pelanggan);
+                        $this->deleteCart($id_pelanggan);
+                    }else{
+                        
+                    }
                 }                        
             }
             
@@ -370,7 +394,9 @@ class TransaksiController extends Controller
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
-                $sum_total = Transaksi::where('MetodePembayaran', $method)
+                $sum_total = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan','!=', 4)
+                ->where('MetodePembayaran', $method)
                 ->whereBetween('TglTransaksi', [$now, $now->format('Y-m-d').' 23:59:59'])
                 ->sum('GrandTotal');
             }else{
@@ -381,7 +407,9 @@ class TransaksiController extends Controller
                 ->orderBy('TglTransaksi', 'DESC')
                 ->get();
 
-                $sum_total = Transaksi::where('MetodePembayaran', $method)
+                $sum_total = Transaksi::where('StatusPembayaran', 1)
+                ->where('StatusPesanan','!=', 4)
+                ->where('MetodePembayaran', $method)
                 ->whereBetween('TglTransaksi', [$request->from_date.' 00:00:00', $request->to_date.' 23:59:59'])
                 ->sum('GrandTotal');
             }
@@ -423,6 +451,8 @@ class TransaksiController extends Controller
                             $statuspesanan = "<span class='badge badge-primary'>Dikirim</span>";
                         }else if($data->StatusPesanan == 3){
                             $statuspesanan = "<span class='badge badge-success'>Selesai</span>";
+                        }else if($data->StatusPesanan == 4){
+                            $statuspesanan = "<span class='badge badge-danger'>Dibatalkan</span>";
                         }
                         return $statuspesanan;
                     })
@@ -582,12 +612,34 @@ class TransaksiController extends Controller
         $transaksi->IdPengguna = $id_pengguna;
         $transaksi->save();
 
+        if($request->StatusPesanan == 4){
+            $details = DetailTransaksi::where('IdTransaksi', $transaksi->IdTransaksi)->get();
+            
+
+            foreach ($details as $detail) {
+                $stokproduk = StokProduk::find($detail->IdStokProduk);
+
+                $stokkeluar = $stokproduk->StokKeluar - $detail->Qty;
+                $stokmasuk = $stokproduk->StokMasuk + $detail->Qty;
+                $stokproduk->StokMasuk = $stokmasuk;
+                $stokproduk->StokKeluar = $stokkeluar;
+                $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+
+                $stokproduk->save();
+            }
+
+            DetailTransaksi::where('IdTransaksi', $transaksi->IdTransaksi)->delete();
+        }
+
         return response()->json(['success'=>'sukses']);
     }
 
     public function printinvoice($id_transaksi)
     {
-        return view('invoice');
+        $transaksi = Transaksi::with('pelanggan')->where('IdTransaksi', $id_transaksi)->first();
+        $detailtransaksis = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $id_transaksi)->get();
+
+        return view('invoice', compact('transaksi','detailtransaksis'));
     }
 
 }

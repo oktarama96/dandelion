@@ -142,42 +142,77 @@
                 url: "{{ url('/pos/detailtransaksi/') }}/"+a+"/",
                 data: kode,
                 success: function(msg){
-                    //console.log(msg);
-                    document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
-                    $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
-                    document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
+                    // console.log(msg.detailtransaksi.length);
 
-                    document.getElementById("Total").innerHTML = "Rp. "+msg.transaksi[0].Total.toLocaleString();
-                    document.getElementById("OngkosKirim").innerHTML = "Rp. "+msg.transaksi[0].OngkosKirim.toLocaleString();
-                    document.getElementById("Potongan").innerHTML = "Rp. "+msg.transaksi[0].Potongan.toLocaleString();
-                    document.getElementById("GrandTotal").innerHTML = "Rp. "+msg.transaksi[0].GrandTotal.toLocaleString();
+                    if(msg.detailtransaksi.length == 0){
+                        document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
+                        $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
+                        document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
 
-                    document.getElementById("NamaPelanggan").innerHTML = msg.transaksi[0].pelanggan.NamaPelanggan;
-                    document.getElementById("Alamat").innerHTML = msg.transaksi[0].pelanggan.Alamat;
-                    document.getElementById("Kota").innerHTML = msg.transaksi[0].pelanggan.NamaKecamatan +", "+ msg.transaksi[0].pelanggan.NamaKabupaten +", "+ msg.transaksi[0].pelanggan.NamaProvinsi;
-                    document.getElementById("NoHandphone").innerHTML = msg.transaksi[0].pelanggan.NoHandphone;
+                        document.getElementById("Total").innerHTML = "";
+                        document.getElementById("OngkosKirim").innerHTML = "";
+                        document.getElementById("Potongan").innerHTML = "";
+                        document.getElementById("GrandTotal").innerHTML = "";
 
-                    if(msg.transaksi[0].StatusPesanan == 3)
-                    // var url = window.location.replace('{{ url("/invoice/") }}'+"/"+msg.transaksi[0].IdTransaksi");
-                    document.getElementById("btninvoice").innerHTML = "<button class='btn btn-primary' type='button' onclick='"+url+"'>Cetak Invoice</button>";
+                        document.getElementById("NamaPelanggan").innerHTML = msg.transaksi[0].pelanggan.NamaPelanggan;
+                        document.getElementById("Alamat").innerHTML = msg.transaksi[0].pelanggan.Alamat;
+                        document.getElementById("Kota").innerHTML = msg.transaksi[0].pelanggan.NamaKecamatan +", "+ msg.transaksi[0].pelanggan.NamaKabupaten +", "+ msg.transaksi[0].pelanggan.NamaProvinsi;
+                        document.getElementById("NoHandphone").innerHTML = msg.transaksi[0].pelanggan.NoHandphone;
 
-                    var dataa = "";
-                    for(var i = 0; i < msg.detailtransaksi.length; i++){
+                        
+                        document.getElementById("btninvoice").innerHTML = "";
+
+                     
+                        
                         var dataa = '<tr class="border-bottom append">'+
-                                        '<td>'+
-                                            '<div class="font-weight-bold">'+msg.detailtransaksi[i].produk.NamaProduk+'</div>'+
-                                            '<div class="small text-muted d-none d-md-block">'+msg.detailtransaksi[i].IdProduk+' - '+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+' - '+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+'</div>'+
+                                        '<td colspan=4 >'+
+                                            '<div class="font-weight-bold text-center">Maaf Data Produk Anda Tidak Tersedia!</div>'+
                                         '</td>'+
-                                        '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+'</td>'+
-                                        '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].Qty+'</td>'+
-                                        '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
                                     '</tr>';
+
+                    }else{
+                        document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
+                        $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
+                        document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
+
+                        document.getElementById("Total").innerHTML = "Rp. "+msg.transaksi[0].Total.toLocaleString();
+                        document.getElementById("OngkosKirim").innerHTML = "Rp. "+msg.transaksi[0].OngkosKirim.toLocaleString();
+                        document.getElementById("Potongan").innerHTML = "Rp. "+msg.transaksi[0].Potongan.toLocaleString();
+                        document.getElementById("GrandTotal").innerHTML = "Rp. "+msg.transaksi[0].GrandTotal.toLocaleString();
+
+                        document.getElementById("NamaPelanggan").innerHTML = msg.transaksi[0].pelanggan.NamaPelanggan;
+                        document.getElementById("Alamat").innerHTML = msg.transaksi[0].pelanggan.Alamat;
+                        document.getElementById("Kota").innerHTML = msg.transaksi[0].pelanggan.NamaKecamatan +", "+ msg.transaksi[0].pelanggan.NamaKabupaten +", "+ msg.transaksi[0].pelanggan.NamaProvinsi;
+                        document.getElementById("NoHandphone").innerHTML = msg.transaksi[0].pelanggan.NoHandphone;
+
+                        if(msg.transaksi[0].StatusPesanan == 3)
+                        document.getElementById("btninvoice").innerHTML = "<button type='button' class='btn btn-primary' id='cetak'>Cetak Invoice</button>";
+
+                        var dataa = "";
+                        for(var i = 0; i < msg.detailtransaksi.length; i++){
+                            var dataa = '<tr class="border-bottom append">'+
+                                            '<td>'+
+                                                '<div class="font-weight-bold">'+msg.detailtransaksi[i].produk.NamaProduk+'</div>'+
+                                                '<div class="small text-muted d-none d-md-block">'+msg.detailtransaksi[i].IdProduk+' - '+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+' - '+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+'</div>'+
+                                            '</td>'+
+                                            '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+'</td>'+
+                                            '<td class="text-right font-weight-bold">'+msg.detailtransaksi[i].Qty+'</td>'+
+                                            '<td class="text-right font-weight-bold">Rp. '+msg.detailtransaksi[i].SubTotal.toLocaleString()+'</td>'+
+                                        '</tr>';
+                        }
                     }
                 
                     $("#detail-trans").prepend(dataa);
+                    $("#cetak").on('click',function(e){
+                        a = $("input[name=IdTransaksi]").val();
+
+                        // console.log('asd');
+                        window.location.href = "{{ url('/invoice/') }}/"+a+"/";
+                    });
                 }
-            })
+            });
         }
+
         $('#pesanan').on('hidden.bs.modal', function(e){
             $('.append').remove();
             document.getElementById("IdTransaksi").innerHTML = "";
@@ -197,7 +232,6 @@
             document.getElementById("btninvoice").innerHTML = "";
         });
 
-
         function pembayaran(token){    
             snap.show();
             snap.pay(token, {
@@ -207,11 +241,11 @@
                 },
                 // Optional
                 onPending: function (result) {
-                    location.reload();;
+                    location.reload();
                 },
                 // Optional
                 onError: function (result) {
-                    location.reload();;
+                    location.reload();
                 }
             });
         }
