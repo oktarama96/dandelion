@@ -328,30 +328,25 @@ class TransaksiController extends Controller
                 
                 if($stokproduk){
                     //dd($stokproduk->StokKeluar);
-                    if($stokproduk->StokAkhir > 0){
-                        
-                        $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
-                        
-                        $stokproduk->StokKeluar = $stokkeluar;
-                        $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
-
-                        $stokproduk->save();
+                    $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
                     
-                        $detailtransaksi = new DetailTransaksi;
-                    
-                        $detailtransaksi->Qty = $request->Qty[$i];
-                        $detailtransaksi->Diskon = 0;
-                        $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                        $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                        $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
-                        $detailtransaksi->IdTransaksi = $IdTransaksi;
+                    $stokproduk->StokKeluar = $stokkeluar;
+                    $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
 
-                        $detailtransaksi->save();
+                    $stokproduk->save();
+                
+                    $detailtransaksi = new DetailTransaksi;
+                
+                    $detailtransaksi->Qty = $request->Qty[$i];
+                    $detailtransaksi->Diskon = 0;
+                    $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                    $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                    $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                    $detailtransaksi->IdTransaksi = $IdTransaksi;
 
-                        $this->deleteCart($id_pelanggan);
-                    }else{
-                        
-                    }
+                    $detailtransaksi->save();
+
+                    $this->deleteCart($id_pelanggan);
                 }                        
             }
             
