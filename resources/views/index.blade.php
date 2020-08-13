@@ -374,8 +374,8 @@
                             </div>
                             <div class="footer-list">
                                 <ul>
-                                    <li><a href="#">Instagram</a></li>
-                                    <li><a href="#">Facebook</a></li>
+                                    <li><a href="https://www.instagram.com/dandelionshop128/">Instagram</a></li>
+                                    <li><a href="https://www.facebook.com/dandelion.butik">Facebook</a></li>
                                 </ul>
                             </div>
                         </div>

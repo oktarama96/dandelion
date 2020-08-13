@@ -21,6 +21,7 @@ use Auth;
 use Mike42\Escpos\Printer;
 use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
 use App\Item;
+use App\ItemDt;
 
 class TransaksiController extends Controller
 {
@@ -147,16 +148,14 @@ class TransaksiController extends Controller
                                 $detailtransaksi->IdTransaksi = $IdTransaksi;
 
                                 $detailtransaksi->save();
-
-                                if($request->has('print')){
-                                    $this->printstruk($IdTransaksi);
-                                }
                             }                                          
+                        }
+                        if($request->has('print')){
+                            $this->printstruk($IdTransaksi);
                         }
                     }else{
                         return redirect()->back()->with("alert" , "Error : Tidak Ada Barang!");
                     }
-                    
                     
                     DB::commit();
 
@@ -169,7 +168,7 @@ class TransaksiController extends Controller
         }
     }
 
-    public function getSnapToken($TrxId, $Total, $Ongkir){
+    public function getSnapToken($TrxId, $Total, $Ongkir, $Potongan){
         $Tgl = Carbon::now();
         $Now = $Tgl->format("Y-m-d H:i:s");
 
@@ -182,7 +181,7 @@ class TransaksiController extends Controller
                 'id'       => $produk->IdStokProduk,
                 'price'    => $produk->HargaJual,
                 'quantity' => $produk->Qty,
-                'name'     => $produk->NamaProduk
+                'name'     => $produk->NamaProduk." (".$produk->NamaWarna." / ".$produk->NamaUkuran.")"
             ];
 
         }
@@ -192,6 +191,13 @@ class TransaksiController extends Controller
             'price'    => $Ongkir,
             'quantity' => 1,
             'name'     => "Ongkos Kirim"
+        ];
+
+        $transaction_detail[] = [
+            'id'       => 0,
+            'price'    => -$Potongan,
+            'quantity' => 1,
+            'name'     => "Potongan"
         ];
         // Buat transaksi ke midtrans kemudian save snap tokennya.
         $payload = [
@@ -318,7 +324,7 @@ class TransaksiController extends Controller
             $transaksi->IdPengguna = 0;
             $transaksi->IdPelanggan = $id_pelanggan;
 
-            $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0]);
+            $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0],$request->Potongan);
             
             $transaksi->Snap_token = $snapToken;
             $transaksi->save();
@@ -328,25 +334,33 @@ class TransaksiController extends Controller
                 
                 if($stokproduk){
                     //dd($stokproduk->StokKeluar);
-                    $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                    if($stokproduk->StokAkhir <= 0){
+                        DB::rollback();
+                        $this->response['error'] = "Ada Produk Yang Stoknya Habis!";
+                        break;
+                    }else{
+                        
+                        $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                        
+                        $stokproduk->StokKeluar = $stokkeluar;
+                        $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+
+                        $stokproduk->save();
                     
-                    $stokproduk->StokKeluar = $stokkeluar;
-                    $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+                        $detailtransaksi = new DetailTransaksi;
+                    
+                        $detailtransaksi->Qty = $request->Qty[$i];
+                        $detailtransaksi->Diskon = 0;
+                        $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                        $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                        $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                        $detailtransaksi->IdTransaksi = $IdTransaksi;
 
-                    $stokproduk->save();
-                
-                    $detailtransaksi = new DetailTransaksi;
-                
-                    $detailtransaksi->Qty = $request->Qty[$i];
-                    $detailtransaksi->Diskon = 0;
-                    $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                    $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                    $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
-                    $detailtransaksi->IdTransaksi = $IdTransaksi;
+                        $detailtransaksi->save();
 
-                    $detailtransaksi->save();
-
-                    $this->deleteCart($id_pelanggan);
+                        $this->deleteCart($id_pelanggan);
+                    
+                    }
                 }                        
             }
             
@@ -506,50 +520,56 @@ class TransaksiController extends Controller
 
     public function printstruk($id)
     {
-        $connector = new WindowsPrintConnector("star");
-
-        $transaksis = Transaksi::with('pengguna')
+        if($id == 1){
+            $transaksis = Transaksi::with('pengguna')
+                    ->where('MetodePembayaran', '=', 'Cash')
+                    ->latest()
+                    ->first();
+        }else{
+            $transaksis = Transaksi::with('pengguna')
                     ->where([
                         ['IdTransaksi', '=', $id],
                         ['MetodePembayaran', '=', 'Cash'],
                     ])->first();
+        }
+        
 
-        $detailtransaksis = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $id)->get();
+        $detailtransaksis = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $transaksis->IdTransaksi)->get();
         // dd($detailtransaksis);
         
-        $id = new Item('ID TRANSAKSI', $transaksis->IdTransaksi);
-        $tgl = new Item('TANGGAL', date('d-m-Y', strtotime($transaksis->TglTransaksi)));
+        $id_transaksi = new Item('ID TRANSAKSI', $transaksis->IdTransaksi);
+        $tgl = new Item('TANGGAL', date('d-m-Y h:m:s', strtotime($transaksis->TglTransaksi)));
         $op = new Item('OPERATOR', $transaksis->pengguna->NamaPengguna);
 
-        $totalp = new Item('TOTAL', $transaksis->Total);
-        $potonganp = new Item('POTONGAN', $transaksis->Potongan);
-        $grandtotalp = new Item('GRANDTOTAL', $transaksis->GrandTotal);
+        $totalp = new Item('TOTAL', "Rp. ".number_format($transaksis->Total,0,',',',')."");
+        $potonganp = new Item('POTONGAN', "Rp. ".number_format($transaksis->Potongan,0,',',',')."");
+        $grandtotalp = new Item('GRANDTOTAL', "Rp. ".number_format($transaksis->GrandTotal,0,',',',')."");
 
         $items = array();
         $items_detail = array();
 
         $i = 0;
         foreach($detailtransaksis as $detailtransaksi){
-            $items[$i] = new ItemDt($detailtransaksi->produk->NamaProduk, $detailtransaksi->Qty." x ".$detailtransaksi->produk->HargaJual, $detailtransaksi->Diskon."%    ".$detailtransaksi->Subtotal);
+            $items[$i] = new ItemDt($detailtransaksi->produk->NamaProduk, $detailtransaksi->Qty." x Rp. ".number_format($detailtransaksi->produk->HargaJual,0,',',','), $detailtransaksi->Diskon."%    Rp. ".number_format($detailtransaksi->SubTotal,0,',',','));
             $items_detail[$i] = new ItemDt($detailtransaksi->stokproduk->ukuran->NamaUkuran ." - ". $detailtransaksi->stokproduk->warna->NamaWarna ,"");
             $i++;
         }
 
-        
+        $connector = new WindowsPrintConnector("tmu");
         $printer = new Printer($connector);
 
         $printer -> setJustification(Printer::JUSTIFY_CENTER);
-        $printer -> selectPrintMode(Printer::MODE_DOUBLE_WIDTH);
+        $printer -> selectPrintMode(Printer::MODE_EMPHASIZED);
         $printer -> text("Dandelion Fashion Shop\n");
         $printer -> selectPrintMode();
         $printer -> text("Jl. Raya Abianbase No. 128\n");
-        $printer -> text("IG: dandelionshop128\n");
+        $printer -> text("0812 4658 5269\n");
         $printer -> text("================================\n");
         $printer -> setJustification();
 
         $printer -> setJustification(Printer::JUSTIFY_LEFT);
         $printer -> setEmphasis(true);
-        $printer -> text($id);
+        $printer -> text($id_transaksi);
         $printer -> setEmphasis(false);
         $printer -> text($tgl);
         $printer -> text($op);
@@ -562,11 +582,9 @@ class TransaksiController extends Controller
 
         $printer -> setJustification(Printer::JUSTIFY_LEFT);
 
-        foreach ($items as $item) {
-            foreach (items_detail as $item_detail){
-                $printer -> text($item);
-                $printer -> text($item_detail);
-            }
+        foreach ($items as $key => $item) {
+                $printer -> text($items[$key]);
+                $printer -> text($items_detail[$key]);
         }
         $printer -> setJustification();
 
@@ -596,6 +614,9 @@ class TransaksiController extends Controller
         $printer -> cut();
         $printer -> close();
 
+        if($id == 1){
+            return redirect()->back();
+        }
     }
 
     public function updatetransaksi(Request $request, $id)        

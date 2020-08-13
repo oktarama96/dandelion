@@ -61,6 +61,8 @@ Route::group(['prefix' => 'pos/', 'middleware' => ['auth:pengguna']], function()
 
     Route::post('/pointofsale/addtransaksi', 'TransaksiController@simpantransaksi');
 
+    Route::get('/pointofsale/print/{id}', 'TransaksiController@printstruk');
+
     Route::get('/transaksi', 'TransaksiController@index');
     Route::get('/transaksi/{id}', 'TransaksiController@loaddata');
     Route::get('/transaksi/detailtransaksi/{id}', 'TransaksiController@showdetailtrans'); 
@@ -92,11 +94,15 @@ Route::get('/shop/product-detail/{id}', 'ShopController@productdetail');
 Route::get('/shop/get-warna/{IdProduk}', 'ProdukController@getDetail');
 Route::get('/shop/get-ukuran/{IdProduk}/{IdWarna}', 'ProdukController@getUkuran');
 
+Route::view('/about', 'about');
+Route::view('/contact', 'contact');
+
 Route::group(['middleware' => ['auth:web']], function() {
-    Route::get('/shop/cart', 'ShopController@showcart');
+    Route::get('/shop/cart', 'ShopController@showcart')->name('cart');
     Route::post('/shop/cek-kupon', 'ShopController@cekKupon');
     Route::get('/shop/cart/min/{id_cart}', 'ShopController@minStokCart');
     Route::get('/shop/cart/plus/{id_cart}', 'ShopController@plusStokCart');
+    Route::get('/shop/cart/balance/{id_cart}', 'ShopController@balanceStokCart');
     Route::get('/shop/get-cart', 'ShopController@getCart');
     Route::get('/shop/delete-cart/{id_cart}', 'ShopController@deleteCartItem');
     Route::post('/shop/add-cart', 'ShopController@addCartItem');

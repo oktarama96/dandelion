@@ -42,14 +42,24 @@
                         $("#potongan").val(0)
 
                     }else{
-                        $("#alert-kupon").html('<div class="alert alert-success alert-dismissible" id="myAlert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Berhasil!</strong> Kode Kupon tersebut berhasil digunakan.</div>');
+                        // console.log(data.MinimalTotal);
+                        if($('#total_cart_val').val() < data.kupondiskon.MinimalTotal){
+                            $("#alert-kupon").html('<div class="alert alert-danger alert-dismissible" id="myAlert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Gagal!</strong> Anda tidak memenuhi syarat Minimal Belanja.</div>');
                         
-                        var potongan = data.kupondiskon.JumlahPotongan;
-                        $("#NamaPotongan").html(data.kupondiskon.NamaKupon)
-                        $("#JumlahPotongan").html(new Number(data.kupondiskon.JumlahPotongan).toLocaleString())
-                        $("#id_kupon").val(data.kupondiskon.IdKuponDiskon)
-                        $("#potongan").val(data.kupondiskon.JumlahPotongan)
-                        
+                            var potongan = 0;
+                            $("#NamaPotongan").html("-")
+                            $("#JumlahPotongan").html("0")
+                            $("#id_kupon").val("-")
+                            $("#potongan").val(0)
+                        }else{
+                            $("#alert-kupon").html('<div class="alert alert-success alert-dismissible" id="myAlert"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a><strong>Berhasil!</strong> Kode Kupon tersebut berhasil digunakan.</div>');
+                            
+                            var potongan = data.kupondiskon.JumlahPotongan;
+                            $("#NamaPotongan").html(data.kupondiskon.NamaKupon)
+                            $("#JumlahPotongan").html(new Number(data.kupondiskon.JumlahPotongan).toLocaleString())
+                            $("#id_kupon").val(data.kupondiskon.IdKuponDiskon)
+                            $("#potongan").val(data.kupondiskon.JumlahPotongan)
+                        }
                     }
 
                     var val = $("#shipping_cost").val().split('-');
@@ -105,20 +115,29 @@
                             url:  "{{ url('/transaksi/online') }}/",
                             data: formData,
                             success: function(data){
-                                snap.pay(data.snap_token, {
-                                    // Optional
-                                    onSuccess: function (result) {
-                                        window.location.replace("{{ route('shop') }}");
-                                    },
-                                    // Optional
-                                    onPending: function (result) {
-                                        window.location.replace("{{ route('shop') }}");
-                                    },
-                                    // Optional
-                                    onError: function (result) {
-                                        window.location.replace("{{ route('shop') }}");
-                                    }
-                                });
+                                
+                                if(data.error){
+                                    swal("Gagal!", data.error, "error")
+                                    .then((value) => {
+                                        window.location.replace("{{ route('cart') }}");
+                                    });
+                                }else{
+                                    snap.pay(data.snap_token, {
+                                        // Optional
+                                        onSuccess: function (result) {
+                                            window.location.replace("{{ route('shop') }}");
+                                        },
+                                        // Optional
+                                        onPending: function (result) {
+                                            window.location.replace("{{ route('shop') }}");
+                                        },
+                                        // Optional
+                                        onError: function (result) {
+                                            window.location.replace("{{ route('shop') }}");
+                                        }
+                                    });
+                                }
+                                
 
                             }
                         })

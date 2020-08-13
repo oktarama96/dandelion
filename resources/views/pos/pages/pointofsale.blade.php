@@ -50,7 +50,7 @@
     });
 
     function reprint(){
-        window.location="re-print.php";
+        window.location="/pos/pointofsale/print/1";
     }
 
     //delete line
@@ -213,7 +213,7 @@
                 } else {
                     swal({
                         title: "Error!",
-                        text: "Produk Tidak Ada!",
+                        text: "Produk Tidak Ada atau Habis!",
                         icon: "error",
                         closeModal: false
                     }).then(function() {
@@ -355,7 +355,10 @@
                                 <td><input type="number" name="SubTotal[]" class="form-control " onkeydown="subTtl(this)" readonly></td>
                             </tr>
                         </tbody>
-                    </table>    
+                    </table>
+                    <div class="text-right">
+                        <button type="button" onclick="reprint()" class="btn btn-primary mb-3">Print Struk Terakhir</button>    
+                    </div>    
                 </div>
             </div>
             

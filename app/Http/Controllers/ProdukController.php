@@ -178,7 +178,11 @@ class ProdukController extends Controller
         $produk = Produk::with('kategori')->where('IdProduk', $id)->first();
         if($produk){
             $warna = $produk->warnas()->groupBy('IdWarna')->where('StokAkhir','>',0)->get();
-            $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+            if($warna->isNotEmpty()){
+                $ukuran = $this->getUkuran($produk->IdProduk, $warna[0]->IdWarna);
+            }else{
+                $produk = null;
+            }
         }
         // return $warna;
         return response()->json(['produk' => $produk, 'warna' => $warna, 'ukuran' => $ukuran]);

@@ -4,9 +4,39 @@
     Invoice - Dandelion Fashion Shop
 @endsection
 
+@section('add-css')
+    <style>
+        .checkout-btn {
+            background-color: #a749ff;
+            border: medium none;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 500;
+            padding: 10px 30px;
+            text-transform: uppercase;
+            border-radius: 50px;
+            z-index: 9; }
+        .checkout-btn:hover {
+            background-color: #333; }
+
+        @media print {
+            html, body {
+                border: 1px solid white;
+                height: 99%;
+                page-break-after: avoid;
+                page-break-before: avoid;
+            }
+        }
+    </style>
+@endsection
+
 @section('content')
-    <nav class="navbar fixed-top navbar-light bg-light">
-        <a class="navbar-brand" href="#">Fixed top</a>
+    <nav class="navbar fixed-top navbar-light bg-light justify-content-between">
+        <div class="container">
+            <a class="btn-hover checkout-btn" href="{{ url('/my-account').'/'.Auth::guard('web')->user()->IdPelanggan }}"><i class="fa fa-angle-double-left"></i> Back</a>
+
+            <button class="btn-hover checkout-btn" type="button" onclick="window.print()"><i class="fa fa-print"></i> Print</button>
+        </div>
     </nav>
     <!-- Main page content-->
     <div class="container mt-100">
@@ -102,7 +132,7 @@
                     </div>
                     <div class="col-lg-4 my-auto">
                         <div class="small text-muted text-uppercase font-weight-700 mb-2">Catatan</div>
-                        <div class="small mb-0">Perhatian!, jika terdapat komplain terhadap barang mohon hubungi langsung 082123456789 atau email ke <a href="mailto:dandelionshop128@gmail.com">dandelionshop128@gmail.com</a></div>
+                        <div class="small mb-0">Perhatian!, jika terdapat komplain terhadap barang mohon hubungi langsung +6281 2465 8526 9 atau email ke <a href="mailto:dandelionshop128@gmail.com">dandelionshop128@gmail.com</a></div>
                     </div>
                 </div>
             </div>

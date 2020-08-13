@@ -20,7 +20,10 @@ class KuponDiskonController extends Controller
 
             return Datatables::of($datas)
                     ->editColumn('JumlahPotongan', function($data){
-                        return "Rp. ".number_format($data->JumlahPotongan,0,',','.')."";
+                        return "Rp. ".number_format($data->JumlahPotongan,0,',',',')."";
+                    })
+                    ->editColumn('MinimalTotal', function($data){
+                        return "Rp. ".number_format($data->MinimalTotal,0,',',',')."";
                     })
                     ->addColumn('Status', function($data){
                         $tglskrg = date_format(date_create(),'yy-m-d h:i:s');
@@ -75,6 +78,7 @@ class KuponDiskonController extends Controller
             'TglMulai' => 'required|',
             'TglSelesai' => 'required|',
             'JumlahPotongan' => 'required|',
+            'MinimalTotal' => 'required|',
         ]);
 
         $tabel = new KuponDiskon;
@@ -84,6 +88,7 @@ class KuponDiskonController extends Controller
         $tabel->TglMulai = $request->TglMulai;
         $tabel->TglSelesai = $request->TglSelesai;
         $tabel->JumlahPotongan = $request->JumlahPotongan;
+        $tabel->MinimalTotal = $request->MinimalTotal;
 
         $tabel->save();
         
@@ -128,6 +133,7 @@ class KuponDiskonController extends Controller
             'TglMulai' => 'required|',
             'TglSelesai' => 'required|',
             'JumlahPotongan' => 'required|',
+            'MinimalTotal' => 'required|',
         ]);
 
         $tabel = KuponDiskon::find($id);
@@ -137,6 +143,7 @@ class KuponDiskonController extends Controller
         $tabel->TglMulai = $request->TglMulai;
         $tabel->TglSelesai = $request->TglSelesai;
         $tabel->JumlahPotongan = $request->JumlahPotongan;
+        $tabel->MinimalTotal = $request->MinimalTotal;
 
         $tabel->save();
         

@@ -18,10 +18,27 @@
 
             if ($button.text() === "+") {
                 // console.log(idCart);
-                if (oldValue == max) {
-                    var newVal = max;
-                }else{
+                if (oldValue >= max) {
+                    if(oldValue == max){
+                        var newVal = max;
+                        $button.parent().find("input").val(newVal);
+                    }else{
+                        var selisih = (oldValue - max);
+
+                        $.ajax({
+                            type: "GET",
+                            url: "{{ url('/shop/cart/balance/') }}/" + idCart,
+                            data: "SelisihStok="+selisih ,
+                            success: function (msg) {
+                                location.reload();
+                            }
+                        })
+
+                        var newVal = selisih;
+                        $button.parent().find("input").val(newVal);
+                    }
                     
+                }else{
                     swal({
                         title: "Apakah anda yakin menambah kuantitas produk ini ?",
                         icon: "warning",
@@ -142,9 +159,9 @@
                                                 <tr>
                                                     <input type="hidden" id="IdCart" value="{{ $cart->IdCart }}">
                                                     <td class="product-thumbnail">
-                                                        <a href="#"><img src="/img/produk/{{ $cart->GambarProduk }}" width="82px" height="82px" alt=""></a>
+                                                        <a href="/shop/product-detail/{{ $cart->IdProduk }}"><img src="/img/produk/{{ $cart->GambarProduk }}" width="82px" height="82px" alt=""></a>
                                                     </td>
-                                                    <td class="product-name"><a href="#">{{ $cart->NamaProduk }}</a></td>
+                                                    <td class="product-name"><a href="/shop/product-detail/{{ $cart->IdProduk }}">{{ $cart->NamaProduk }}</a><p>{{ $cart->NamaWarna }} / {{ $cart->NamaUkuran }}</p></td>
                                                     <td class="product-price-cart"><span class="amount">Rp. {{ number_format($cart->HargaJual,0,',','.') }}</span></td>
                                                     <td class="product-quantity">
                                                         <div class="cart-plus-minus">

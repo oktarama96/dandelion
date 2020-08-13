@@ -31,6 +31,7 @@
             {data: 'TglSelesai', name: 'TglSelesai'},
             {data: 'Status', name: 'Status'},
             {data: 'JumlahPotongan', name: 'JumlahPotongan'},
+            {data: 'MinimalTotal', name: 'MinimalTotal'},
             {data: 'Aksi', name: 'Aksi', orderable: false, searchable: false},
         ]
     });
@@ -100,6 +101,7 @@
                 $("#TglMulaiE").val(msg.TglMulai);
                 $("#TglSelesaiE").val(msg.TglSelesai);
                 $("#JumlahPotonganE").val(msg.JumlahPotongan);
+                $("#MinimalTotalE").val(msg.MinimalTotal);
             }
         })
     }
@@ -167,6 +169,7 @@
                         <th>Tanggal Selesai</th>
                         <th>Status</th>
                         <th>Jumlah Potongan</th>
+                        <th>Minimal Total</th>
                         <th>Aksi</th>
                     </tr>
                     </thead>
@@ -198,7 +201,7 @@
                             <label>Nama Kupon Diskon</label>
                             <input type="text" class="form-control" name="NamaKuponDiskon" required>
                         </div>
-                        <div class="row">
+                        <div class="row form-group">
                             <div class="col">
                                 <label>Tanggal Mulai</label>
                                 <input type="text" class="form-control tgl" name="TglMulai" required>                        
@@ -215,6 +218,15 @@
                                   <div class="input-group-text">Rp.</div>
                                 </div>
                                 <input type="number" class="form-control" name="JumlahPotongan" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Minimal Total</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                  <div class="input-group-text">Rp.</div>
+                                </div>
+                                <input type="number" class="form-control" name="MinimalTotal" required>
                             </div>
                         </div>
                     </form>
@@ -264,6 +276,15 @@
                                   <div class="input-group-text">Rp.</div>
                                 </div>
                                 <input type="number" class="form-control" name="JumlahPotongan" id="JumlahPotonganE" required>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Minimal Total</label>
+                            <div class="input-group mb-2">
+                                <div class="input-group-prepend">
+                                  <div class="input-group-text">Rp.</div>
+                                </div>
+                                <input type="number" class="form-control" name="MinimalTotal" id="MinimalTotalE" required>
                             </div>
                         </div>
                     </form>

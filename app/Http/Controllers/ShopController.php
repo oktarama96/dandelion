@@ -169,26 +169,33 @@ class ShopController extends Controller
         if(Auth::guard('web')->check()){
             $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
 
-            $IdStokProduk = StokProduk::where([
+            $StokProduk = StokProduk::where([
                 ['IdProduk', '=', $request->IdProduk],
                 ['IdWarna', '=', $request->IdWarna],
                 ['IdUkuran', '=', $request->IdUkuran],
-            ])->pluck('IdStokProduk')->first();
+            ])->select('IdStokProduk','StokAkhir')->first();
+
+            // dd($StokProduk->IdStokProduk);
 
             $cart_item = Cart::where([
                 ['IdPelanggan', $id_pelanggan],
-                ['IdStokProduk', $IdStokProduk]
+                ['IdStokProduk', $StokProduk->IdStokProduk]
             ])->first();
 
             if(!$cart_item){
                 $cart_item = new Cart;
                 $cart_item->IdPelanggan = Auth::guard('web')->user()->IdPelanggan;
-                $cart_item->IdStokProduk = $IdStokProduk;
+                $cart_item->IdStokProduk = $StokProduk->IdStokProduk;
                 $cart_item->Qty = $request->Qty;
                 $cart_item->save();
             } else {
-                $cart_item->Qty += $request->Qty;
-                $cart_item->save();
+                if(($cart_item->Qty + $request->Qty) >= $StokProduk->StokAkhir){
+                    $cart_item->Qty = $StokProduk->StokAkhir;
+                    $cart_item->save();
+                }else{
+                    $cart_item->Qty += $request->Qty;
+                    $cart_item->save(); 
+                }
             }
             
             $item = Cart::join('stokproduk', 'cart.IdStokProduk', '=', 'stokproduk.IdStokProduk')
@@ -231,17 +238,23 @@ class ShopController extends Controller
         $cart_produk = $this->getCart();
         $cart_total = 0;
         $cart_weight = 0;
-        foreach($cart_produk as $produk){
-            $cart_total+=$produk->sub_total;
-            $cart_weight+=$produk->Berat;
+        // dd($cart_produk->isEmpty());
+        if($cart_produk->isNotEmpty()){
+            foreach($cart_produk as $produk){
+                $cart_total+=$produk->sub_total;
+                $cart_weight+=$produk->Berat;
+            }
+    
+            $curl = curl_init();
+    
+            $biaya_kirim = $this->getBiayaKirim($cart_weight);
+            $biaya_kirim = json_decode($biaya_kirim);
+            $cost_jne = $biaya_kirim->rajaongkir->results[0]->costs;
+
+            return view('checkout', compact('cart_produk', 'cart_weight', 'cart_total', 'cart_weight', 'cost_jne'));
+        }else{
+            return redirect()->action('ShopController@showcart');
         }
-
-        $curl = curl_init();
-
-        $biaya_kirim = $this->getBiayaKirim($cart_weight);
-        $biaya_kirim = json_decode($biaya_kirim);
-        $cost_jne = $biaya_kirim->rajaongkir->results[0]->costs;
-        return view('checkout', compact('cart_produk', 'cart_weight', 'cart_total', 'cart_weight', 'cost_jne'));
     }
 
     function getBiayaKirim($weight){
@@ -287,6 +300,15 @@ class ShopController extends Controller
     {
         $cart = Cart::find($id);
         $cart->Qty += 1;
+        $cart->save();
+        
+        return response()->json(['success'=>'sukses']);
+    }
+
+    public function balanceStokCart($id, Request $request)
+    {
+        $cart = Cart::find($id);
+        $cart->Qty -= $request->SelisihStok;
         $cart->save();
         
         return response()->json(['success'=>'sukses']);
