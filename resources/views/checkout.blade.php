@@ -4,6 +4,20 @@
     Checkout - Dandelion Fashion Shop
 @endsection
 
+@section('add-css')
+    <style>
+        .swal-text {
+            background-color: #FEFAE3;
+            padding: 17px;
+            border: 1px solid #F0E1A1;
+            display: block;
+            margin: 22px;
+            text-align: center;
+            color: #61534e;
+        }
+    </style>
+@endsection
+
 @section('add-js')
 
     <script src="{{ !config('services.midtrans.isProduction') ? 'https://app.sandbox.midtrans.com/snap/snap.js' : 'https://app.midtrans.com/snap/snap.js' }}" data-client-key="{{ config('services.midtrans.clientKey') }}"></script>
@@ -99,7 +113,7 @@
             $("#btn_checkout").click(function(){
                 swal({
                     title: "Apakah anda yakin ?",
-                    text: " Pastikan Pesanan Anda Sudah Sesuai.",
+                    text: " Pastikan Pesanan Anda Sudah Sesuai.\nSetelah Anda Memilih OK, Segera Selesaikan Pembayaran Anda atau Pesanan Anda Akan Kadaluarsa",
                     icon: "info",
                     buttons: true,
                     dangerMode: true,
@@ -235,14 +249,14 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="your-order-area">
-                        <h3>Your order</h3>
+                        <h3>Pesanan Anda</h3>
                         <form id="checkout_form" action="#" method="POST">
                         @csrf
                         <div class="your-order-wrap gray-bg-4">
                             <div class="your-order-product-info">
                                 <div class="your-order-top">
                                     <ul>
-                                        <li>Product</li>
+                                        <li>Produk</li>
                                         <li>Total</li>
                                     </ul>
                                 </div>
@@ -271,7 +285,7 @@
                                 </div>
                                 <div class="your-order-total">
                                     <ul>
-                                        <li class="order-total">Coupon Code</li>
+                                        <li class="order-total">Kode Kupon</li>
                                         <li>
                                             <div class="shopping-cart-delete text-right">
                                                 <span id="NamaPotongan">-</span>
@@ -281,14 +295,14 @@
                                         </li>
                                     </ul>
                                     <ul>
-                                        <li class="order-total">Discount</li>
+                                        <li class="order-total">Diskon</li>
                                         <li>- Rp. <span id="JumlahPotongan">0</span></li>
                                         <input type="hidden" id="potongan" name="Potongan" value=0 />
                                     </ul>
                                 </div>
                                 <div class="your-order-total">
                                     <ul>
-                                        <li class="your-order-shipping" style="font-weight: 500;color: #212121;font-size: 18px;">Shipping (JNE)</li>
+                                        <li class="your-order-shipping" style="font-weight: 500;color: #212121;font-size: 18px;">Jasa Pengiriman (JNE)</li>
                                         <li>
                                             <div class='pro-details-color-content'>
                                                 <select id="shipping_cost" class='form-control' name="OngkosKirim">
@@ -302,7 +316,7 @@
                                 </div>
                                 <div class="your-order-total">
                                     <ul>
-                                        <li class="order-total">Shipping Cost</li>
+                                        <li class="order-total">Biaya Pengiriman</li>
                                         <li id="total_shipping">Rp. {{ number_format($cost_jne[0]->cost[0]->value, 0, '', '.') }}</li>
                                         <input type="hidden" id="nama_ekspedisi" name="NamaEkspedisi" value="JNE - {{ $cost_jne[0]->service }}" />
                                     </ul>

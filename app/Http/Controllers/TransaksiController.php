@@ -216,8 +216,8 @@ class TransaksiController extends Controller
             'item_details' => $transaction_detail,
             'expiry' => array (
               "start_time" => $Now." +0800",
-              "unit" => "minute",
-              "duration" => 2
+              "unit" => "minutes",
+              "duration" => 30
             )
         ];
         

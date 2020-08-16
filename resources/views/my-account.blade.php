@@ -11,6 +11,18 @@
 @section('add-css')
     <link href="{{ asset('vendor/bootstrap-datepicker/css/bootstrap-datepicker.standalone.min.css') }}" rel="stylesheet">
     <link href="{{ asset('vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
+
+    <style>
+        .swal-text {
+            background-color: #FEFAE3;
+            padding: 17px;
+            border: 1px solid #F0E1A1;
+            display: block;
+            margin: 22px;
+            text-align: center;
+            color: #61534e;
+        }
+    </style>
 @endsection
 @section('add-js')
     <script src="{{ asset('vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
@@ -587,7 +599,8 @@
                                       <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
                                       <div class="h6 mb-1">Dandelion Fashion Shop</div>
                                       <div class="small">Jln. Raya Abianbase No. 128</div>
-                                      <div class="small">Badung, Bali, Indonesia</div>
+                                      <div class="small">Mengwi, Badung, Bali</div>
+                                      <div class="small">081246585269</div>
                                   </div>
                                   <div class="col-lg-4 my-auto text-center">
                                       <!-- Invoice - additional notes-->

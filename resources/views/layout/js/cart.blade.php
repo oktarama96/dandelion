@@ -29,9 +29,12 @@
                         cart_total -= cart_produk[key].sub_total
                         cart_produk.splice(key, 1)
 
-                        $('#cart_total').html('Rp' + cart_total.toLocaleString())
+                        $('#cart_total').html('Rp. ' + cart_total.toLocaleString())
                         $('#cart_count').html(cart_produk.length)
                         $('#cart_content li').eq(key).remove()
+
+                        if(cart_total == 0)
+                        $('#cart_content').html('<li class="text-center"><span>Cart Kosong!</span></li>')
 
                         swal("Berhasil!", "Berhasil Menghapus Produk dari Keranjang Belanja", "success");
                     }
@@ -73,6 +76,11 @@
                     if (new_item) {
                         cart_produk.push(data)
                     }
+
+                    if (cart_total == 0){
+                        $('#cart_content').html('')
+                    }
+
 
                     cart_count = cart_produk.length
                     cart_total += sub_total

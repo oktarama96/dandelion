@@ -49,14 +49,14 @@
                             <label for="email">Email</label>                            
                             <input type="email" class="form-control {{ $errors->has('email') ? ' form-control-danger' : '' }} form-control-user" id="email" name="email" placeholder="Masukkan email anda" value="{{ old('email') }}" required autofocus> 
                             @if ($errors->has('email'))
-                            <label class="error mt-2 text-danger">{{ $errors->first('email') }}</label>
+                            <label class="mt-2 text-danger">{{ $errors->first('email') }}</label>
                             @endif
                         </div>
                         <div class="form-group {{ $errors->has('password') ? ' has-danger' : '' }}">
                             <label for="password">Password</label>
-                            <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }} form-control-user" id="password" name="password" required> 
+                            <input type="password" class="form-control {{ $errors->has('password') ? 'form-control-danger' : '' }} form-control-user" id="password" name="password" placeholder="Masukkan password anda" required> 
                             @if ($errors->has('password'))
-                            <label class="error mt-2 text-danger">{{ $errors->first('password') }}</label>
+                            <label class="mt-2 text-danger">{{ $errors->first('password') }}</label>
                             @endif
                         </div> 
                       {{-- <div class="form-group">

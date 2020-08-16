@@ -290,7 +290,7 @@
             url: "{{ url('/pos/detailtransaksi/') }}/"+a+"/",
             data: kode,
             success: function(msg){
-                //console.log(msg);
+                console.log(msg.detailtransaksi);
                 document.getElementById("IdTransaksi").innerHTML = msg.transaksi[0].IdTransaksi;
                 $("input[name=IdTransaksi]").val(msg.transaksi[0].IdTransaksi);
                 document.getElementById("TglTransaksi").innerHTML = msg.transaksi[0].TglTransaksi;
@@ -307,7 +307,7 @@
 
                 var dataa = "";
                 for(var i = 0; i < msg.detailtransaksi.length; i++){
-                    var dataa = '<tr class="border-bottom append">'+
+                    var dataa = dataa+'<tr class="border-bottom append">'+
                                     '<td>'+
                                         '<div class="font-weight-bold">'+msg.detailtransaksi[i].produk.NamaProduk+'</div>'+
                                         '<div class="small text-muted d-none d-md-block">'+msg.detailtransaksi[i].IdProduk+' - '+msg.detailtransaksi[i].stokproduk.warna.NamaWarna+' - '+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+'</div>'+
@@ -711,7 +711,8 @@
                                         <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
                                         <div class="h6 mb-1">Dandelion Fashion Shop</div>
                                         <div class="small">Jln. Raya Abianbase No. 128</div>
-                                        <div class="small">Badung, Bali, Indonesia</div>
+                                        <div class="small">Mengwi, Badung, Bali</div>
+                                        <div class="small">081246585269</div>
                                     </div>
                                     <div class="col-lg-4 mt-1">
                                         <!-- Invoice - additional notes-->
@@ -720,6 +721,7 @@
                                           <select class="form-control" name="StatusPesanan">
                                             <option value="1">DiProses</option>
                                             <option value="2">DiKirim</option>
+                                            <option value="4">Dibatalkan</option>
                                           </select>
                                         </div>
                                     </div>

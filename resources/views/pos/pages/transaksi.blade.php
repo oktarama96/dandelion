@@ -12,6 +12,7 @@
   <script src="{{ asset('vendor/datatables/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('vendor/datatables/dataTables.bootstrap4.min.js') }}"></script>
   <script src="{{ asset('vendor/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+  <script src="{{ asset('vendor/moment/moment.min.js') }}"></script>
 
   <script type="text/javascript">
     $.ajaxSetup({
@@ -24,6 +25,15 @@
         $('.input-daterange').datepicker({
             format: "yyyy-mm-dd"
         });
+
+        var to = moment().endOf('day').format("YYYY-MM-DD");
+        var from = moment().startOf('day').format("YYYY-MM-DD");
+
+        $('#from_date_pos').val(from);
+        $('#to_date_pos').val(to);
+
+        $('#from_date_online').val(from);
+        $('#to_date_online').val(to);
 
         load_data_pos();
         load_data_online();
@@ -86,8 +96,8 @@
         });
 
         $('#refresh_pos').click(function(){
-            $('#from_date_pos').val('');
-            $('#to_date_pos').val('');
+            $('#from_date_pos').val(from);
+            $('#to_date_pos').val(to);
             $('.data-table-pos').DataTable().destroy();
             load_data_pos();
         });
@@ -150,8 +160,8 @@
         });
 
         $('#refresh_online').click(function(){
-            $('#from_date_online').val('');
-            $('#to_date_online').val('');
+            $('#from_date_online').val(from);
+            $('#to_date_online').val(to);
             $('.data-table-online').DataTable().destroy();
             load_data_online();
         });
@@ -180,7 +190,7 @@
                             "<td>"+msg.detailtransaksi[i].stokproduk.ukuran.NamaUkuran+"</td>"+
                             "<td>Rp. "+msg.detailtransaksi[i].produk.HargaJual.toLocaleString()+"</td>"+
                             "<td>"+msg.detailtransaksi[i].Qty+"</td>"+
-                            "<td>"+msg.detailtransaksi[i].Diskon+"</td>"+
+                            "<td>"+msg.detailtransaksi[i].Diskon+" %</td>"+
                             "<td>Rp. "+msg.detailtransaksi[i].SubTotal.toLocaleString()+"</td>"+
                         "</tr>";
                     }
@@ -442,22 +452,24 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <table class="table table-bordered" >
-                        <thead>
-                            <tr>
-                              <th>Id Produk</th>
-                              <th>Nama Produk</th>
-                              <th>Warna</th>
-                              <th>Ukuran</th>
-                              <th>Harga</th>
-                              <th>Qty</th>
-                              <th>Diskon</th>
-                              <th>Subtotal</th>
-                            </tr>  
-                        </thead>  
-                        <tbody id="detail-trans">
-                        </tbody>
-                      </table>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" >
+                            <thead>
+                                <tr>
+                                  <th>Id Produk</th>
+                                  <th>Nama Produk</th>
+                                  <th>Warna</th>
+                                  <th>Ukuran</th>
+                                  <th>Harga</th>
+                                  <th>Qty</th>
+                                  <th>Diskon</th>
+                                  <th>Subtotal</th>
+                                </tr>  
+                            </thead>  
+                            <tbody id="detail-trans">
+                            </tbody>
+                          </table>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
@@ -556,7 +568,8 @@
                                       <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
                                       <div class="h6 mb-1">Dandelion Fashion Shop</div>
                                       <div class="small">Jln. Raya Abianbase No. 128</div>
-                                      <div class="small">Badung, Bali, Indonesia</div>
+                                      <div class="small">Mengwi, Badung, Bali</div>
+                                      <div class="small">081246585269</div>
                                   </div>
                                   <div class="col-lg-4 mt-1">
                                       <!-- Invoice - additional notes-->

@@ -128,7 +128,8 @@
                         <div class="small text-muted text-uppercase font-weight-700 mb-2">Dari</div>
                         <div class="h6 mb-1">Dandelion Fashion Shop</div>
                         <div class="small">Jln. Raya Abianbase No. 128</div>
-                        <div class="small">Badung, Bali, Indonesia</div>
+                        <div class="small">Mengwi, Badung, Bali</div>
+                        <div class="small">081246585269</div>
                     </div>
                     <div class="col-lg-4 my-auto">
                         <div class="small text-muted text-uppercase font-weight-700 mb-2">Catatan</div>

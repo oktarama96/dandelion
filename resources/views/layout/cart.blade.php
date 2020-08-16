@@ -17,7 +17,7 @@
                         <div class="shopping-cart-title">
                             <h4><a href="#">{{ $produk->NamaProduk }} ({{ $produk->NamaWarna }}/{{ $produk->NamaUkuran }}) </a></h4>
                             <h6 class='qty'>Qty: {{ $produk->Qty }} </h6>
-                            <span class='sub_total'>Rp {{ number_format($produk->sub_total,0,"",".") }}</span>
+                            <span class='sub_total'>Rp. {{ number_format($produk->sub_total,0,"",".") }}</span>
                         </div>
                         <div class="shopping-cart-delete">
                             <a href="#" class="delete_cart" onclick="delete_cart(this)"><i class="fa fa-times-circle"></i></a>
@@ -27,7 +27,7 @@
                 @endif
             </ul>
             <div class="shopping-cart-total">
-                <h4>Total : <span class="shop-total" id="cart_total">Rp {{ number_format($cart_total,0,"",".") }}</span></h4>
+                <h4>Total : <span class="shop-total" id="cart_total">Rp. {{ number_format($cart_total,0,"",".") }}</span></h4>
             </div>
             <div class="shopping-cart-btn btn-hover text-center">
                 <a class="default-btn" href="/shop/cart">view cart</a>
