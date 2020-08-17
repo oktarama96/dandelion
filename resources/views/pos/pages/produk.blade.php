@@ -13,6 +13,7 @@
 
   <!-- Page level custom scripts -->
   <script type="text/javascript">
+  
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
@@ -40,7 +41,7 @@
         //var NamaPengguna = $("input[name=NamaPengguna]").val();
        // document.getElementById("demo").innerHTML = name;
        var formData = new FormData(this);
-
+        console.log(formData)
         $.ajax({
             type: 'POST',
             url: "{{ url('/pos/admin/produk') }}",
@@ -60,33 +61,6 @@
                 });
                 
                 swal("Gagal!","Gagal Menambah Data : \n"+errors+"","error");
-            },
-        });
-    });
-
-    $("#Edit").click(function(e){
-        e.preventDefault();
-
-        a = $("#IdProdukE").val();
-        //console.log($('#form-edit').serialize());
-        $.ajax({
-            type: 'PATCH',
-            url: "{{ url('/pos/admin/produk/') }}/"+a+"/",
-            data: $('#form-edit').serialize(),
-            
-            success: function (data) {
-                swal("Selamat!", "Berhasil Mengubah Data", "success");
-                $('#form-edit').trigger("reset");
-                $('#edit').modal('hide');
-                table.draw();
-            },
-            error: function (data) {
-                var errors = "";
-                $.each(data.responseJSON.errors, function(key,value) {
-                    errors = errors +' '+ value +'\n';
-                });
-                
-                swal("Gagal!","Gagal Mengubah Data : \n"+errors+"","error");
             },
         });
     });
@@ -185,7 +159,9 @@
             }
         })
     }
-  
+
+    
+    
     function edit(a){
         var kode = 'IdProduk='+ a;
         $.ajax({
@@ -230,15 +206,43 @@
                     "</tr>";
                 }
             
-            $(".add-row").append(dataa);
+                $(".add-row").append(dataa);
 
-            for(var j = 0; j < msg.stokproduk.length; j++){
-                $("select[name='Ukuran["+j+"]']").val(msg.stokproduk[j].ukuran.IdUkuran);
-                $("select[name='Warna["+j+"]']").val(msg.stokproduk[j].warna.IdWarna); 
-                $("input[name='StokMasuk["+j+"]']").val(msg.stokproduk[j].StokMasuk); 
+                for(var j = 0; j < msg.stokproduk.length; j++){
+                    $("select[name='Ukuran["+j+"]']").val(msg.stokproduk[j].ukuran.IdUkuran);
+                    $("select[name='Warna["+j+"]']").val(msg.stokproduk[j].warna.IdWarna); 
+                    $("input[name='StokMasuk["+j+"]']").val(msg.stokproduk[j].StokMasuk); 
                 }
+
+                $('#btn_update').click(function(e){
+                    e.preventDefault();
+                    var data = new FormData($('#form-edit')[0])
+                    $.ajax({
+                        contentType: false,
+                        processData: false,
+                        type: 'POST',
+                        url: "{{ url('/pos/admin/produk/') }}/"+a+"/",
+                        data:  data,
+                        
+                        success: function (data) {
+                            swal("Selamat!", "Berhasil Mengubah Data", "success");
+                            $('#form-edit').trigger("reset");
+                            $('#edit').modal('hide');
+                            table.draw();
+                        },
+                        error: function (data) {
+                            var errors = "";
+                            $.each(data.responseJSON.errors, function(key,value) {
+                                errors = errors +' '+ value +'\n';
+                            });
+                            
+                            swal("Gagal!","Gagal Mengubah Data : \n"+errors+"","error");
+                        },
+                    });
+                });
             }
-        }) 
+        });
+       
     }
 
     function deletee(a){
@@ -516,6 +520,7 @@
     <div class="modal fade" id="edit" tabindex="-1" role="dialog" aria-labelledby="edit" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
+                <form method="post" action="#" id="form-edit" enctype="multipart/form-data">
                 <div class="modal-header">
                     <h5 class="modal-title" id="add">Edit Data Produk</h5>
                     <button class="close" type="button" data-dismiss="modal" aria-label="Close">
@@ -523,82 +528,82 @@
                     </button>
                 </div>
                 <div class="modal-body">
-                    <form method="post" action="#" id="form-edit">
-                        <div class="form-group">
-                            <label>Id Produk</label>
-                            <input type="text" name="IdProduk" class="form-control" id="IdProdukE" readonly>
-                        </div>
+                   
+                    <div class="form-group">
+                        <label>Id Produk</label>
+                        <input type="text" name="IdProduk" class="form-control" id="IdProdukE" readonly>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Nama Produk</label>
-                            <input type="text" name="NamaProduk" class="form-control" id="NamaProdukE" required>
-                        </div>
+                    <div class="form-group">
+                        <label>Nama Produk</label>
+                        <input type="text" name="NamaProduk" class="form-control" id="NamaProdukE" required>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Kategori Produk</label>
-                            <select class="form-control" name="KategoriProduk" id="KategoriProdukE">
-                                @foreach ($kategoris as $kategori)
-                                <option value="{{ $kategori->IdKategoriProduk }}">{{ $kategori->NamaKategori }}</option>
-                                @endforeach
-                            </select>
-                        </div>
+                    <div class="form-group">
+                        <label>Kategori Produk</label>
+                        <select class="form-control" name="KategoriProduk" id="KategoriProdukE">
+                            @foreach ($kategoris as $kategori)
+                            <option value="{{ $kategori->IdKategoriProduk }}">{{ $kategori->NamaKategori }}</option>
+                            @endforeach
+                        </select>
+                    </div>
 
-                        <div class="form-group row">
-                            <div class="col">
-                                <label>Harga Pokok</label>
-                                <input type="number" class="form-control" name="HargaPokok" id="HargaPokokE" required>                        
-                            </div>
-                            <div class="col">
-                                <label>Harga Jual</label>
-                                <input type="number" class="form-control" name="HargaJual" id="HargaJualE" required> 
-                            </div>
+                    <div class="form-group row">
+                        <div class="col">
+                            <label>Harga Pokok</label>
+                            <input type="number" class="form-control" name="HargaPokok" id="HargaPokokE" required>                        
                         </div>
-
-                        <div class="form-group">
-                            <label>Berat (g)</label>
-                            <input type="number" name="Berat" class="form-control" id="BeratE" required>
+                        <div class="col">
+                            <label>Harga Jual</label>
+                            <input type="number" class="form-control" name="HargaJual" id="HargaJualE" required> 
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <div class="table-responsive">
-                                <table class="table table-bordered" width="100%" cellspacing="0" style="white-space: nowrap;">
-                                    <thead>
-                                    <tr>
-                                        <th>Ukuran</th>
-                                        <th>Warna</th>
-                                        <th>Stok Masuk</th>
-                                        <th>Aksi</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody class="add-row">
-                                        
+                    <div class="form-group">
+                        <label>Berat (g)</label>
+                        <input type="number" name="Berat" class="form-control" id="BeratE" required>
+                    </div>
+
+                    <div class="form-group">
+                        <div class="table-responsive">
+                            <table class="table table-bordered" width="100%" cellspacing="0" style="white-space: nowrap;">
+                                <thead>
+                                <tr>
+                                    <th>Ukuran</th>
+                                    <th>Warna</th>
+                                    <th>Stok Masuk</th>
+                                    <th>Aksi</th>
+                                </tr>
+                                </thead>
+                                <tbody class="add-row">
                                     
-                                    <tr>
-                                        <td colspan="3"></td>
-                                        <td>
-                                            <button type="button" class="btn btn-success button-tambah"><i class="fas fa-plus text-white"></i></button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                            </div>
+                                
+                                <tr>
+                                    <td colspan="3"></td>
+                                    <td>
+                                        <button type="button" class="btn btn-success button-tambah"><i class="fas fa-plus text-white"></i></button>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
                         </div>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Deskripsi</label>
-                            <textarea name="Deskripsi" class="form-control" id="DeskripsiE"></textarea>
-                        </div>
+                    <div class="form-group">
+                        <label>Deskripsi</label>
+                        <textarea name="Deskripsi" class="form-control" id="DeskripsiE"></textarea>
+                    </div>
 
-                        <div class="form-group">
-                            <label>Pilih gambar</label>
-                            <input type="file" name="GambarProduk" class="form-control-file">
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label>Pilih gambar</label>
+                        <input type="file" name="GambarProduk" class="form-control-file">
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <button class="btn btn-primary" type="button" id="Edit">Edit</button>
+                    <button class="btn btn-primary" type="button" id="btn_update">Edit</button>
                 </div>
+            </form>
             </div>
         </div>
     </div>

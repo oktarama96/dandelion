@@ -30,6 +30,7 @@ Route::group(['prefix' => 'pos/admin', 'middleware' => ['auth:pengguna', 'is_adm
 
     Route::resource('/kupondiskon', 'KuponDiskonController');
 
+    Route::post('/produk/{id}', 'ProdukController@update');
     Route::resource('/produk', 'ProdukController');
     Route::patch('/produk/{id}/stok', 'ProdukController@managestok');
     Route::delete('/produk/{id}/stok', 'ProdukController@hapusstok');

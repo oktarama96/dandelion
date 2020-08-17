@@ -302,76 +302,96 @@ class TransaksiController extends Controller
     {
         $id_pelanggan = Auth::guard('web')->user()->IdPelanggan;
         DB::beginTransaction();
-        try {
-            $Tgl = Carbon::now();
-            $IdTransaksi = $Tgl->format("YmdHis");
-            $TglTransaksi = $Tgl->format("Y-m-d H:i:s");
-            $ongkir = explode("-",$request->OngkosKirim);
+        
+        for ($j=0; $j < count($request->IdStokProduk); $j++) { 
+            $stokproduk = StokProduk::find($request->IdStokProduk[$j]);
 
-            $transaksi = new Transaksi;
-
-            $transaksi->IdTransaksi = $IdTransaksi;
-            $transaksi->TglTransaksi = $TglTransaksi;
-            $transaksi->Total = $request->Total;
-            $transaksi->Potongan = $request->Potongan;
-            $transaksi->OngkosKirim = $ongkir[0];
-            $transaksi->NamaEkspedisi = $request->NamaEkspedisi;
-            $transaksi->GrandTotal = $request->GrandTotal;
-            $transaksi->MetodePembayaran = "Midtrans";
-            $transaksi->StatusPembayaran = 0;
-            $transaksi->StatusPesanan = 0; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai, 4=dibatalkan
-            $transaksi->IdKuponDiskon = $request->IdKuponDiskon;
-            $transaksi->IdPengguna = 0;
-            $transaksi->IdPelanggan = $id_pelanggan;
-
-            $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0],$request->Potongan);
-            
-            $transaksi->Snap_token = $snapToken;
-            $transaksi->save();
-
-            for($i=0;$i<count($request->IdProduk);$i++){
-                $stokproduk = StokProduk::find($request->IdStokProduk[$i]);
-                
-                if($stokproduk){
-                    //dd($stokproduk->StokKeluar);
-                    if($stokproduk->StokAkhir <= 0){
-                        DB::rollback();
-                        $this->response['error'] = "Ada Produk Yang Stoknya Habis!";
-                        break;
-                    }else{
+            if($request->Qty[$j] <= $stokproduk->StokAkhir){
+                try {
+                    $Tgl = Carbon::now();
+                    $IdTransaksi = $Tgl->format("YmdHis");
+                    $TglTransaksi = $Tgl->format("Y-m-d H:i:s");
+                    $ongkir = explode("-",$request->OngkosKirim);
+        
+                    $transaksi = new Transaksi;
+        
+                    $transaksi->IdTransaksi = $IdTransaksi;
+                    $transaksi->TglTransaksi = $TglTransaksi;
+                    $transaksi->Total = $request->Total;
+                    $transaksi->Potongan = $request->Potongan;
+                    $transaksi->OngkosKirim = $ongkir[0];
+                    $transaksi->NamaEkspedisi = $request->NamaEkspedisi;
+                    $transaksi->GrandTotal = $request->GrandTotal;
+                    $transaksi->MetodePembayaran = "Midtrans";
+                    $transaksi->StatusPembayaran = 0;
+                    $transaksi->StatusPesanan = 0; //0=belumdiproses, 1=diproses, 2=dikirim,  3=selesai, 4=dibatalkan
+                    $transaksi->IdKuponDiskon = $request->IdKuponDiskon;
+                    $transaksi->IdPengguna = 0;
+                    $transaksi->IdPelanggan = $id_pelanggan;
+        
+                    $snapToken = $this->getSnapToken($IdTransaksi, $request->GrandTotal,$ongkir[0],$request->Potongan);
+                    
+                    $transaksi->Snap_token = $snapToken;
+                    $transaksi->save();
+        
+                    for($i=0;$i<count($request->IdProduk);$i++){
+                        $stokproduk = StokProduk::find($request->IdStokProduk[$i]);
                         
-                        $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
-                        
-                        $stokproduk->StokKeluar = $stokkeluar;
-                        $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
-
-                        $stokproduk->save();
-                    
-                        $detailtransaksi = new DetailTransaksi;
-                    
-                        $detailtransaksi->Qty = $request->Qty[$i];
-                        $detailtransaksi->Diskon = 0;
-                        $detailtransaksi->SubTotal = $request->SubTotal[$i];
-                        $detailtransaksi->IdProduk = $request->IdProduk[$i];
-                        $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
-                        $detailtransaksi->IdTransaksi = $IdTransaksi;
-
-                        $detailtransaksi->save();
-
-                        $this->deleteCart($id_pelanggan);
-                    
+                        if($stokproduk){
+                            //dd($stokproduk->StokKeluar);
+                            if($stokproduk->StokAkhir <= 0){
+                                DB::rollback();
+                                $this->response['error'] = "Ada Produk Yang Stoknya Habis!";
+                                break;
+                            }else{
+                                
+                                $stokkeluar = $stokproduk->StokKeluar + $request->Qty[$i];
+                                
+                                $stokproduk->StokKeluar = $stokkeluar;
+                                $stokproduk->StokAkhir = $stokproduk->StokMasuk - $stokkeluar;
+        
+                                $stokproduk->save();
+                            
+                                $detailtransaksi = new DetailTransaksi;
+                            
+                                $detailtransaksi->Qty = $request->Qty[$i];
+                                $detailtransaksi->Diskon = 0;
+                                $detailtransaksi->SubTotal = $request->SubTotal[$i];
+                                $detailtransaksi->IdProduk = $request->IdProduk[$i];
+                                $detailtransaksi->IdStokProduk = $stokproduk->IdStokProduk;
+                                $detailtransaksi->IdTransaksi = $IdTransaksi;
+        
+                                $detailtransaksi->save();
+        
+                                $this->deleteCart($id_pelanggan);
+                            
+                            }
+                        }                        
                     }
-                }                        
-            }
-            
-            
-            DB::commit();
+                    
+                    
+                    DB::commit();
+        
+                    $this->response['snap_token'] = $snapToken;
+                }catch(Exception $e){
+                    DB::rollback();
+                    $this->response['error'] = $e;
+                }
+            }else{
+                DB::rollback();
 
-            $this->response['snap_token'] = $snapToken;
-        }catch(Exception $e){
-            DB::rollback();
-            $this->response['error'] = $e;
+                $carts = $this->getCart();
+                foreach($carts as $cart){
+                    $cart->Qty += $cart->selisih_stok;
+                    $cart->save();
+                }
+
+                $this->response['error'] = "Ada Stok Yang Kurang!";
+            }
         }
+        
+
+        
         return response()->json($this->response);
     }
 

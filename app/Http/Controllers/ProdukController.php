@@ -78,6 +78,7 @@ class ProdukController extends Controller
      */
     public function store(Request $request)
     {
+        return($request);
         $this->validate($request, [
             'IdProduk' => 'required',
             'NamaProduk' => 'required',
