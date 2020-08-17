@@ -85,11 +85,11 @@ class PenggunaController extends Controller
         
         $pengguna->IdPengguna = $request->IdPengguna;
         $pengguna->NamaPengguna = $request->NamaPengguna;
-        if($request->has('Email')){
+        if(!empty($request->Email)){
             $pengguna->email = $request->Email;
         }
 
-        if($request->has('Password')){
+        if(!empty($request->Password)){
             $pengguna->password = bcrypt($request->Password);
         }        
         $pengguna->Alamat = $request->Alamat;

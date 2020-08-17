@@ -154,11 +154,11 @@ class PelangganController extends Controller
 
         $tabel->IdPelanggan = $request->IdPelanggan;
         $tabel->NamaPelanggan = $request->NamaPelanggan;
-        if($request->has('Email')){
+        if(!empty($request->Email)){
             $tabel->email = $request->Email;
         }
 
-        if($request->has('Password')){
+        if(!empty($request->Password)){
             $tabel->password = bcrypt($request->Password);
         }     
         $tabel->JenisKelamin = $request->JenisKelamin;
