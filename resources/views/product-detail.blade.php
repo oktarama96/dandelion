@@ -222,6 +222,7 @@
                     </div>
                     <div class="col-lg-5 col-lg-5 col-md-12">
                         <div class="product-details-content">
+                            <input type='hidden' id='IdProdukDetail' value='{{ $produks->IdProduk }}'>
                             <h2>{{ $produks->NamaProduk }}</h2>
                             <div class="product-details-price">
                                 <span>Rp. {{ number_format($produks->HargaJual,0,',',',') }}</span>

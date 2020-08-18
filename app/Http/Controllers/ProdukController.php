@@ -315,6 +315,7 @@ class ProdukController extends Controller
         $this->validate($request, [
             'IdStokProduk' => 'required',
             'IdProduk' => 'required',
+            'StokMasuk.*' => 'required',
         ]);
         
         DB::beginTransaction();

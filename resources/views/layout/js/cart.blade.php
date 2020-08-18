@@ -45,14 +45,14 @@
     }
 
     function addToCart() {
-        // alert($('#IdProduk').val() + " " + $('#IdWarna').val() + " " + $('#IdUkuran').val() + " " + $('#Qty').val())
+        alert($('#IdProdukDetail').val() + " " + $('#IdWarnaDetail').val() + " " + $('#IdUkuranDetail').val() + " " + $('#QtyDetail').val())
         @if (Auth::guard('web')->check())
             data = {
                 "_token": "{{ csrf_token() }}",
-                'IdProduk': $('#IdProduk').val(),
-                'IdWarna': $('#IdWarna').val(),
-                'IdUkuran': $('#IdUkuran').val(),
-                'Qty': $('#Qty').val(),
+                'IdProduk': ( $('#IdProduk').val() == null )? $('#IdProdukDetail').val() : $('#IdProduk').val()  , //(name === 'true') ? 'Y' :'N';
+                'IdWarna': ( $('#IdWarna').val() == null )? $('#IdWarnaDetail').val() : $('#IdWarna').val()  ,
+                'IdUkuran': ( $('#IdUkuran').val() == null )? $('#IdUkuranDetail').val() : $('#IdUkuran').val()  ,
+                'Qty': ( $('#Qty').val() == null )? $('#QtyDetail').val() : $('#Qty').val()  ,
             }
 
             $.ajax({
