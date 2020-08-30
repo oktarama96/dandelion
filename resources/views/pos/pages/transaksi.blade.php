@@ -91,7 +91,7 @@
             }
             else
             {
-                swal("Peringatan!", "Both Date is required", "warning");
+                swal("Peringatan!", "Kedua Tanggal Harus Isi!", "warning");
             }
         });
 
@@ -155,7 +155,7 @@
             }
             else
             {
-                swal("Peringatan!", "Both Date is required", "warning");
+                swal("Peringatan!", "Kedua Tanggal Harus Isi!", "warning");
             }
         });
 
@@ -228,13 +228,8 @@
                         var table_online = $('.data-table-online').DataTable(); 
                         table_online.ajax.reload( null, false );
                     },
-                    error: function (data) {
-                        var errors = "";
-                        $.each(data.responseJSON.errors, function(key,value) {
-                            errors = errors +' '+ value +'\n';
-                        });
-                        
-                        swal("Gagal!","Gagal Menghapus Data : \n"+errors+"","error");
+                    error: function (data) {                
+                        swal("Gagal!","Gagal Menghapus Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
                     },
                 })
             }

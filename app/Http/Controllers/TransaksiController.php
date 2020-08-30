@@ -160,7 +160,7 @@ class TransaksiController extends Controller
                     DB::commit();
 
                     return redirect()->back()->with("alert", "Data Berhasil Disimpan!");
-                }catch(Exception $e){
+                }catch(\Exception $e){
                     DB::rollback();
                     return redirect()->back()->with("alert", "Error : $e");
                 }
@@ -373,7 +373,7 @@ class TransaksiController extends Controller
                     DB::commit();
         
                     $this->response['snap_token'] = $snapToken;
-                }catch(Exception $e){
+                }catch(\Exception $e){
                     DB::rollback();
                     $this->response['error'] = $e;
                 }
@@ -532,9 +532,9 @@ class TransaksiController extends Controller
             DB::commit();
 
             return response()->json(['success'=>'sukses']);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
-            return response()->json(['error'=> $e ]);
+            return response()->json(['error'=> $e ], 400);
         }
     }
 

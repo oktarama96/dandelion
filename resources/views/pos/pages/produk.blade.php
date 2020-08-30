@@ -41,7 +41,7 @@
         //var NamaPengguna = $("input[name=NamaPengguna]").val();
        // document.getElementById("demo").innerHTML = name;
        var formData = new FormData(this);
-        console.log(formData)
+        //console.log(formData)
         $.ajax({
             type: 'POST',
             url: "{{ url('/pos/admin/produk') }}",
@@ -54,13 +54,8 @@
                 $('#form-tambah').trigger("reset");
                 table.draw();
             },
-            error: function (data) {
-                var errors = "";
-                $.each(data.responseJSON.errors, function(key,value) {
-                    errors = errors +' '+ value +'\n';
-                });
-                
-                swal("Gagal!","Gagal Menambah Data : \n"+errors+"","error");
+            error: function (data) {                
+                swal("Gagal!","Gagal Menambah Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
             },
         });
     });
@@ -78,13 +73,8 @@
             success: function (data) {
                 swal("Selamat!", "Berhasil Mengubah Data", "success");
             },
-            error: function (data) {
-                var errors = "";
-                $.each(data.responseJSON.errors, function(key,value) {
-                    errors = errors +' '+ value +'\n';
-                });
-                
-                swal("Gagal!","Gagal Mengubah Data : \n"+errors+"","error");
+            error: function (data) {                
+                swal("Gagal!","Gagal Mengubah Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
             },
         });
     });
@@ -230,13 +220,8 @@
                             $('#edit').modal('hide');
                             table.draw();
                         },
-                        error: function (data) {
-                            var errors = "";
-                            $.each(data.responseJSON.errors, function(key,value) {
-                                errors = errors +' '+ value +'\n';
-                            });
-                            
-                            swal("Gagal!","Gagal Mengubah Data : \n"+errors+"","error");
+                        error: function (data) {                
+                            swal("Gagal!","Gagal Mengubah Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
                         },
                     });
                 });
@@ -265,13 +250,8 @@
                         swal("Selamat!", "Berhasil Menghapus Data", "success");
                         table.draw();
                     },
-                    error: function (data) {
-                        var errors = "";
-                        $.each(data.responseJSON.errors, function(key,value) {
-                            errors = errors +' '+ value +'\n';
-                        });
-                        
-                        swal("Gagal!","Gagal Menghapus Data : \n"+errors+"","error");
+                    error: function (data) {                
+                        swal("Gagal!","Gagal Menghapus Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
                     },
                 })
             }
@@ -330,13 +310,8 @@
                             $(tr).remove();
                             swal("Selamat!", "Berhasil Menghapus Data", "success");
                         },
-                        error: function (data) {
-                            var errors = "";
-                            $.each(data.responseJSON.errors, function(key,value) {
-                                errors = errors +' '+ value +'\n';
-                            });
-                            
-                            swal("Gagal!","Gagal Menghapus Data : \n"+errors+"","error");
+                        error: function (data) {                
+                            swal("Gagal!","Gagal Menghapus Data : \n"+data.responseJSON.error.errorInfo[2]+"","error");
                         },
                     })
                 }

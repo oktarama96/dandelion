@@ -138,9 +138,9 @@ class ProdukController extends Controller
             DB::commit();
 
             return response()->json(['success'=>'sukses']);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
-            return response()->json(['error'=> $e ]);
+            return response()->json(['error'=> $e ], 400);
         }
         
     }
@@ -280,9 +280,9 @@ class ProdukController extends Controller
             DB::commit();
 
             return response()->json(['success'=>'sukses']);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
-            return response()->json(['error'=> $e ]);
+            return response()->json(['error'=> $e ], 400);
         }
     }
 
@@ -304,9 +304,9 @@ class ProdukController extends Controller
             DB::commit();
 
             return response()->json(['success'=>'sukses']);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
-            return response()->json(['error'=> $e ]);
+            return response()->json(['error'=> $e ], 400);
         }
     }
 
@@ -339,9 +339,9 @@ class ProdukController extends Controller
             DB::commit();
 
             return response()->json(['success'=>'sukses']);
-        }catch(Exception $e){
+        }catch(\Exception $e){
             DB::rollback();
-            return response()->json(['error'=> $e ]);
+            return response()->json(['error'=> $e ], 400);
         }
     }
 

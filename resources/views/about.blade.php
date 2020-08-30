@@ -20,8 +20,8 @@
     <div class="welcome-area pt-100 pb-95">
         <div class="container">
             <div class="welcome-content text-center">
-                <h5>Who Are We</h5>
-                <h1>Welcome To Dandelion Fashion Shop</h1>
+                <h5>Siapa Kita</h5>
+                <h1>Selamat Datang di Dandelion Fashion Shop</h1>
                 <p>Dandelion Fashion Shop merupakan sebuah usaha yang bergerak dalam
                     bidang penjualan busana wanita yang terletak di Jalan Raya Abianbase No. 128,
                     Badung, Bali. Usaha ini berdiri pada akhir tahun 2016, tepatnya pada bulan
