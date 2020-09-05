@@ -279,7 +279,7 @@
         <div class="product-area hm4-section-padding pt-80 pb-100">
             <div class="container-fluid">
                 <div class="section-title text-center">
-                    <h2>NEWEST PRODUCT!</h2>
+                    <h2>PRODUK TERBARU!</h2>
                 </div>
                 <div class="product-tab-list nav pt-30 pb-55 text-center">
         
@@ -316,7 +316,7 @@
                                 @endforeach
                             
                             <div class="view-more text-center mt-20 col-12">
-                                <a href="/shop">VIEW MORE PRODUCTS</a>
+                                <a href="/shop">LIHAT LEBIH BANYAK!</a>
                             </div>
 
                             @else
