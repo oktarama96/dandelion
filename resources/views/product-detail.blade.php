@@ -68,7 +68,7 @@
                                             "<div class='pro-details-rating-wrap'>"+
                                             "</div>"+
                                             '<div class="pro-details-list">'+
-                                                "<p>"+msg.produk.Deskripsi+"</p>"+
+                                                "<p style='white-space:pre-line;'>"+msg.produk.Deskripsi+"</p>"+
                                                 "<br/>"+
                                                 "<p>Berat : "+msg.produk.Berat+" Gram</p>"+
                                             '</div>'+
@@ -229,7 +229,7 @@
                             </div>
                             <div class='pro-details-rating-wrap'></div>
                             <div class="pro-details-list">
-                                <p>{{ $produks->Deskripsi }}</p>
+                                <p style="white-space:pre-line;">{{ $produks->Deskripsi }}</p>
                                 <br/>
                                 <p>Berat : {{ $produks->Berat }} Gram</p>
                             </div>

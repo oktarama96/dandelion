@@ -366,7 +366,11 @@
     });
 
   </script>
-
+  @if(session()->has('alert'))
+    <script type="text/javascript" >
+        swal('Error!', '{{ session()->get('alert') }}', 'error');
+    </script>
+  @endif
 @endsection
 
 @section('content')

@@ -277,6 +277,10 @@
                         url: "{{ url('/my-account/updatetransaksi/') }}/"+IdTransaksi+"/",
                         
                         success: function (data) {
+                            $.ajax({
+                                type: 'GET',
+                                url: "{{ url('/mail/') }}/"+IdTransaksi+"/"
+                            });
                             swal("Selamat!", "Pesanan Anda Sudah Selesai!", "success");
                             table.draw();
                         },

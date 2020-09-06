@@ -50,7 +50,7 @@
           <i class="fas fa-fw fa-tachometer-alt"></i>
           <span>Dashboard</span></a>
       </li>
-      @if (Auth::guard('pengguna')->user()->Is_admin == 1)
+      @if (Auth::guard('pengguna')->user()->Is_admin == 1 || Auth::guard('pengguna')->user()->Is_admin == 2)
         <!-- Divider -->
         <hr class="sidebar-divider">
 
@@ -68,7 +68,9 @@
           <div id="collapsePages2" class="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
             <div class="bg-white py-2 collapse-inner rounded">
 
+              @if(Auth::guard('pengguna')->user()->Is_admin == 2)
               <a class="collapse-item {{ Request::path() === 'pos/admin/pengguna' ? 'active' : '' }}" href="/pos/admin/pengguna">Data Pengguna</a>
+              @endif
               <a class="collapse-item {{ Request::path() === 'pos/admin/pelanggan' ? 'active' : '' }}" href="/pos/admin/pelanggan">Data Pelanggan</a>
               <a class="collapse-item {{ Request::path() === 'pos/admin/kategoriproduk' ? 'active' : '' }}" href="/pos/admin/kategoriproduk">Data Kategori Produk</a>
               <a class="collapse-item {{ Request::path() === 'pos/admin/warnaproduk' ? 'active' : '' }}" href="/pos/admin/warnaproduk">Data Warna Produk</a>
@@ -223,6 +225,8 @@
               <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                 @if (Auth::guard('pengguna')->user()->Is_admin == 1)
                   <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::guard('pengguna')->user()->NamaPengguna}} - Admin</span>
+                @elseif(Auth::guard('pengguna')->user()->Is_admin == 2)
+                  <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::guard('pengguna')->user()->NamaPengguna}} - Superadmin</span> 
                 @else
                   <span class="mr-2 d-none d-lg-inline text-gray-600 small">{{Auth::guard('pengguna')->user()->NamaPengguna}} - Kasir</span>
                 @endif                

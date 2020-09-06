@@ -207,6 +207,7 @@
                         <div class="form-group">
                             <label>Jabatan</label>
                             <select class="form-control" name="jabatan">
+                                <option value="2">Superadmin</option>
                                 <option value="1">Admin</option>
                                 <option value="0">Kasir</option>
                               </select>

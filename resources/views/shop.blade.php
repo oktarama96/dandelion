@@ -75,7 +75,7 @@
                                             "<div class='pro-details-rating-wrap'>"+
                                             "</div>"+
                                             '<div class="pro-details-list">'+
-                                                "<p>"+msg.produk.Deskripsi+"</p>"+
+                                                "<p  style='white-space:pre-line;'>"+msg.produk.Deskripsi+"</p>"+
                                                 "<br/>"+
                                                 "<p>Berat : "+msg.produk.Berat+" Gram</p>"+
                                             '</div>'+

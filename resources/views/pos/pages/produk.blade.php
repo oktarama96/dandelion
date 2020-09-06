@@ -105,7 +105,7 @@
                                 "<img class='card-img-top' src='"+imgurl+msg.produk[0].GambarProduk+"'>"+
                                 "<div class='card-body'>"+
                                     "<h3>Deskripsi</h3>"+
-                                    "<p class='card-text'>"+msg.produk[0].Deskripsi+"</p>"+
+                                    "<p class='card-text' style='white-space:pre-line;'>"+msg.produk[0].Deskripsi+"</p>"+
                                     "<div class='table-responsive'>"+
                                         "<table class='table table-bordered' width='100%' cellspacing='0' style='white-space: nowrap;'>"+
                                             "<thead>"+

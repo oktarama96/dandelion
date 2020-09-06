@@ -126,3 +126,4 @@ Route::post('/midtrans/finish', function(){
 })->name('shop.finish');
 Route::post('/midtrans/notification/handler', 'TransaksiController@notificationHandler')->name('notification.handler');
 
+Route::get('/mail/{id_transaksi}', 'PelangganController@sendmail');

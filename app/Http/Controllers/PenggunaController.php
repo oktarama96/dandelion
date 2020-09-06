@@ -20,9 +20,7 @@ class PenggunaController extends Controller
     }
     public function index(Request $request){
         if(auth()->user()->Is_admin != 2){
-            // return 'GGABIASA ANJING';
-            return abort(404);
-            //return redirect juga bisa ram trus tambah data apa nama errornya atau buatin function biar ga duplicate
+            return redirect()->route('kasir.index')->with("alert" , "Anda tidak memiliki akses!");
         }
         if ($request->ajax()) {
             $pengguna = Pengguna::latest()->get();
@@ -31,6 +29,8 @@ class PenggunaController extends Controller
                     ->editColumn('Is_admin', function ($data) {
                         if($data->Is_admin == 1){
                             return "Admin";
+                        }elseif($data->Is_admin == 2){
+                            return "Superadmin";
                         }else{
                             return "Kasir";
                         }

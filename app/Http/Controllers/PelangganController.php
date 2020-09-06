@@ -6,9 +6,13 @@ use Illuminate\Http\Request;
 use App\Pelanggan;
 use App\Produk;
 use App\Transaksi;
+use App\DetailTransaksi;
 use DataTables;
 use RuangApi;
 use Auth;
+
+use App\Mail\EmailTransaksi;
+use Illuminate\Support\Facades\Mail;
 
 class PelangganController extends Controller
 {
@@ -297,5 +301,13 @@ class PelangganController extends Controller
         $transaksi->save();
 
         return response()->json(['success'=>'sukses']);
+    }
+
+    public function sendmail($id_transaksi)  
+    {
+        $transaksi = Transaksi::with('pelanggan')->where('IdTransaksi', $id_transaksi)->first();
+        $detailtransaksis = DetailTransaksi::with(['produk','stokproduk','stokproduk.warna','stokproduk.ukuran'])->where('IdTransaksi', $id_transaksi)->get();
+        
+        Mail::to($transaksi->pelanggan->email)->send(new EmailTransaksi($transaksi, $detailtransaksis));
     }
 }
