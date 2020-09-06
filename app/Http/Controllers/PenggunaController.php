@@ -5,9 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Pengguna;
 use DataTables;
+use Auth;
 
 class PenggunaController extends Controller
-{
+{    
     public function adminDash()
     {
         return view('admin');
@@ -18,6 +19,11 @@ class PenggunaController extends Controller
         return view('kasir');
     }
     public function index(Request $request){
+        if(auth()->user()->Is_admin != 2){
+            // return 'GGABIASA ANJING';
+            return abort(404);
+            //return redirect juga bisa ram trus tambah data apa nama errornya atau buatin function biar ga duplicate
+        }
         if ($request->ajax()) {
             $pengguna = Pengguna::latest()->get();
 

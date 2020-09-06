@@ -33,11 +33,14 @@ class PosController extends Controller
       
         if (Auth::guard('pengguna')->attempt(['email' => $request->email, 'password' => $request->password])) {
           
-            if (Auth::guard('pengguna')->user()->Is_admin == 1) {
+            if (Auth::guard('pengguna')->user()->Is_admin == 2) {
+                // return "Halaman Super Admin";
+                return redirect()->route('kasir.index'); //ubah ni nanti sesuaiin
+            }else if(Auth::guard('pengguna')->user()->Is_admin == 1){
                 // return "Halaman Admin";
-                return redirect()->route('kasir.index');
-                // return redirect()->intended(route('admin.dashboard'));
+                return redirect()->route('kasir.index'); //ubah ni nanti
             }else{
+               // return "Halaman Kasir;
                 return redirect()->route('kasir.index');
             }
         } 
