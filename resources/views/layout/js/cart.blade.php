@@ -45,7 +45,7 @@
     }
 
     function addToCart() {
-        alert($('#IdProdukDetail').val() + " " + $('#IdWarnaDetail').val() + " " + $('#IdUkuranDetail').val() + " " + $('#QtyDetail').val())
+        // alert($('#IdProdukDetail').val() + " " + $('#IdWarnaDetail').val() + " " + $('#IdUkuranDetail').val() + " " + $('#QtyDetail').val())
         @if (Auth::guard('web')->check())
             data = {
                 "_token": "{{ csrf_token() }}",

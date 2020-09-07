@@ -246,7 +246,7 @@
                             </div>
                             <div class="col-xl-5 col-lg-5 col-md-6 col-12 col-sm-6">
                                 <div class="single-slider-img4 slider-animated-1">
-                                    <img class="animated" src="assets/img/slider/single-slide-2.png" alt="">
+                                    <img class="animated" src="assets/img/banner/banner-1.jpg" alt="">
                                 </div>
                             </div>
                         </div>
@@ -267,7 +267,7 @@
                             </div>
                             <div class="col-xl-5 col-lg-5 col-md-6 col-12 col-sm-6">
                                 <div class="single-slider-img4 slider-animated-1">
-                                    <img class="animated" src="assets/img/slider/single-slide-7.png" alt="">
+                                    <img class="animated" src="assets/img/banner/banner-2.jpg" alt="">
                                 </div>
                             </div>
                         </div>
